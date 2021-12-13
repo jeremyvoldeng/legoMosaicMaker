@@ -23,7 +23,7 @@ start with.
 
 1. Download the image you would like to make a mosaic.
 2. Crop the image to an aspect ratio with integer numbers (Ex. 3x3, 2x4, etc) !! If you don't do this, part of your image might be cropped out!
-3. Upload the image using the 'Browse' button
+3. Locate and upload the image using the 'Browse' button.
 4. Select the width and height you would like to use that matches your image. For example, Lego uses a 3x3 grid of 16x16 plates for all mosaics except for the World Map, which uses 8x5.
 5. Hit 'Submit'
 6. Adjust colour sliders to your liking. For example, sometimes adjusting brightness can bring out sharper colours and remove unwanted colours.
