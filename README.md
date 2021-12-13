@@ -27,5 +27,5 @@ start with.
 4. Select the width and height you would like to use that matches your image. For example, Lego uses a 3x3 grid of 16x16 plates for all mosaics except for the World Map, which uses 8x5.
 5. Hit 'Submit'
 6. Adjust colour sliders to your liking. For example, sometimes adjusting brightness can bring out sharper colours and remove unwanted colours.
-7. When you are satisfied, hit the Download button. A PDF copy of instructions for building as well as required pieces will be downloaded to your computer.
+7. When you are satisfied, hit the Download button. A PDF copy of instructions for building as well as required pieces will be downloaded to your computer, in the same folder as the program.
 8. Enjoy building! :)
