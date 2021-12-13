@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 from PIL import ImageTk, Image, ImageEnhance
-import os.path
+import os
 import legoImageMaker
 import io
 
@@ -64,7 +64,8 @@ layout = [
         sg.Column(piece_viewer_column)
     ],
     [
-        sg.Button("-DOWNLOAD-")
+        sg.Button("-DOWNLOAD-"),
+        sg.Button("-SAVEIMAGE-"),
     ],
     [
         sg.Text("",key="Error"),
@@ -84,6 +85,7 @@ layout = [
 
 originalImage = Image
 editedImage = Image
+legoImage = Image
 saturation = 1.0
 sharpness = 1.0
 brightness = 1.0
@@ -91,6 +93,7 @@ contrast = 1.0
 newSize = 0,0
 
 def processImage(image):
+    global legoImage
     legoImage, numbersImage = legoImageMaker.processImage(image)
     legoImage = legoImage.resize(newSize)
     bio = io.BytesIO()
@@ -142,6 +145,9 @@ while True:
         name = values["Name"]
         legoImageMaker.makeInstructions(name).save()
 
+    elif event == "-SAVEIMAGE-":
+        legoImageMaker.newImage.save('mosaic.jpg')
+
     elif event == "Reset":
         try:
             saturation = 1.0
@@ -171,6 +177,29 @@ while True:
     elif event == "-SATURATION-":
         i = values['-SATURATION-']
         try:
+            window['SATINPUT'].update(int(i))
+            saturation = i/100
+            imageCopy = originalImage.copy()
+            converter = ImageEnhance.Color(imageCopy)
+            imageCopy = converter.enhance(saturation)
+            converter = ImageEnhance.Sharpness(imageCopy)
+            imageCopy = converter.enhance(sharpness)
+            converter = ImageEnhance.Brightness(imageCopy)
+            imageCopy = converter.enhance(brightness)
+            converter = ImageEnhance.Contrast(imageCopy)
+            imageCopy = converter.enhance(contrast)
+            bio = io.BytesIO()
+            imageCopy.save(bio, format = "PNG")
+            window["-IMAGE-"].update(bio.getvalue())
+            processImage(imageCopy)
+        except: 
+            window['Error'].update("ERROR: No Image Uploaded!")
+
+    elif event == "SATINPUT":
+        i = values['SATINPUT']
+        print("yuh")
+        try:
+            window['-SATURATION-'].update(int(i))
             saturation = i/100
             imageCopy = originalImage.copy()
             converter = ImageEnhance.Color(imageCopy)
@@ -191,6 +220,7 @@ while True:
     elif event == "-BRIGHTNESS-":
         i = values['-BRIGHTNESS-']
         try:
+            window['BRIINPUT'].update(int(i))
             brightness = i/100
             imageCopy = originalImage.copy()
             converter = ImageEnhance.Color(imageCopy)
@@ -211,6 +241,7 @@ while True:
     elif event == "-SHARPNESS-":
         i = values['-SHARPNESS-']
         try:
+            window['SHAINPUT'].update(int(i))
             sharpness = i/100
             imageCopy = originalImage.copy()
             converter = ImageEnhance.Color(imageCopy)
@@ -231,6 +262,7 @@ while True:
     elif event == "-CONTRAST-":
         i = values['-CONTRAST-']
         try:
+            window['CONINPUT'].update(int(i))
             contrast = i/100
             imageCopy = originalImage.copy()
             converter = ImageEnhance.Color(imageCopy)
