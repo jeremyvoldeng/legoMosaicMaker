@@ -150,7 +150,9 @@ def processImage(album):
         if values[1] > 0:
             fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
             draw.ellipse((12, 2+(25*values[1]), 33, 23+(25*values[1])), fill=fill)
-            draw.text((40, 3+(25*values[1])), str(values[1]) + ": " + str(key) + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
+            name = str(key)
+            name = name.replace('_', ' ')
+            draw.text((40, 3+(25*values[1])), ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
 
     return newImage, colourNumbersImage
 
@@ -165,7 +167,9 @@ def makeInstructions(name):
         if values[1] > 0:
             fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
             draw.ellipse((12, 2+(25*values[1]), 33, 23+(25*values[1])), fill=fill)
-            draw.text((40, 3+(25*values[1])), str(values[1]) + ": " + str(key) + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
+            name = str(key)
+            name = name.replace('_', ' ')
+            draw.text((40, 3+(25*values[1])), str(values[1]) + ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
 
     colourNumbersImage.save(NamedTemporaryFile(), format = 'PNG')
 

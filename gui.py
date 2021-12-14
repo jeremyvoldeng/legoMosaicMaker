@@ -38,24 +38,41 @@ layout = [
         sg.Input("3", size = (4,10), key="height"),
     ],[
         sg.Text("Image Adjustment Sliders: ", font = 'Arial 12 bold'),
+    ],[
+        sg.Text("Move the sliders to adjust the image settings. Alternatively, use the inputs below.", font = 'Arial 8 bold'),
+    ],[
         sg.VSeparator(),
         sg.Text("Saturation"), 
         sg.Slider(range=(0,200), default_value=100, orientation="h", key="-SATURATION-", enable_events=True),
-        sg.Input("100",size = (4,10), key='SATINPUT'),
+        sg.VSeperator(),
         sg.Text("Brightness"), 
-        sg.VSeperator(),
         sg.Slider(range=(0,200), default_value=100, orientation="h", key="-BRIGHTNESS-", enable_events=True),
-        sg.Input("100",size = (4,10), key='BRIINPUT'),
+        sg.VSeperator(),
         sg.Text("Sharpness"), 
-        sg.VSeperator(),
         sg.Slider(range=(0,200), default_value=100, orientation="h", key="-SHARPNESS-", enable_events=True),
-        sg.Input("100",size = (4,10), key='SHAINPUT'),
-        sg.Text("Contrast"), 
         sg.VSeperator(),
+        sg.Text("Contrast"), 
         sg.Slider(range=(0,200), default_value=100, orientation="h", key="-CONTRAST-", enable_events=True),
+        sg.VSeperator(),
+    ],[
+        sg.Text("Image Adjustment Inputs: ", font = 'Arial 12 bold'),
+    ],[
+        sg.Text("Input a value between 0-200 to adjust the image settings. Alternatively, use the sliders above.", font = 'Arial 8 bold'),
+    ],[
+        sg.Text("Saturation:"), 
+        sg.Input("100",size = (4,10), key='SATINPUT'),
+        sg.VSeperator(),
+        sg.Text("Brightness:"), 
+        sg.Input("100",size = (4,10), key='BRIINPUT'),
+        sg.VSeperator(),
+        sg.Text("Sharpness:"),
+        sg.Input("100",size = (4,10), key='SHAINPUT'),
+        sg.VSeperator(),
+        sg.Text("Contrast:"), 
         sg.Input("100",size = (4,10), key='CONINPUT'),
         sg.VSeperator(),
         sg.Button("Reset"),
+        sg.Button("Enter"),
     ],[
         sg.Column(image_viewer_column_left),
         sg.VSeperator(),
@@ -154,6 +171,40 @@ while True:
             brightness = 1.0
             contrast = 1.0
             sharpness = 1.0
+            window['-SATURATION-'].update(saturation*100)
+            window['-BRIGHTNESS-'].update(brightness*100)
+            window['-CONTRAST-'].update(contrast*100)
+            window['-SHARPNESS-'].update(sharpness*100)
+            imageCopy = originalImage.copy()
+            converter = ImageEnhance.Color(imageCopy)
+            imageCopy = converter.enhance(saturation)
+            converter = ImageEnhance.Sharpness(imageCopy)
+            imageCopy = converter.enhance(sharpness)
+            converter = ImageEnhance.Brightness(imageCopy)
+            imageCopy = converter.enhance(brightness)
+            converter = ImageEnhance.Contrast(imageCopy)
+            imageCopy = converter.enhance(contrast)
+            bio = io.BytesIO()
+            imageCopy.save(bio, format = "PNG")
+            window["-IMAGE-"].update(bio.getvalue())
+            processImage(imageCopy)
+        except: 
+            window['Error'].update("ERROR: No Image Selected!")
+
+    elif event == "Enter":
+        sat = int(values['SATINPUT'])
+        bri = int(values['BRIINPUT'])
+        sha = int(values['SHAINPUT'])
+        con = int(values['CONINPUT'])
+        # print(sat/100)
+        # print(bri/100)
+        # print(sha/100)
+        # print(con/100)
+        try:
+            saturation = sat/100
+            brightness = bri/100
+            contrast = con/100
+            sharpness = sha/100
             window['-SATURATION-'].update(saturation*100)
             window['-BRIGHTNESS-'].update(brightness*100)
             window['-CONTRAST-'].update(contrast*100)
