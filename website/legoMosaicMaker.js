@@ -79,6 +79,16 @@ const RGBDistance = (r1, g1, b1, r2, g2, b2) => {
   )
 }
 
+const sRGBDistance = (r1, g1, b1, r2, g2, b2) => {
+  r = (r1 + r2) / 2
+  d1 = r1 - r2
+  d2 = g1 - g2
+  d3 = b1 - b2
+  return Math.sqrt(
+    (2 + r / 256) * d1 * d1 + 4 * d2 * d2 + (2 + (255 - r) / 256) * d3 * d3
+  )
+}
+
 const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
   /* From the Colour Difference Wikipedia page[0], it turns
    * out that distances in RGB colour space are not perceptibly
@@ -89,7 +99,7 @@ const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
    * space for distances.
    *
    * [0] https://en.wikipedia.org/wiki/Color_difference
-   * [1] http://www.brucelindbloom.com/index.html?Equations.html
+   * [1] https://en.wikipedia.org/wiki/CIELAB_color_space#RGB_and_CMYK_conversions
    * [2] stackoverflow link https://stackoverflow.com/questions/9018016/how-to-compare-two-colors-for-similarity-difference
    */
   minimum_colour_dist = 256
