@@ -91,7 +91,7 @@ a {
 .lego-zone a {
   color: #0818A8;
 }
-.lego-zone img {
+.lego-zone img canvas {
   max-height: 500px;
   margin: 1rem 0 1rem 0;
 }
