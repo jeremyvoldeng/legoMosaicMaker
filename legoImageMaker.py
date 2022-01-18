@@ -156,10 +156,10 @@ def processImage(album):
 
     return newImage, colourNumbersImage
 
-def makeInstructions(name):
+def makeInstructions(title):
     width = int(size[0]/16)
     height = int(size[1]/16)
-    instructionPDF = Canvas(name + ".pdf", pagesize=(850,600))
+    instructionPDF = Canvas(title + ".pdf", pagesize=(850,600))
     colourNumbersImage = Image.new('RGB', (400, 1000),(0,0,0))
     draw = ImageDraw.Draw(colourNumbersImage)
     textColour = (200,200,200)
@@ -181,7 +181,7 @@ def makeInstructions(name):
     instructionPDF.drawPath(path, True,True)
     titleImage = Image.new('RGB', (850, 50), (0,0,0))
     drawText = ImageDraw.Draw(titleImage)
-    drawText.text(xy=(425,25),text= name, anchor= "mm", font = ImageFont.truetype("GILSANUB", 25))
+    drawText.text(xy=(425,25),text= title, anchor= "mm", font = ImageFont.truetype("GILSANUB", 25))
     instructionPDF.drawInlineImage(titleImage, x=0,y=550)
     instructionPDF.drawInlineImage(newImage, (850-500/height*width)/2, 50, width= 500/height*width, height= 500)
     instructionPDF.showPage()
