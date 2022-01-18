@@ -67,11 +67,16 @@ const resizeImage = (img) => {
   const ctx  = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0, SIZE[0], SIZE[1]);
 
-  return [canvas, ctx]
+  return ctx
 }
 
 const RGBDistance = (r1, g1, b1, r2, g2, b2) => {
-  return Math.sqrt(Math.abs(r1 - r2)^2 + Math.abs(g1 - g2)^2 + Math.abs(b1 - b2)^2)
+  d1 = r1 - r2
+  d2 = g1 - g2
+  d3 = b1 - b2
+  return Math.sqrt(
+    d1 * d1 + d2 * d2 + d3 * d3
+  )
 }
 
 const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
@@ -90,8 +95,10 @@ const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
   minimum_colour_dist = 256
   closest_colour = ""
   for (let colour in legoColours) {
+
     const [lego_r, lego_g, lego_b] = legoColours[colour]
     colour_dist = distance_metric(r, g, b, lego_r, lego_g, lego_b)
+
     if (colour_dist < minimum_colour_dist) {
       minimum_colour_dist = colour_dist
       closest_colour = colour
@@ -108,7 +115,7 @@ const processImage = (input_img, input_ctx, output_ctx) => {
 
   coloursUsed = init_colours_used()
 
-  const [thumbnail_img, mini_input_ctx] = resizeImage(input_img)
+  const mini_input_ctx = resizeImage(input_img)
 
   for (let i = 0; i < SIZE[0]; i++) {
     for (let j = 0; j < SIZE[0]; j++) {
