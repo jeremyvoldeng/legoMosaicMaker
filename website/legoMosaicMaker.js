@@ -36,8 +36,8 @@ legoColours = {
   "yellowish_green" : [226,249,154]
 }
 
-const FACTOR = 10;
-const SIZE = [48, 48];
+const FACTOR = 9;
+const SIZE = [64, 64];
 
 
 const draw_circle = (x, y, r, colour, canvas_ctx) => {
@@ -58,7 +58,6 @@ const init_colours_used = () => {
 }
 
 const resizeImage = (img) => {
-  // set up a hidden canvas with desired size
   const canvas = document.createElement('canvas')
   canvas.width = SIZE[0]
   canvas.height = SIZE[1]
@@ -68,6 +67,62 @@ const resizeImage = (img) => {
   ctx.drawImage(img, 0, 0, SIZE[0], SIZE[1]);
 
   return ctx
+}
+
+const nthOfArray = (array, period, start) => {
+  vs = []
+  for (let i = start; i < array.length; i += period) {
+    vs.push(array[i])
+  }
+  return vs
+}
+
+const resizeImage2 = (img) => {
+  /* notes:
+   *    If this turns out to be the best method, we can integrate this
+   *    into the main processImage loop for speed.
+   *
+   *    This version is qualitatively better than resizeImage - fewer
+   *    misplaced pixels, more uniform colouring, e.t.c.
+   *
+   *    Potential improvements: gaussian-weighted averaging
+   */
+  const canvas = document.createElement('canvas')
+  canvas.width = img.width
+  canvas.height = img.height
+
+  const small_canvas = document.createElement('canvas')
+  small_canvas.width = SIZE[0]
+  small_canvas.height = SIZE[1]
+
+  const ctx  = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+  const small_ctx  = small_canvas.getContext('2d');
+
+  const width_chunk_size = canvas.width / SIZE[0]
+  const height_chunk_size = canvas.height / SIZE[1]
+
+  for (let i = 0; i < SIZE[0]; i++) {
+    for (let j = 0; j < SIZE[1]; j++) {
+      const vals = ctx.getImageData(
+        i * width_chunk_size,
+        j * width_chunk_size,
+        width_chunk_size,
+        height_chunk_size
+      ).data
+      const rs = nthOfArray(vals, 4, 0)
+      const gs = nthOfArray(vals, 4, 1)
+      const bs = nthOfArray(vals, 4, 2)
+      const R = rs.reduce((a,b) => a + b) / rs.length
+      const G = gs.reduce((a,b) => a + b) / gs.length
+      const B = bs.reduce((a,b) => a + b) / bs.length
+      small_ctx.fillStyle = `rgb(${R}, ${G}, ${B})`
+      small_ctx.fillRect(i, j, 1, 1)
+    }
+  }
+
+  return small_ctx
 }
 
 const RGBDistance = (r1, g1, b1, r2, g2, b2) => {
@@ -105,7 +160,6 @@ const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
   minimum_colour_dist = 256
   closest_colour = ""
   for (let colour in legoColours) {
-
     const [lego_r, lego_g, lego_b] = legoColours[colour]
     colour_dist = distance_metric(r, g, b, lego_r, lego_g, lego_b)
 
@@ -118,17 +172,15 @@ const getClosestLegoColour = (r, g, b, distance_metric = RGBDistance) => {
 }
 
 const processImage = (input_img, input_ctx, output_ctx) => {
-  new_img_width = FACTOR * SIZE[0]
-  new_img_height = FACTOR * SIZE[1]
-  output_ctx.canvas.width = new_img_width
-  output_ctx.canvas.height = new_img_height
+  output_ctx.canvas.width = FACTOR * SIZE[0]
+  output_ctx.canvas.height = FACTOR * SIZE[1]
 
   coloursUsed = init_colours_used()
 
-  const mini_input_ctx = resizeImage(input_img)
+  const mini_input_ctx = resizeImage2(input_img)
 
   for (let i = 0; i < SIZE[0]; i++) {
-    for (let j = 0; j < SIZE[0]; j++) {
+    for (let j = 0; j < SIZE[1]; j++) {
       const [r, g, b, a] = mini_input_ctx.getImageData(i, j, 1, 1).data
       const closest_lego_colour = getClosestLegoColour(r, g, b)
       draw_circle(
