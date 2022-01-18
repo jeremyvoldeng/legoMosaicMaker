@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles/main.css">
+    <title> LEGO MOSAIC MAKER </Title>
+  </head>
+
+  <body class="content">
+    <div class="homeheader">
+      <h2 class="titleCard name">
+        LEGO MOSAIC MAKER
+      </h2>
+    </div>
+
+    <div class="lego-zone">
+      <input type="file" id="albumArtIn" type="image/*">
+      <img id="albumArtPreview" alt="select a file"></img>
+      <canvas>
+    </div>
+  </body>
+
+  <script>
+    const inputElement = document.getElementById("albumArtIn");
+    inputElement.addEventListener("change", handleFiles, false);
+
+    function handleFiles() {
+        const album_art = this.files[0]
+
+        const album_art_url = URL.createObjectURL(album_art)
+
+        const album_art_img = new Image
+        album_art_img.onload = () => {
+          document.getElementById("albumArtPreview").src = album_art_url
+        }
+        album_art_img.src = album_art_url
+
+        const FR = new FileReader
+        FR.onload = (data) => {
+            console.log(album_art_img.width, album_art_img.height);
+            console.log(data);
+
+            <!-- img_data = data.result -->
+            <!-- for (let i = 0; i < album_art_img.height; i++) { -->
+            <!--     for (let j = 0; j < album_art_img.width; j++) { -->
+            <!--         console.log(img_data[i * album_art_img.width + j]) -->
+            <!--     } -->
+            <!-- } -->
+        };
+        const data = FR.readAsArrayBuffer(album_art)
+    }
+
+  </script>
+</html>
