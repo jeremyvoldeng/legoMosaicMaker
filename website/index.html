@@ -3,41 +3,68 @@
   <head>
     <link rel="stylesheet" href="styles/main.css">
     <title> LEGO MOSAIC MAKER </Title>
+    <script src='legoMosaicMaker.js'></script>
   </head>
 
   <body class="content">
+    <!--
+      I am very clearly a novice web developer. I have been sticking to the pure
+      web APIs as much as I can, in order to learn the absolute basics. I am SURE that
+      there are better ways to do things here. If you have the motivation to help me
+      out, create an issue here https://github.com/jeremyvoldeng/legoMosaicMaker/issues
+
+      Jeremy Voldeng had this great idea and created the first implementation, written
+      in Python. I am here to just get it out onto the web.
+
+      Axel!
+    -->
     <div class="homeheader">
       <h2 class="titleCard name">
         LEGO MOSAIC MAKER
       </h2>
     </div>
 
-    <div class="lego-zone">
+    <div class="lego-zone" id="da-zone">
       <input type="file" id="albumArtIn" type="image/*">
-      <canvas id="cvs" width="400" height="400" alt="select a file">
+      <div class="row_cls">
+        <canvas id="cvs">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
+        <canvas id="outcvs">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
+      </div>
     </div>
   </body>
 
   <script>
     const inputElement = document.getElementById("albumArtIn")
-    const canvas = document.getElementById("cvs")
-    const ctx = canvas.getContext('2d')
     inputElement.addEventListener("change", handleFiles, false)
 
+    const canvas = document.getElementById("cvs")
+    const output_canvas = document.getElementById("outcvs")
+
+    const ctx = canvas.getContext('2d')
+    const out_ctx = output_canvas.getContext('2d')
+
     function handleFiles() {
-        const album_art = this.files[0]
-        const album_art_url = URL.createObjectURL(album_art)
+          const album_art = this.files[0]
+          const album_art_url = URL.createObjectURL(album_art)
 
-        const album_art_img = new Image
-        album_art_img.onload = (img) => {
-          ctx.drawImage(
-              album_art_img,
-              canvas.width / 2 - album_art_img.width / 2,
-              canvas.height / 2 - album_art_img.height / 2
-          )
+          const album_art_img = new Image
+
+          album_art_img.onload = (img) => {
+                canvas.width = album_art_img.width
+                canvas.height = album_art_img.height
+                ctx.drawImage(album_art_img, 0, 0)
+
+                processImage(album_art_img, ctx, out_ctx)
+          }
+          album_art_img.src = album_art_url
         }
-        album_art_img.src = album_art_url
-    }
-
   </script>
 </html>
