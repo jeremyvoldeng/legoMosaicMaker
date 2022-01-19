@@ -52,6 +52,7 @@
     const out_ctx = output_canvas.getContext('2d')
 
     function handleFiles() {
+          const L = new Legoificator
           const album_art = this.files[0]
           const album_art_url = URL.createObjectURL(album_art)
 
@@ -62,7 +63,7 @@
                 canvas.height = album_art_img.height
                 ctx.drawImage(album_art_img, 0, 0)
 
-                processImage(album_art_img, ctx, out_ctx)
+                L.processImage(album_art_img, ctx, out_ctx)
           }
           album_art_img.src = album_art_url
         }
