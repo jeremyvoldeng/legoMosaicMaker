@@ -1,3 +1,4 @@
+// http://ryanhowerter.net/colors.php
 legoColours = {
   "black" : [33,33,33],
   "blue" : [0,85,191],
@@ -129,26 +130,34 @@ class Legoificator {
     return small_ctx
   }
 
-  RGBDistance(r1, g1, b1, r2, g2, b2) {
-    const d1 = r1 - r2
-    const d2 = g1 - g2
-    const d3 = b1 - b2
+  EuclideanDistance(v1, v2) {
+    const [x0, y0, z0] = v1
+    const [x1, y1, z1] = v2
+
+    const d1 = x1 - x2
+    const d2 = y1 - y2
+    const d3 = z1 - z2
+
     return Math.sqrt(
       d1 * d1 + d2 * d2 + d3 * d3
     )
   }
 
-  RGBDistance2(r1, g1, b1, r2, g2, b2) {
+  RGBDistance2(rgb1, rgb2) {
+    const [r1, g1, b1] = rgb1
+    const [r2, g2, b2] = rgb2
+
     const r = (r1 + r2) / 2
     const d1 = r1 - r2
     const d2 = g1 - g2
     const d3 = b1 - b2
+
     return Math.sqrt(
       (2 + r / 256) * d1 * d1 + 4 * d2 * d2 + (2 + (255 - r) / 256) * d3 * d3
     )
   }
 
-  getClosestLegoColour(r, g, b, distance_metric = this.RGBDistance2) {
+  getClosestLegoColour(rgb, distance_metric = this.RGBDistance2) {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -165,8 +174,23 @@ class Legoificator {
     let minimum_colour_dist = 256
     let closest_colour = ""
     for (let colour in legoColours) {
-      const [lego_r, lego_g, lego_b] = legoColours[colour]
-      const colour_dist = distance_metric(r, g, b, lego_r, lego_g, lego_b)
+      const lego_rgb = legoColours[colour]
+      const colour_dist = distance_metric(rgb, lego_rgb)
+
+      if (colour_dist < minimum_colour_dist) {
+        minimum_colour_dist = colour_dist
+        closest_colour = colour
+      }
+    }
+    return closest_colour
+  }
+
+  getClosestLegoColourByLAB(rgb) {
+    let minimum_colour_dist = 256
+    let closest_colour = ""
+    for (let colour in legoColours) {
+      const lego_rgb = legoColours[colour]
+      const colour_dist = EuclideanDistance(RGBtoLAB(rgb), RGBtoLAB(lego_rgb))
 
       if (colour_dist < minimum_colour_dist) {
         minimum_colour_dist = colour_dist
@@ -187,7 +211,7 @@ class Legoificator {
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
         const [r, g, b, a] = mini_input_ctx.getImageData(i, j, 1, 1).data
-        const closest_lego_colour = this.getClosestLegoColour(r, g, b)
+        const closest_lego_colour = this.getClosestLegoColourByLAB([r, g, b])
         this.draw_circle(
           i * this.factor + this.factor / 2,
           j * this.factor + this.factor / 2,
