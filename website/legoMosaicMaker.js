@@ -40,9 +40,12 @@ legoColours = {
 
 class Legoificator {
 
-  constructor(factor=9, size = [64, 64]) {
+  constructor(input_image, factor = 9, size = [64, 64]) {
+    this.input_image = input_image
     this.factor = factor
     this.size = size
+
+    this.mini_input_ctx = this.resizeImage(input_image)
   }
 
   draw_circle(x, y, r, colour, canvas_ctx) {
@@ -62,18 +65,6 @@ class Legoificator {
     return coloursUsed
   }
 
-  resizeImage(img) {
-    const canvas = document.createElement('canvas')
-    canvas.width = this.size[0]
-    canvas.height = this.size[1]
-
-    // draw the image to the canvas
-    const ctx  = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, this.size[0], this.size[1]);
-
-    return ctx
-  }
-
   nthOfArray(array, period, start) {
     const vs = []
     for (let i = start; i < array.length; i += period) {
@@ -82,15 +73,12 @@ class Legoificator {
     return vs
   }
 
-  resizeImage2(img) {
+  resizeImage(img) {
     /* notes:
-     *    If this turns out to be the best method, we can integrate this
-     *    into the main processImage loop for speed.
+     *    This version is qualitatively better than just casting an image
+     *    to a smaller canvas - fewer misplaced pixels, more uniform colouring, e.t.c.
      *
-     *    This version is qualitatively better than resizeImage - fewer
-     *    misplaced pixels, more uniform colouring, e.t.c.
-     *
-     *    Potential improvements: gaussian-weighted averaging
+     *    Potential Improvement: gaussian-weighted averaging
      */
     const canvas = document.createElement('canvas')
     canvas.width = img.width
@@ -134,9 +122,9 @@ class Legoificator {
     const [x0, y0, z0] = v1
     const [x1, y1, z1] = v2
 
-    const d1 = x1 - x2
-    const d2 = y1 - y2
-    const d3 = z1 - z2
+    const d1 = x0 - x1
+    const d2 = y0 - y1
+    const d3 = z0 - z1
 
     return Math.sqrt(
       d1 * d1 + d2 * d2 + d3 * d3
@@ -190,7 +178,7 @@ class Legoificator {
     let closest_colour = ""
     for (let colour in legoColours) {
       const lego_rgb = legoColours[colour]
-      const colour_dist = EuclideanDistance(RGBtoLAB(rgb), RGBtoLAB(lego_rgb))
+      const colour_dist = this.EuclideanDistance(RGBtoLAB(rgb), RGBtoLAB(lego_rgb))
 
       if (colour_dist < minimum_colour_dist) {
         minimum_colour_dist = colour_dist
@@ -200,18 +188,23 @@ class Legoificator {
     return closest_colour
   }
 
-  processImage(input_img, input_ctx, output_ctx) {
+  commence_legoification(input_ctx, output_ctx, useLAB=false) {
     output_ctx.canvas.width = this.factor * this.size[0]
     output_ctx.canvas.height = this.factor * this.size[1]
 
     const coloursUsed = this.init_colours_used()
 
-    const mini_input_ctx = this.resizeImage2(input_img)
-
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
-        const [r, g, b, a] = mini_input_ctx.getImageData(i, j, 1, 1).data
-        const closest_lego_colour = this.getClosestLegoColourByLAB([r, g, b])
+        const [r, g, b, a] = this.mini_input_ctx.getImageData(i, j, 1, 1).data
+
+        let closest_lego_colour
+        if (useLAB) {
+          closest_lego_colour = this.getClosestLegoColourByLAB([r, g, b])
+        } else {
+          closest_lego_colour = this.getClosestLegoColour([r, g, b])
+        }
+
         this.draw_circle(
           i * this.factor + this.factor / 2,
           j * this.factor + this.factor / 2,

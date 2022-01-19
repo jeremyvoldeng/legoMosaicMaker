@@ -26,8 +26,32 @@
     </div>
 
     <div class="lego-zone" id="da-zone">
-      <input type="file" id="albumArtIn" type="image/*">
-      <div class="row_cls">
+      <!-- Inputs -->
+      <div class="col-cls">
+        <input type="file" id="albumArtIn" type="image/*"> </input>
+        <div class="col-cls">
+          <div class="row-cls">
+            <input type="checkbox" id="useLAB"> use LAB color scheme </input>
+          </div>
+          <div class="row-cls">
+            <input type="button" id="reset"> Reset image </input>
+          </div>
+        </div>
+        <div class="slidecontainer row-cls">
+          <div class="col-cls">
+            <b>Saturation</b>
+            <b>Brightness</b>
+            <b>Sharpness</b>
+          </div>
+          <div class="col-cls">
+            <input type="range" min="1" max="100" value="1" class="slider" id="saturation">
+            <input type="range" min="1" max="100" value="1" class="slider" id="brightness">
+            <input type="range" min="1" max="100" value="1" class="slider" id="sharpness">
+          </div>
+        </div>
+      </div>
+      <!-- Some nice looking images -->
+      <div class="row-cls">
         <canvas id="cvs">
           Sorry, your browser does not support "canvas" elements - this is typically because
           the browser is relatively old. You can try updating your browser, or view the project
@@ -43,8 +67,15 @@
   </body>
 
   <script>
-    const inputElement = document.getElementById("albumArtIn")
-    inputElement.addEventListener("change", handleFiles, false)
+    const fileSelection = document.getElementById("albumArtIn")
+    const resetButton   = document.getElementById("reset")
+    const useLABCheck   = document.getElementById("useLAB")
+
+    fileSelection.addEventListener("change", handleFiles)
+    resetButton.addEventListener("click", reset)
+    useLABCheck.addEventListener("change", () => {
+          if (L) L.commence_legoification(ctx, out_ctx, useLAB)
+        })
 
     const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
@@ -52,11 +83,11 @@
     const ctx = canvas.getContext('2d')
     const out_ctx = output_canvas.getContext('2d')
 
+    let L;
+
     function handleFiles() {
-          const L = new Legoificator
           const album_art = this.files[0]
           const album_art_url = URL.createObjectURL(album_art)
-
           const album_art_img = new Image
 
           album_art_img.onload = (img) => {
@@ -64,9 +95,18 @@
                 canvas.height = album_art_img.height
                 ctx.drawImage(album_art_img, 0, 0)
 
-                L.processImage(album_art_img, ctx, out_ctx)
-          }
+                L = new Legoificator(album_art_img)
+
+                const useLAB = document.getElementById("useLAB").checked
+                L.commence_legoification(ctx, out_ctx, useLAB)
+              }
           album_art_img.src = album_art_url
         }
+
+    function reset() {
+          console.log("RESET ME ZADDY")
+          console.log(L)
+          if (L) L.resizeImage(L.input_image)
+    }
   </script>
 </html>
