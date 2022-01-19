@@ -26,17 +26,18 @@
     </div>
 
     <div class="lego-zone" id="da-zone">
+
       <!-- Inputs -->
       <div class="col-cls">
         <input type="file" id="albumArtIn" type="image/*"> </input>
+
         <div class="col-cls">
           <div class="row-cls">
             <input type="checkbox" id="useLAB"> use LAB color scheme </input>
           </div>
-          <div class="row-cls">
-            <input type="button" id="reset"> Reset image </input>
-          </div>
+          <button id="reset">Reset image</input>
         </div>
+
         <div class="slidecontainer row-cls">
           <div class="col-cls">
             <b>Saturation</b>
@@ -49,7 +50,9 @@
             <input type="range" min="1" max="100" value="1" class="slider" id="sharpness">
           </div>
         </div>
+
       </div>
+
       <!-- Some nice looking images -->
       <div class="row-cls">
         <canvas id="cvs">
@@ -73,9 +76,7 @@
 
     fileSelection.addEventListener("change", handleFiles)
     resetButton.addEventListener("click", reset)
-    useLABCheck.addEventListener("change", () => {
-          if (L) L.commence_legoification(ctx, out_ctx, useLAB)
-        })
+    useLABCheck.addEventListener("click", legoify)
 
     const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
@@ -97,16 +98,29 @@
 
                 L = new Legoificator(album_art_img)
 
-                const useLAB = document.getElementById("useLAB").checked
+                const useLAB = useLABCheck.checked
+                L.commence_legoification(ctx, out_ctx, useLAB)
+                console.log(L)
                 L.commence_legoification(ctx, out_ctx, useLAB)
               }
           album_art_img.src = album_art_url
         }
 
     function reset() {
-          console.log("RESET ME ZADDY")
           console.log(L)
-          if (L) L.resizeImage(L.input_image)
-    }
+          if (L) 
+            L.resizeImage()
+        }
+
+    function legoify() {
+          console.log(L)
+          if (L) {
+                // for some reason, when this func is called, L gets assigned
+                // a value of 94ish. Why?!
+                console.log(useLABCheck.checked)
+                L.commence_legoification(ctx, out_ctx, useLABCheck.checked)
+              }
+          console.log(L)
+        }
   </script>
 </html>

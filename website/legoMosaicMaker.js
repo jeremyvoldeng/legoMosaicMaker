@@ -1,5 +1,7 @@
+'use strict';
+
 // http://ryanhowerter.net/colors.php
-legoColours = {
+const legoColours = {
   "black" : [33,33,33],
   "blue" : [0,85,191],
   "bright_green" : [16,203,49],
@@ -44,8 +46,9 @@ class Legoificator {
     this.input_image = input_image
     this.factor = factor
     this.size = size
+    this.mini_input_ctx = undefined
 
-    this.mini_input_ctx = this.resizeImage(input_image)
+    this.resizeImage()
   }
 
   draw_circle(x, y, r, colour, canvas_ctx) {
@@ -73,7 +76,7 @@ class Legoificator {
     return vs
   }
 
-  resizeImage(img) {
+  resizeImage() {
     /* notes:
      *    This version is qualitatively better than just casting an image
      *    to a smaller canvas - fewer misplaced pixels, more uniform colouring, e.t.c.
@@ -81,15 +84,15 @@ class Legoificator {
      *    Potential Improvement: gaussian-weighted averaging
      */
     const canvas = document.createElement('canvas')
-    canvas.width = img.width
-    canvas.height = img.height
+    canvas.width = this.input_image.width
+    canvas.height = this.input_image.height
 
     const small_canvas = document.createElement('canvas')
     small_canvas.width = this.size[0]
     small_canvas.height = this.size[1]
 
     const ctx  = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, img.width, img.height);
+    ctx.drawImage(this.input_image, 0, 0, this.input_image.width, this.input_image.height);
 
     const small_ctx  = small_canvas.getContext('2d');
 
@@ -115,7 +118,7 @@ class Legoificator {
       }
     }
 
-    return small_ctx
+    this.mini_input_ctx = small_ctx
   }
 
   EuclideanDistance(v1, v2) {
