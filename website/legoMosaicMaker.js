@@ -40,6 +40,9 @@ const legoColours = {
 }
 
 
+const IDENTITY = (x) => x
+
+
 class Legoificator {
 
   constructor(input_image, factor = 9, size = [64, 64]) {
@@ -134,7 +137,7 @@ class Legoificator {
     )
   }
 
-  getClosestLegoColour = rgb => {
+  getClosestLegoColour = (rgb, colorScheme=IDENTITY) => {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -152,23 +155,10 @@ class Legoificator {
     let closest_colour = ""
     for (let colour in legoColours) {
       const lego_rgb = legoColours[colour]
-      const colour_dist = this.EuclideanDistance(rgb, lego_rgb)
-
-      if (colour_dist < minimum_colour_dist) {
-        minimum_colour_dist = colour_dist
-        closest_colour = colour
-      }
-    }
-    return closest_colour
-  }
-
-  getClosestLegoColourByLAB = (rgb) => {
-    let minimum_colour_dist = 256
-    let closest_colour = ""
-    for (let colour in legoColours) {
-      const lego_rgb = legoColours[colour]
-      const colour_dist = this.EuclideanDistance(RGBtoLAB(rgb), RGBtoLAB(lego_rgb))
-
+      const colour_dist = this.EuclideanDistance(
+        colorScheme(rgb),
+        colorScheme(lego_rgb)
+      )
       if (colour_dist < minimum_colour_dist) {
         minimum_colour_dist = colour_dist
         closest_colour = colour
@@ -178,12 +168,12 @@ class Legoificator {
   }
 
   commenceLegoification = (input_ctx, output_ctx, useLAB = false)  => {
-    if (this.mini_input_ctx === undefined)
+    if (this.mini_input_ctx === undefined) {
       throw `Legoificator has not been initialized; mini_input_ctx is undefined`
+    }
 
     output_ctx.canvas.width = this.factor * this.size[0]
     output_ctx.canvas.height = this.factor * this.size[1]
-    console.log(this.factor * this.size[0], this.factor * this.size[1])
 
     const coloursUsed = this.init_colours_used()
 
@@ -193,7 +183,7 @@ class Legoificator {
 
         let closest_lego_colour
         if (useLAB) {
-          closest_lego_colour = this.getClosestLegoColourByLAB([r, g, b])
+          closest_lego_colour = this.getClosestLegoColour([r, g, b], RGBtoLAB)
         } else {
           closest_lego_colour = this.getClosestLegoColour([r, g, b])
         }

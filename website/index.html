@@ -3,8 +3,8 @@
   <head>
     <link rel="stylesheet" href="styles/main.css">
     <title> LEGO MOSAIC MAKER </Title>
-    <script src='colorConversions.js'></script>
-    <script src='legoMosaicMaker.js'></script>
+    <script type='text/javascript' src='colorConversions.js'></script>
+    <script type='text/javascript' src='legoMosaicMaker.js'></script>
   </head>
 
   <body class="content">
@@ -73,10 +73,16 @@
     const fileSelection = document.getElementById("albumArtIn")
     const resetButton   = document.getElementById("reset")
     const useLABCheck   = document.getElementById("useLAB")
+    const satSlider     = document.getElementById("saturation")
+    const brightSlider  = document.getElementById("brightness")
+    const sharpSlider   = document.getElementById("sharpness")
 
     fileSelection.addEventListener("change", handleFiles)
     resetButton.addEventListener("change", reset)
     useLABCheck.addEventListener("change", legoify)
+    satSlider.addEventListener("change", modifyImg)
+    brightSlider.addEventListener("change", modifyImg)
+    sharpSlider.addEventListener("change", modifyImg)
 
     const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
@@ -103,19 +109,17 @@
         }
 
     function reset() {
-          console.log(L)
           if (L) 
-            L.resizeImage()
+            L.commenceLegoification(ctx, out_ctx)
         }
 
     function legoify() {
-          if (L) {
-                console.log("L is ", L)
-                // for some reason, when this func is called, L gets assigned
-                // a value of 94ish. Why?!
-                L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
-                console.log("now it is ", L)
-              }
+          if (L)
+            L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+        }
+
+    function modifyImg() {
+
         }
   </script>
 </html>

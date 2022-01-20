@@ -1,4 +1,5 @@
 // Thanks to http://www.easyrgb.com/en/math.php#text2
+'use strict'
 
 const valInBounds = (val, min, max) => {
   return (min <= val) && (val <= max)
@@ -7,7 +8,7 @@ const valInBounds = (val, min, max) => {
 const RGBtoXYZ = (rgb) => {
   /* rgb is an array [r, g, b]
   */
-  for (c of rgb) {
+  for (let c of rgb) {
     if (!valInBounds(c, 0, 255)) { throw `color ${c} out of bounds` }
   }
 
@@ -61,9 +62,9 @@ const XYZtoLAB = (xyz) => {
     Yp = idunnowhatthisdoes(Ynorm),
     Zp = idunnowhatthisdoes(Znorm);
 
-  L = (116 * Yp) - 16
-  a = 500 * (Xp - Yp)
-  b = 200 * (Yp - Zp)
+  const L = (116 * Yp) - 16,
+    a = 500 * (Xp - Yp),
+    b = 200 * (Yp - Zp);
 
   return [L, a, b]
 }
