@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="styles/main.css">
     <title> LEGO MOSAIC MAKER </Title>
+
+    <link rel="stylesheet" href="styles/main.css">
+
+    <script type='text/javascript' src='glfx.js'></script>
     <script type='text/javascript' src='colorConversions.js'></script>
     <script type='text/javascript' src='legoMosaicMaker.js'></script>
   </head>
@@ -70,56 +73,61 @@
   </body>
 
   <script>
-    const fileSelection = document.getElementById("albumArtIn")
-    const resetButton   = document.getElementById("reset")
-    const useLABCheck   = document.getElementById("useLAB")
-    const satSlider     = document.getElementById("saturation")
-    const brightSlider  = document.getElementById("brightness")
-    const sharpSlider   = document.getElementById("sharpness")
+    window.onload(() => 
+          // I am certain that CORS will be a PITA. How to deal?
+          // Nothing is easy in web development :(
 
-    fileSelection.addEventListener("change", handleFiles)
-    resetButton.addEventListener("change", reset)
-    useLABCheck.addEventListener("change", legoify)
-    satSlider.addEventListener("change", modifyImg)
-    brightSlider.addEventListener("change", modifyImg)
-    sharpSlider.addEventListener("change", modifyImg)
+          const fileSelection = document.getElementById("albumArtIn")
+          const resetButton   = document.getElementById("reset")
+          const useLABCheck   = document.getElementById("useLAB")
+          const satSlider     = document.getElementById("saturation")
+          const brightSlider  = document.getElementById("brightness")
+          const sharpSlider   = document.getElementById("sharpness")
 
-    const canvas = document.getElementById("cvs")
-    const output_canvas = document.getElementById("outcvs")
+          fileSelection.addEventListener("change", handleFiles)
+          resetButton.addEventListener("click", reset)
+          useLABCheck.addEventListener("change", legoify)
+          satSlider.addEventListener("change", modifyImg)
+          brightSlider.addEventListener("change", modifyImg)
+          sharpSlider.addEventListener("change", modifyImg)
 
-    const ctx = canvas.getContext('2d')
-    const out_ctx = output_canvas.getContext('2d')
+          const canvas = document.getElementById("cvs")
+          const output_canvas = document.getElementById("outcvs")
 
-    let L;
+          const ctx = canvas.getContext('2d')
+          const out_ctx = output_canvas.getContext('2d')
 
-    function handleFiles() {
-          const album_art_img = new Image
-          const album_art_url = URL.createObjectURL(this.files[0])
+          let L;
 
-          album_art_img.onload = (data) => {
-                canvas.width = album_art_img.width
-                canvas.height = album_art_img.height
-                ctx.drawImage(album_art_img, 0, 0)
+          function handleFiles() {
+                const album_art_img = new Image
+                const album_art_url = URL.createObjectURL(this.files[0])
 
-                L = new Legoificator(album_art_img)
-                L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+                album_art_img.onload = (data) => {
+                      canvas.width = album_art_img.width
+                      canvas.height = album_art_img.height
+                      ctx.drawImage(album_art_img, 0, 0)
+
+                      L = new Legoificator(album_art_img)
+                      L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+                    }
+
+                album_art_img.src = album_art_url
               }
 
-          album_art_img.src = album_art_url
-        }
+          function reset() {
+                if (L) {
+                      L.commenceLegoification(ctx, out_ctx)
+                    }
+                useLABCheck.checked = false
+              }
 
-    function reset() {
-          if (L) 
-            L.commenceLegoification(ctx, out_ctx)
-        }
+          function legoify() {
+                if (L)
+                  L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+              }
 
-    function legoify() {
-          if (L)
-            L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
-        }
-
-    function modifyImg() {
-
-        }
+          function modifyImg() { }
+        })
   </script>
 </html>
