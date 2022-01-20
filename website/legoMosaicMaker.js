@@ -1,6 +1,6 @@
 'use strict';
 
-// http://ryanhowerter.net/colors.php
+
 const legoColours = {
   "black" : [33,33,33],
   "blue" : [0,85,191],
@@ -51,7 +51,7 @@ class Legoificator {
     this.resizeImage()
   }
 
-  draw_circle(x, y, r, colour, canvas_ctx) {
+  draw_circle = (x, y, r, colour, canvas_ctx) => {
     let circle = new Path2D()
     // x, y, radius, start_angle, end_angle
     circle.arc(x, y, r, 0, 2 * Math.PI);
@@ -60,7 +60,7 @@ class Legoificator {
     canvas_ctx.fillStyle = 'black'
   }
 
-  init_colours_used() {
+  init_colours_used = () => {
     const coloursUsed = {}
     for (const colour in legoColours) {
       coloursUsed[colour] = [0, 0]
@@ -68,7 +68,7 @@ class Legoificator {
     return coloursUsed
   }
 
-  nthOfArray(array, period, start) {
+  nthOfArray = (array, period, start) => {
     const vs = []
     for (let i = start; i < array.length; i += period) {
       vs.push(array[i])
@@ -76,7 +76,7 @@ class Legoificator {
     return vs
   }
 
-  resizeImage() {
+  resizeImage = () => {
     /* notes:
      *    This version is qualitatively better than just casting an image
      *    to a smaller canvas - fewer misplaced pixels, more uniform colouring, e.t.c.
@@ -92,9 +92,9 @@ class Legoificator {
     small_canvas.height = this.size[1]
 
     const ctx  = canvas.getContext('2d');
-    ctx.drawImage(this.input_image, 0, 0, this.input_image.width, this.input_image.height);
-
     const small_ctx  = small_canvas.getContext('2d');
+
+    ctx.drawImage(this.input_image, 0, 0, this.input_image.width, this.input_image.height);
 
     const width_chunk_size = canvas.width / this.size[0]
     const height_chunk_size = canvas.height / this.size[1]
@@ -121,7 +121,7 @@ class Legoificator {
     this.mini_input_ctx = small_ctx
   }
 
-  EuclideanDistance(v1, v2) {
+  EuclideanDistance = (v1, v2) => {
     const [x0, y0, z0] = v1
     const [x1, y1, z1] = v2
 
@@ -134,21 +134,7 @@ class Legoificator {
     )
   }
 
-  RGBDistance2(rgb1, rgb2) {
-    const [r1, g1, b1] = rgb1
-    const [r2, g2, b2] = rgb2
-
-    const r = (r1 + r2) / 2
-    const d1 = r1 - r2
-    const d2 = g1 - g2
-    const d3 = b1 - b2
-
-    return Math.sqrt(
-      (2 + r / 256) * d1 * d1 + 4 * d2 * d2 + (2 + (255 - r) / 256) * d3 * d3
-    )
-  }
-
-  getClosestLegoColour(rgb, distance_metric = this.RGBDistance2) {
+  getClosestLegoColour = rgb => {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -166,7 +152,7 @@ class Legoificator {
     let closest_colour = ""
     for (let colour in legoColours) {
       const lego_rgb = legoColours[colour]
-      const colour_dist = distance_metric(rgb, lego_rgb)
+      const colour_dist = this.EuclideanDistance(rgb, lego_rgb)
 
       if (colour_dist < minimum_colour_dist) {
         minimum_colour_dist = colour_dist
@@ -176,7 +162,7 @@ class Legoificator {
     return closest_colour
   }
 
-  getClosestLegoColourByLAB(rgb) {
+  getClosestLegoColourByLAB = (rgb) => {
     let minimum_colour_dist = 256
     let closest_colour = ""
     for (let colour in legoColours) {
@@ -191,9 +177,13 @@ class Legoificator {
     return closest_colour
   }
 
-  commence_legoification(input_ctx, output_ctx, useLAB=false) {
+  commenceLegoification = (input_ctx, output_ctx, useLAB = false)  => {
+    if (this.mini_input_ctx === undefined)
+      throw `Legoificator has not been initialized; mini_input_ctx is undefined`
+
     output_ctx.canvas.width = this.factor * this.size[0]
     output_ctx.canvas.height = this.factor * this.size[1]
+    console.log(this.factor * this.size[0], this.factor * this.size[1])
 
     const coloursUsed = this.init_colours_used()
 
@@ -217,5 +207,7 @@ class Legoificator {
         )
       }
     }
+    return true
   }
+
 }

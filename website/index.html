@@ -75,8 +75,8 @@
     const useLABCheck   = document.getElementById("useLAB")
 
     fileSelection.addEventListener("change", handleFiles)
-    resetButton.addEventListener("click", reset)
-    useLABCheck.addEventListener("click", legoify)
+    resetButton.addEventListener("change", reset)
+    useLABCheck.addEventListener("change", legoify)
 
     const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
@@ -87,22 +87,18 @@
     let L;
 
     function handleFiles() {
-          const album_art = this.files[0]
-          const album_art_url = URL.createObjectURL(album_art)
           const album_art_img = new Image
+          const album_art_url = URL.createObjectURL(this.files[0])
 
-          album_art_img.onload = (img) => {
+          album_art_img.onload = (data) => {
                 canvas.width = album_art_img.width
                 canvas.height = album_art_img.height
                 ctx.drawImage(album_art_img, 0, 0)
 
                 L = new Legoificator(album_art_img)
-
-                const useLAB = useLABCheck.checked
-                L.commence_legoification(ctx, out_ctx, useLAB)
-                console.log(L)
-                L.commence_legoification(ctx, out_ctx, useLAB)
+                L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
               }
+
           album_art_img.src = album_art_url
         }
 
@@ -113,14 +109,13 @@
         }
 
     function legoify() {
-          console.log(L)
           if (L) {
+                console.log("L is ", L)
                 // for some reason, when this func is called, L gets assigned
                 // a value of 94ish. Why?!
-                console.log(useLABCheck.checked)
-                L.commence_legoification(ctx, out_ctx, useLABCheck.checked)
+                L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+                console.log("now it is ", L)
               }
-          console.log(L)
         }
   </script>
 </html>
