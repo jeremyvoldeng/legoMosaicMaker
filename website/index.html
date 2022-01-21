@@ -132,7 +132,10 @@
 
           function legoify() {
                 if (L) {
-                      fxcanvas.draw(input_texture).update()
+                      fxcanvas.draw(input_texture)
+                        .hueSaturation(0, satSlider.value)
+                        .brightnessContrast(brightSlider.value, contrastSlider.value)
+                        .update()
                       L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
                     }
               }
