@@ -111,7 +111,7 @@ newSize = 0,0
 
 def processImage(image):
     global legoImage
-    legoImage, numbersImage = legoImageMaker.processImage(image)
+    legoImage, numbersImage = legoImageMaker.generateMosaic(image)
     legoImage = legoImage.resize(newSize)
     bio = io.BytesIO()
     legoImage.save(bio,  format = "PNG")
