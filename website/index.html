@@ -81,9 +81,9 @@
           fileSelection.addEventListener("change", handleFiles)
           resetButton.addEventListener("click", reset)
           useLABCheck.addEventListener("change", legoify)
-          satSlider.addEventListener("change", changeSaturation)
-          brightSlider.addEventListener("change", changeBrightnessAndContrast)
-          contrastSlider.addEventListener("change", changeBrightnessAndContrast)
+          satSlider.addEventListener("change", legoify)
+          brightSlider.addEventListener("change", legoify)
+          contrastSlider.addEventListener("change", legoify)
 
           let fxcanvas
           try {
@@ -99,12 +99,14 @@
 
           let L;
           let input_texture;
+          let album_art_img;
           function handleFiles() {
-                const album_art_img = new Image
+                album_art_img = new Image
                 const album_art_url = URL.createObjectURL(this.files[0])
 
                 album_art_img.onload = (data) => {
                       input_texture = fxcanvas.texture(album_art_img)
+                      original_texture = fxcanvas.texture(album_art_img)
 
                       fxcanvas.draw(input_texture).update()
 
@@ -119,6 +121,7 @@
 
           function reset() {
                 if (L) {
+                      input_texture.loadContentsOf(album_art_img)
                       fxcanvas.draw(input_texture).update()
                       L.resizeImage()
                       L.commenceLegoification(out_ctx)
@@ -132,26 +135,9 @@
 
           function legoify() {
                 if (L) {
+                      input_texture.loadContentsOf(album_art_img)
                       fxcanvas.draw(input_texture)
                         .hueSaturation(0, satSlider.value)
-                        .brightnessContrast(brightSlider.value, contrastSlider.value)
-                        .update()
-                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
-                    }
-              }
-
-          function changeSaturation() {
-                if (L) {
-                      fxcanvas.draw(input_texture)
-                        .hueSaturation(0, satSlider.value)
-                        .update()
-                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
-                    }
-              }
-
-          function changeBrightnessAndContrast() {
-                if (L) {
-                      fxcanvas.draw(input_texture)
                         .brightnessContrast(brightSlider.value, contrastSlider.value)
                         .update()
                       L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
