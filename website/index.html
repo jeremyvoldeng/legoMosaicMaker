@@ -84,6 +84,7 @@
     resetButton.addEventListener("click", reset)
     useLABCheck.addEventListener("change", legoify)
     sizeSlider.addEventListener("input", legoify)
+
     satSlider.addEventListener("input", legoify)
     brightSlider.addEventListener("input", legoify)
     contrastSlider.addEventListener("input", legoify)
@@ -124,17 +125,18 @@
         }
 
     function reset() {
-          if (L) {
-                input_texture.loadContentsOf(album_art_img)
-                fxcanvas.draw(input_texture).update()
-                L.resizeImage()
-                L.commenceLegoification(out_ctx)
-              }
-
           useLABCheck.checked = false
+          sizeSlider.value = 3
           contrastSlider.value = 0
           brightSlider.value = 0
           satSlider.value = 0
+
+          if (L) {
+                input_texture.loadContentsOf(album_art_img)
+                fxcanvas.draw(input_texture).update()
+                L.updateSize(parseInt(sizeSlider.value))
+                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+              }
         }
 
     function legoify() {
