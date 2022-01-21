@@ -46,11 +46,13 @@
             <b>Saturation</b>
             <b>Brightness</b>
             <b>Contrast</b>
+            <b>Size</b>
           </div>
           <div class="col-cls">
-            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="saturation">
-            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="brightness">
-            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="contrast">
+            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="saturation">
+            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
+            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
+            <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
           </div>
         </div>
 
@@ -70,78 +72,81 @@
   <script>
     // I am certain that CORS will be a PITA. How to deal?
     // Nothing is easy in web development :(
-    window.onload = () => {
-          const fileSelection = document.getElementById("albumArtIn")
-          const resetButton   = document.getElementById("reset")
-          const useLABCheck   = document.getElementById("useLAB")
-          const satSlider     = document.getElementById("saturation")
-          const brightSlider  = document.getElementById("brightness")
-          const contrastSlider = document.getElementById("contrast")
+    const fileSelection = document.getElementById("albumArtIn")
+    const resetButton   = document.getElementById("reset")
+    const useLABCheck   = document.getElementById("useLAB")
+    const sizeSlider    = document.getElementById("size")
+    const satSlider     = document.getElementById("saturation")
+    const brightSlider  = document.getElementById("brightness")
+    const contrastSlider = document.getElementById("contrast")
 
-          fileSelection.addEventListener("change", handleFiles)
-          resetButton.addEventListener("click", reset)
-          useLABCheck.addEventListener("change", legoify)
-          satSlider.addEventListener("change", legoify)
-          brightSlider.addEventListener("change", legoify)
-          contrastSlider.addEventListener("change", legoify)
+    fileSelection.addEventListener("change", handleFiles)
+    resetButton.addEventListener("click", reset)
+    useLABCheck.addEventListener("change", legoify)
+    sizeSlider.addEventListener("input", legoify)
+    satSlider.addEventListener("input", legoify)
+    brightSlider.addEventListener("input", legoify)
+    contrastSlider.addEventListener("input", legoify)
 
-          let fxcanvas
-          try {
-                fxcanvas = fx.canvas()
-              } catch (e) {
-                    alert(e)
-                  }
+    let fxcanvas
+    try {
+          fxcanvas = fx.canvas()
+        } catch (e) {
+              alert(e)
+            }
 
-          const canvas = document.getElementById("cvs")
-          const output_canvas = document.getElementById("outcvs")
+    const canvas = document.getElementById("cvs")
+    const output_canvas = document.getElementById("outcvs")
 
-          const out_ctx = output_canvas.getContext('2d')
+    const out_ctx = output_canvas.getContext('2d')
 
-          let L;
-          let input_texture;
-          let album_art_img;
-          function handleFiles() {
-                album_art_img = new Image
-                const album_art_url = URL.createObjectURL(this.files[0])
+    let L;
+    let input_texture;
+    let album_art_img;
 
-                album_art_img.onload = (data) => {
-                      input_texture = fxcanvas.texture(album_art_img)
-                      original_texture = fxcanvas.texture(album_art_img)
+    function handleFiles() {
+          album_art_img = new Image
+          const album_art_url = URL.createObjectURL(this.files[0])
 
-                      fxcanvas.draw(input_texture).update()
+          album_art_img.onload = (data) => {
+                input_texture = fxcanvas.texture(album_art_img)
+                original_texture = fxcanvas.texture(album_art_img)
 
-                      L = new Legoificator(input_texture)
-                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                fxcanvas.draw(input_texture).update()
 
-                      document.getElementById("imgdiv").prepend(fxcanvas)
-                    }
+                L = new Legoificator(input_texture)
+                L.commenceLegoification(out_ctx, useLABCheck.checked)
 
-                album_art_img.src = album_art_url
+                document.getElementById("imgdiv").prepend(fxcanvas)
               }
 
-          function reset() {
-                if (L) {
-                      input_texture.loadContentsOf(album_art_img)
-                      fxcanvas.draw(input_texture).update()
-                      L.resizeImage()
-                      L.commenceLegoification(out_ctx)
-                    }
+          album_art_img.src = album_art_url
+        }
 
-                useLABCheck.checked = false
-                contrastSlider.value = 0
-                brightSlider.value = 0
-                satSlider.value = 0
+    function reset() {
+          if (L) {
+                input_texture.loadContentsOf(album_art_img)
+                fxcanvas.draw(input_texture).update()
+                L.resizeImage()
+                L.commenceLegoification(out_ctx)
               }
 
-          function legoify() {
-                if (L) {
-                      input_texture.loadContentsOf(album_art_img)
-                      fxcanvas.draw(input_texture)
-                        .hueSaturation(0, satSlider.value)
-                        .brightnessContrast(brightSlider.value, contrastSlider.value)
-                        .update()
-                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
-                    }
+          useLABCheck.checked = false
+          contrastSlider.value = 0
+          brightSlider.value = 0
+          satSlider.value = 0
+        }
+
+    function legoify() {
+          if (L) {
+                input_texture.loadContentsOf(album_art_img)
+                fxcanvas.draw(input_texture)
+                  .hueSaturation(0, satSlider.value)
+                  .brightnessContrast(brightSlider.value, contrastSlider.value)
+                  .update()
+
+                L.updateSize(parseInt(sizeSlider.value))
+                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
               }
         }
   </script>

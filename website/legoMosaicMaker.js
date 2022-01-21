@@ -45,13 +45,19 @@ const IDENTITY = (x) => x
 
 class Legoificator {
 
-  constructor(input_image, factor = 9, size = [64, 64]) {
+  constructor(input_image, factor = 9, size = [48, 48]) {
     this.input_image_gl = input_image._
     this.factor = factor
     this.size = size
     this.mini_input_ctx = undefined
 
     this.resizeImage()
+  }
+
+  updateSize(s) {
+    if (![1,2,3,4].includes(s))
+      return
+    this.size = [16 * s, 16 * s]
   }
 
   draw_circle = (x, y, r, colour, canvas_ctx) => {
