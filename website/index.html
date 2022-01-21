@@ -90,11 +90,9 @@
     contrastSlider.addEventListener("input", legoify)
 
     let fxcanvas
-    try {
-          fxcanvas = fx.canvas()
-        } catch (e) {
-              alert(e)
-            }
+    try { fxcanvas = fx.canvas() } catch (e) {
+          alert("Sorry, your browser does not support WebGL. I need to get on this, and make it backwards compatible.\n Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
+        }
 
     const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
@@ -104,6 +102,7 @@
     let L;
     let input_texture;
     let album_art_img;
+    let pieceInformation;
 
     function handleFiles() {
           album_art_img = new Image
@@ -116,7 +115,7 @@
                 fxcanvas.draw(input_texture).update()
 
                 L = new Legoificator(input_texture)
-                L.commenceLegoification(out_ctx, useLABCheck.checked)
+                pieceInformation = L.commenceLegoification(out_ctx, useLABCheck.checked)
 
                 document.getElementById("imgdiv").prepend(fxcanvas)
               }
@@ -135,7 +134,7 @@
                 input_texture.loadContentsOf(album_art_img)
                 fxcanvas.draw(input_texture).update()
                 L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+                pieceInformation = L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
               }
         }
 
@@ -148,7 +147,7 @@
                   .update()
 
                 L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+                pieceInformation = L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
               }
         }
   </script>

@@ -72,7 +72,10 @@ class Legoificator {
   init_colours_used = () => {
     const coloursUsed = {}
     for (const colour in legoColours) {
-      coloursUsed[colour] = [0, 0]
+      coloursUsed[colour] = {
+        'pieceCount': 0,
+        'colourID': undefined,
+      }
     }
     return coloursUsed
   }
@@ -179,20 +182,31 @@ class Legoificator {
     output_ctx.canvas.width = this.factor * this.size[0]
     output_ctx.canvas.height = this.factor * this.size[1]
 
+    // make the output canvas' background black
     output_ctx.fillStyle = 'black';
     output_ctx.fillRect(0, 0, output_ctx.canvas.width, output_ctx.canvas.width)
 
-    const coloursUsed = this.init_colours_used()
+    let current_colour_id = 1  // this is used in the PDF
+    const coloursUsed = this.init_colours_used()  // this holds information for PDF generation
 
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
+        // gimme a pixel!
         const [r, g, b, a] = this.mini_input_ctx.getImageData(i, j, 1, 1).data
 
+        // find the closest colour
         let closest_lego_colour
         if (useLAB) {
           closest_lego_colour = this.getClosestLegoColour([r, g, b], RGBtoLAB)
         } else {
           closest_lego_colour = this.getClosestLegoColour([r, g, b])
+        }
+
+        // update the colours that were used
+        coloursUsed[closest_lego_colour]['pieceCount']++
+        if (coloursUsed[closest_lego_colour]['colourID'] == undefined) {
+          coloursUsed[closest_lego_colour]['colourID'] = current_colour_id
+          current_colour_id++
         }
 
         this.draw_circle(
@@ -204,12 +218,12 @@ class Legoificator {
         )
       }
     }
-    return true
+    return coloursUsed
   }
 
   updateLegoificatedEntity = (output_ctx, useLAB = false) => {
     this.resizeImage()
-    this.commenceLegoification(output_ctx, useLAB)
+    return this.commenceLegoification(output_ctx, useLAB)
   }
 
 }
