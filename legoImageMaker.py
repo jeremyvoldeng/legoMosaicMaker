@@ -1,11 +1,15 @@
 from tkinter.constants import CENTER
 from typing import Text
-from  PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from math import sqrt
 from reportlab.pdfgen import textobject
 from reportlab.pdfgen.canvas import Canvas
 from tempfile import NamedTemporaryFile
 
+### LEGO MOSAIC DESIGNER ###
+# This code takes an image and converts it to a mosaic using the available solid LEGO colours.
+
+# List of RGB values of all possible solid LEGO colours of 1x1 round tiles.
 legoColours = {
     "black" : [33,33,33],
     "blue" : [0,85,191],
@@ -44,6 +48,8 @@ legoColours = {
     "yellowish_green" : [226,249,154]
 }
 
+# Dictionary to keep track of used colours. The first value in the dictionary is the number of that colour of pieces are used in the mosiac. The second value is 
+# a unique key given to each colour, assigned in accending order from 1.
 coloursUsed = {
     "black" : [0,0],
     "blue" : [0,0],
@@ -82,7 +88,10 @@ coloursUsed = {
     "yellowish_green" : [0,0]
 }
 
+# Scale factor to create high-res images
 factor = 100
+
+# Assumed starting size of the mosaic. Adjustable in GUI
 size = 48, 48
 
 font = ImageFont.truetype("arial.ttf", 19)
@@ -92,32 +101,34 @@ newImage = Image
 draw = ImageDraw
 newImageNumbers = Image
 drawNumbers = ImageDraw
+pieceCountList = Image
 
+# Used to update the mosiac size
 def updateSize(newSize):
     global size
     size = newSize
 
-def processImage(album):
+# Takes an image and returns the mosaic created from the image as well as an image of the pieces required to build.
+def generateMosaic(album):
     global newImage
     global draw
-    global newImageNumbers
-    global drawNumbers
 
+    # New mosaic image
     newImage = Image.new('RGB', (factor*size[0],factor*size[1]),(0,0,0))
     draw = ImageDraw.Draw(newImage)
-    newImageNumbers = Image.new('RGB', (factor*size[0],factor*size[1]),(0,0,0))
-    drawNumbers = ImageDraw.Draw(newImageNumbers)
-
+    
     image = album.copy()
+
+    # Shrinks the image down to the size of the desired mosiac
     image.thumbnail(size)
 
+    # Ensure the coloursUsed dictionary is empty before starting
     for colours in coloursUsed:
         coloursUsed[colours] = [0,0]
 
     count = 1
 
-    textColour = (255,255,255)
-
+    # Observes each pixel in the shrunken image and finds the closest lego colour, then adds the lego 'piece' to the new mosaic image.
     for i in range(size[0]):
         for j in range(size[1]):
             [r,g,b] = image.getpixel((i,j))
@@ -129,56 +140,43 @@ def processImage(album):
             fill=tuple(min(colourDifs)[1])
             colour = min(colourDifs)[2]
             draw.ellipse((i*factor,j*factor,i*factor+factor-1,j*factor+factor-1),fill)
-            drawNumbers.ellipse((i*factor,j*factor,i*factor+factor-1,j*factor+factor-1),fill)
             coloursUsed[colour][0] = coloursUsed[colour][0] + 1
 
-            if sum(legoColours[colour]) > 450:
-                 textColour = (0,0,0)
-            else:
-                textColour = (255,255,255)
-            if coloursUsed[colour][1] > 0:
-                drawNumbers.text((i*factor + 50, j*factor + 50), str(coloursUsed[colour][1]), font=numberTileFont, anchor="mm", fill=textColour)
-            else:
+            # Keep count of the number of pieces used for each colour
+            if coloursUsed[colour][1] == 0:
                 coloursUsed[colour][1] = count
                 count = count + 1
-                drawNumbers.text((i*factor + 50, j*factor + 50), str(coloursUsed[colour][1]), font=numberTileFont, anchor="mm", fill=textColour)
 
-    colourNumbersImage = Image.new('RGB', (400, 1000),(0,0,0))
-    draw = ImageDraw.Draw(colourNumbersImage)
-    textColour = (200,200,200)
-    for key, values in coloursUsed.items():
-        if values[1] > 0:
-            fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
-            draw.ellipse((12, 2+(25*values[1]), 33, 23+(25*values[1])), fill=fill)
-            name = str(key)
-            name = name.replace('_', ' ')
-            draw.text((40, 3+(25*values[1])), ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
+    createPieceList()
 
-    return newImage, colourNumbersImage
+    return newImage, pieceCountList
 
+# Takes a string as a title for the instruction set, and returns a set of PDF instructions for building.
 def makeInstructions(title):
+    global pieceCountList
+
+    generateMosaicWithNumbers()
+
     width = int(size[0]/16)
     height = int(size[1]/16)
+
+    # Preset PDF page size to horizontal A4 paper size
     instructionPDF = Canvas(title + ".pdf", pagesize=(850,600))
-    colourNumbersImage = Image.new('RGB', (400, 1000),(0,0,0))
-    draw = ImageDraw.Draw(colourNumbersImage)
-    textColour = (200,200,200)
-    for key, values in coloursUsed.items():
-        if values[1] > 0:
-            fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
-            draw.ellipse((12, 2+(25*values[1]), 33, 23+(25*values[1])), fill=fill)
-            name = str(key)
-            name = name.replace('_', ' ')
-            draw.text((40, 3+(25*values[1])), str(values[1]) + ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
+    
+    # Generate a piece list in case one was not generated yet
+    createPieceList()
 
-    colourNumbersImage.save(NamedTemporaryFile(), format = 'PNG')
+    pieceCountList.save(NamedTemporaryFile(), format = 'PNG')
 
+    # Draw background of PDF
     path = instructionPDF.beginPath()
     path.moveTo(0,0)
     path.lineTo(0,600)
     path.lineTo(850,600)
     path.lineTo(850,0)
     instructionPDF.drawPath(path, True,True)
+
+    #Create title page
     titleImage = Image.new('RGB', (850, 50), (0,0,0))
     drawText = ImageDraw.Draw(titleImage)
     drawText.text(xy=(425,25),text= title, anchor= "mm", font = ImageFont.truetype("GILSANUB", 25))
@@ -188,6 +186,7 @@ def makeInstructions(title):
 
     count = 1
 
+    # Create required number of pages for each 16x16 plate used
     for i in range(width):
         for j in range(height):
             imageSegment = newImageNumbers.copy()
@@ -206,8 +205,46 @@ def makeInstructions(title):
             drawPageNumber.text(xy=(25,25),text = str(count),anchor='mm', font = ImageFont.truetype("arial.ttf", 10))
             instructionPDF.drawInlineImage(pageNumberImage, x=0,y=0)
             instructionPDF.drawInlineImage(imageSegment, 300, 50, width= 500, height= 500)
-            instructionPDF.drawInlineImage(colourNumbersImage, 50, 50, width= 200, height= 500)
+            instructionPDF.drawInlineImage(pieceCountList, 50, 50, width= 200, height= 500)
             instructionPDF.showPage()
             count = count + 1
 
     return instructionPDF
+
+# Creates a copy of the mosaic and imposes numbers on each colour for use in the instructions
+def generateMosaicWithNumbers():
+    global newImage
+    global newImageNumbers
+    global drawNumbers
+
+    newImageNumbers = newImage.copy()
+    drawNumbers = ImageDraw.Draw(newImageNumbers)
+    textColour = (255,255,255)
+
+    for i in range(size[0]):
+        for j in range(size[1]):
+            [r,g,b] = newImageNumbers.getpixel((i*factor+factor/2, j*factor+factor/2))
+            colour = list(legoColours.keys())[list(legoColours.values()).index([r,g,b])]
+            key = coloursUsed[colour][1]
+
+            if sum(legoColours[colour]) > 450:
+                 textColour = (0,0,0)
+            else:
+                textColour = (255,255,255)
+
+            drawNumbers.text((i*factor + factor/2, j*factor + factor/2), str(coloursUsed[colour][1]), font=numberTileFont, anchor="mm", fill=textColour)
+            
+
+# Create an image that displays the colours of pieces used, their unique key for buliding, and the quantity required.
+def createPieceList():
+    global pieceCountList
+    pieceCountList = Image.new('RGB', (400, 1000),(0,0,0))
+    draw = ImageDraw.Draw(pieceCountList)
+    textColour = (200,200,200)
+    for key, values in coloursUsed.items():
+        if values[1] > 0:
+            fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
+            draw.ellipse((12, 2+(25*values[1]), 33, 23+(25*values[1])), fill=fill)
+            name = str(key)
+            name = name.replace('_', ' ')
+            draw.text((40, 3+(25*values[1])), ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
