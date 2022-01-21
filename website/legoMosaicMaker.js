@@ -198,4 +198,9 @@ class Legoificator {
     return true
   }
 
+  updateLegoificatedEntity = (output_ctx, useLAB = false) => {
+    this.resizeImage()
+    this.commenceLegoification(output_ctx, useLAB)
+  }
+
 }

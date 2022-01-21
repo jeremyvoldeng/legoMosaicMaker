@@ -46,13 +46,11 @@
             <b>Saturation</b>
             <b>Brightness</b>
             <b>Contrast</b>
-            <b>Sharpness</b>
           </div>
           <div class="col-cls">
-            <input type="range" min="1" max="100" value="1" class="slider" id="saturation">
+            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="saturation">
             <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="brightness">
             <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="contrast">
-            <input type="range" min="1" max="100" value="1" class="slider" id="sharpness">
           </div>
         </div>
 
@@ -72,22 +70,20 @@
   <script>
     // I am certain that CORS will be a PITA. How to deal?
     // Nothing is easy in web development :(
-    <!-- window.onload = () => { -->
+    window.onload = () => {
           const fileSelection = document.getElementById("albumArtIn")
           const resetButton   = document.getElementById("reset")
           const useLABCheck   = document.getElementById("useLAB")
           const satSlider     = document.getElementById("saturation")
           const brightSlider  = document.getElementById("brightness")
           const contrastSlider = document.getElementById("contrast")
-          const sharpSlider   = document.getElementById("sharpness")
 
           fileSelection.addEventListener("change", handleFiles)
           resetButton.addEventListener("click", reset)
           useLABCheck.addEventListener("change", legoify)
-          satSlider.addEventListener("change", modifyImg)
+          satSlider.addEventListener("change", changeSaturation)
           brightSlider.addEventListener("change", changeBrightnessAndContrast)
           contrastSlider.addEventListener("change", changeBrightnessAndContrast)
-          sharpSlider.addEventListener("change", modifyImg)
 
           let fxcanvas
           try {
@@ -125,16 +121,28 @@
                 if (L) {
                       fxcanvas.draw(input_texture).update()
                       L.resizeImage()
-                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                      L.commenceLegoification(out_ctx)
                     }
+
                 useLABCheck.checked = false
+                contrastSlider.value = 0
+                brightSlider.value = 0
+                satSlider.value = 0
               }
 
           function legoify() {
                 if (L) {
                       fxcanvas.draw(input_texture).update()
-                      L.resizeImage()
-                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+                    }
+              }
+
+          function changeSaturation() {
+                if (L) {
+                      fxcanvas.draw(input_texture)
+                        .hueSaturation(0, satSlider.value)
+                        .update()
+                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
                     }
               }
 
@@ -143,11 +151,9 @@
                       fxcanvas.draw(input_texture)
                         .brightnessContrast(brightSlider.value, contrastSlider.value)
                         .update()
-
-                      L.resizeImage()
-                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
                     }
               }
-            <!-- } -->
+        }
   </script>
 </html>
