@@ -40,13 +40,13 @@ const legoColours = {
 }
 
 
-const IDENTITY = (x) => x
+const IDENTITY = x => x
 
 
 class Legoificator {
 
   constructor(input_image, factor = 9, size = [48, 48]) {
-    this.input_image_gl = input_image._
+    this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
     this.size = size
     this.mini_input_ctx = undefined
@@ -178,6 +178,9 @@ class Legoificator {
 
     output_ctx.canvas.width = this.factor * this.size[0]
     output_ctx.canvas.height = this.factor * this.size[1]
+
+    output_ctx.fillStyle = 'black';
+    output_ctx.fillRect(0, 0, output_ctx.canvas.width, output_ctx.canvas.width)
 
     const coloursUsed = this.init_colours_used()
 
