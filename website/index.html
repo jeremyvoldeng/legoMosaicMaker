@@ -45,11 +45,13 @@
           <div class="col-cls">
             <b>Saturation</b>
             <b>Brightness</b>
+            <b>Contrast</b>
             <b>Sharpness</b>
           </div>
           <div class="col-cls">
             <input type="range" min="1" max="100" value="1" class="slider" id="saturation">
-            <input type="range" min="1" max="100" value="1" class="slider" id="brightness">
+            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="brightness">
+            <input type="range" min="-0.2" max="0.2" value="0" step=0.01 class="slider" id="contrast">
             <input type="range" min="1" max="100" value="1" class="slider" id="sharpness">
           </div>
         </div>
@@ -57,12 +59,7 @@
       </div>
 
       <!-- Some nice looking images -->
-      <div class="row-cls">
-        <canvas id="cvs">
-          Sorry, your browser does not support "canvas" elements - this is typically because
-          the browser is relatively old. You can try updating your browser, or view the project
-          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-        </canvas>
+      <div class="row-cls" id="imgdiv">
         <canvas id="outcvs">
           Sorry, your browser does not support "canvas" elements - this is typically because
           the browser is relatively old. You can try updating your browser, or view the project
@@ -73,43 +70,52 @@
   </body>
 
   <script>
-    window.onload(() => 
-          // I am certain that CORS will be a PITA. How to deal?
-          // Nothing is easy in web development :(
-
+    // I am certain that CORS will be a PITA. How to deal?
+    // Nothing is easy in web development :(
+    <!-- window.onload = () => { -->
           const fileSelection = document.getElementById("albumArtIn")
           const resetButton   = document.getElementById("reset")
           const useLABCheck   = document.getElementById("useLAB")
           const satSlider     = document.getElementById("saturation")
           const brightSlider  = document.getElementById("brightness")
+          const contrastSlider = document.getElementById("contrast")
           const sharpSlider   = document.getElementById("sharpness")
 
           fileSelection.addEventListener("change", handleFiles)
           resetButton.addEventListener("click", reset)
           useLABCheck.addEventListener("change", legoify)
           satSlider.addEventListener("change", modifyImg)
-          brightSlider.addEventListener("change", modifyImg)
+          brightSlider.addEventListener("change", changeBrightnessAndContrast)
+          contrastSlider.addEventListener("change", changeBrightnessAndContrast)
           sharpSlider.addEventListener("change", modifyImg)
+
+          let fxcanvas
+          try {
+                fxcanvas = fx.canvas()
+              } catch (e) {
+                    alert(e)
+                  }
 
           const canvas = document.getElementById("cvs")
           const output_canvas = document.getElementById("outcvs")
 
-          const ctx = canvas.getContext('2d')
           const out_ctx = output_canvas.getContext('2d')
 
           let L;
-
+          let input_texture;
           function handleFiles() {
                 const album_art_img = new Image
                 const album_art_url = URL.createObjectURL(this.files[0])
 
                 album_art_img.onload = (data) => {
-                      canvas.width = album_art_img.width
-                      canvas.height = album_art_img.height
-                      ctx.drawImage(album_art_img, 0, 0)
+                      input_texture = fxcanvas.texture(album_art_img)
 
-                      L = new Legoificator(album_art_img)
-                      L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+                      fxcanvas.draw(input_texture).update()
+
+                      L = new Legoificator(input_texture)
+                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+
+                      document.getElementById("imgdiv").prepend(fxcanvas)
                     }
 
                 album_art_img.src = album_art_url
@@ -117,17 +123,31 @@
 
           function reset() {
                 if (L) {
-                      L.commenceLegoification(ctx, out_ctx)
+                      fxcanvas.draw(input_texture).update()
+                      L.resizeImage()
+                      L.commenceLegoification(out_ctx, useLABCheck.checked)
                     }
                 useLABCheck.checked = false
               }
 
           function legoify() {
-                if (L)
-                  L.commenceLegoification(ctx, out_ctx, useLABCheck.checked)
+                if (L) {
+                      fxcanvas.draw(input_texture).update()
+                      L.resizeImage()
+                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                    }
               }
 
-          function modifyImg() { }
-        })
+          function changeBrightnessAndContrast() {
+                if (L) {
+                      fxcanvas.draw(input_texture)
+                        .brightnessContrast(brightSlider.value, contrastSlider.value)
+                        .update()
+
+                      L.resizeImage()
+                      L.commenceLegoification(out_ctx, useLABCheck.checked)
+                    }
+              }
+            <!-- } -->
   </script>
 </html>

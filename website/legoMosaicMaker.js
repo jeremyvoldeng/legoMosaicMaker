@@ -46,7 +46,7 @@ const IDENTITY = (x) => x
 class Legoificator {
 
   constructor(input_image, factor = 9, size = [64, 64]) {
-    this.input_image = input_image
+    this.input_image_gl = input_image._
     this.factor = factor
     this.size = size
     this.mini_input_ctx = undefined
@@ -81,14 +81,12 @@ class Legoificator {
 
   resizeImage = () => {
     /* notes:
-     *    This version is qualitatively better than just casting an image
-     *    to a smaller canvas - fewer misplaced pixels, more uniform colouring, e.t.c.
-     *
-     *    Potential Improvement: gaussian-weighted averaging
+     *  This is almost certainly an absurdly stupid way to do this in webgl, but I
+     *  am stupid and just trying to move quickly so c'est la vie
      */
     const canvas = document.createElement('canvas')
-    canvas.width = this.input_image.width
-    canvas.height = this.input_image.height
+    canvas.width = this.input_image_gl.width
+    canvas.height = this.input_image_gl.height
 
     const small_canvas = document.createElement('canvas')
     small_canvas.width = this.size[0]
@@ -97,7 +95,7 @@ class Legoificator {
     const ctx  = canvas.getContext('2d');
     const small_ctx  = small_canvas.getContext('2d');
 
-    ctx.drawImage(this.input_image, 0, 0, this.input_image.width, this.input_image.height);
+    ctx.drawImage(this.input_image_gl.gl.canvas, 0, 0);
 
     const width_chunk_size = canvas.width / this.size[0]
     const height_chunk_size = canvas.height / this.size[1]
@@ -167,7 +165,7 @@ class Legoificator {
     return closest_colour
   }
 
-  commenceLegoification = (input_ctx, output_ctx, useLAB = false)  => {
+  commenceLegoification = (output_ctx, useLAB = false)  => {
     if (this.mini_input_ctx === undefined) {
       throw `Legoificator has not been initialized; mini_input_ctx is undefined`
     }
