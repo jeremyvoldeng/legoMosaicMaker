@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="styles/main.css">
 
     <script type='text/javascript' src='glfx.js'></script>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
     <script type='text/javascript' src='colorConversions.js'></script>
     <script type='text/javascript' src='legoMosaicMaker.js'></script>
   </head>
@@ -32,7 +33,8 @@
 
       <!-- Inputs -->
       <div class="col-cls">
-        <input type="file" id="albumArtIn" type="image/*"> </input>
+        <input type="file" id="albumArtIn" accept="image/*"> </input>
+        <input type="text" id="albumName" placeholder="Name of Album"></input>
 
         <div class="col-cls">
           <div class="row-cls">
@@ -48,14 +50,17 @@
             <b>Contrast</b>
             <b>Size</b>
           </div>
+
           <div class="col-cls">
             <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="saturation">
             <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
             <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
             <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
           </div>
+
         </div>
 
+        <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
       </div>
 
       <!-- Some nice looking images -->
@@ -72,31 +77,31 @@
   <script>
     // I am certain that CORS will be a PITA. How to deal?
     // Nothing is easy in web development :(
-    const fileSelection = document.getElementById("albumArtIn")
-    const resetButton   = document.getElementById("reset")
-    const useLABCheck   = document.getElementById("useLAB")
-    const sizeSlider    = document.getElementById("size")
-    const satSlider     = document.getElementById("saturation")
-    const brightSlider  = document.getElementById("brightness")
+    const fileSelection  = document.getElementById("albumArtIn")
+    const albumName      = document.getElementById("albumName")
+    const resetButton    = document.getElementById("reset")
+    const useLABCheck    = document.getElementById("useLAB")
+    const sizeSlider     = document.getElementById("size")
+    const satSlider      = document.getElementById("saturation")
+    const brightSlider   = document.getElementById("brightness")
     const contrastSlider = document.getElementById("contrast")
+    const generatePDFBtn = document.getElementById("generatePDFBtn")
 
     fileSelection.addEventListener("change", handleFiles)
     resetButton.addEventListener("click", reset)
     useLABCheck.addEventListener("change", legoify)
     sizeSlider.addEventListener("input", legoify)
-
     satSlider.addEventListener("input", legoify)
     brightSlider.addEventListener("input", legoify)
     contrastSlider.addEventListener("input", legoify)
+    generatePDFBtn.addEventListener("click", genInstructions)
 
     let fxcanvas
     try { fxcanvas = fx.canvas() } catch (e) {
           alert("Sorry, your browser does not support WebGL. I need to get on this, and make it backwards compatible.\n Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
         }
 
-    const canvas = document.getElementById("cvs")
     const output_canvas = document.getElementById("outcvs")
-
     const out_ctx = output_canvas.getContext('2d')
 
     let L;
@@ -110,16 +115,15 @@
 
           album_art_img.onload = (data) => {
                 input_texture = fxcanvas.texture(album_art_img)
-                original_texture = fxcanvas.texture(album_art_img)
 
                 fxcanvas.draw(input_texture).update()
 
                 L = new Legoificator(input_texture)
+                out_ctx.alpha = 0
                 pieceInformation = L.commenceLegoification(out_ctx, useLABCheck.checked)
 
                 document.getElementById("imgdiv").prepend(fxcanvas)
               }
-
           album_art_img.src = album_art_url
         }
 
@@ -129,6 +133,7 @@
           contrastSlider.value = 0
           brightSlider.value = 0
           satSlider.value = 0
+          albumName.value = ""
 
           if (L) {
                 input_texture.loadContentsOf(album_art_img)
@@ -148,6 +153,19 @@
 
                 L.updateSize(parseInt(sizeSlider.value))
                 pieceInformation = L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+              }
+        }
+
+    function genInstructions() {
+          if (L) {
+                const mosaic = output_canvas.toDataURL('image/png')
+                L.generatePDF(
+                      albumName.value,
+                      pieceInformation,
+                      mosaic,
+                      output_canvas.width,
+                      output_canvas.height
+                    )
               }
         }
   </script>

@@ -45,10 +45,11 @@ const IDENTITY = x => x
 
 class Legoificator {
 
-  constructor(input_image, factor = 9, size = [48, 48]) {
+  constructor(input_image, factor = 9, scale = 3, size = [48, 48]) {
     this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
     this.size = size
+    this.scale = scale
     this.mini_input_ctx = undefined
 
     this.resizeImage()
@@ -63,7 +64,7 @@ class Legoificator {
   draw_circle = (x, y, r, colour, canvas_ctx) => {
     let circle = new Path2D()
     // x, y, radius, start_angle, end_angle
-    circle.arc(x, y, r, 0, 2 * Math.PI);
+    circle.arc(this.scale * x, this.scale * y, this.scale * r, 0, 2 * Math.PI);
     canvas_ctx.fillStyle = `rgb(${colour[0]},${colour[1]},${colour[2]})`
     canvas_ctx.fill(circle)
     canvas_ctx.fillStyle = 'black'
@@ -174,13 +175,50 @@ class Legoificator {
     return closest_colour
   }
 
+  generatePDF = (name, pieceInformation, image, img_width, img_height) => {
+    // 210 x 297 mm
+    // 793.706 x 1,122.52 px
+
+    const pdfWidth = 297,
+      pdfHeight = 210;
+
+    const px_to_mm = px => px * 25.4 / 72
+
+    const doc = new jspdf.jsPDF({
+      orientation: 'l',
+      unit: 'mm',
+      format: 'a4'
+    })
+
+    if (name === "")
+      name = "Lego Mosaic, made with fury directed at javascript"
+
+    doc.setFontSize(20)
+    doc.setTextColor(192, 192, 192)
+
+    // Make black background
+    doc.rect(0, 0, 297, 210, 'F')
+
+    // Title Name
+    doc.text(name, pdfWidth / 2, 20, { align: "center" })
+
+
+    // TODO: deal w/ different mosaic sizes nicely!
+    doc.addImage(image, 'PNG', (pdfWidth - 100) / 2, (pdfHeight - 100 - 20) / 2, 100, 100, '', 'NONE')
+
+    doc.save("test.pdf")
+  }
+
   commenceLegoification = (output_ctx, useLAB = false)  => {
     if (this.mini_input_ctx === undefined) {
       throw `Legoificator has not been initialized; mini_input_ctx is undefined`
     }
 
-    output_ctx.canvas.width = this.factor * this.size[0]
-    output_ctx.canvas.height = this.factor * this.size[1]
+    // Set canvas size, with appropriate css scaling to make it look good
+    output_ctx.canvas.style.width = `${this.factor * this.size[0]}px`
+    output_ctx.canvas.style.height = `${this.factor * this.size[1]}px`
+    output_ctx.canvas.width = this.factor * this.size[0] * this.scale
+    output_ctx.canvas.height = this.factor * this.size[1] * this.scale
 
     // make the output canvas' background black
     output_ctx.fillStyle = 'black';
