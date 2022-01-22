@@ -1,21 +1,17 @@
 'use strict';
 
-
-const drawCircle = (x, y, r, colour, canvas_ctx) => {
-  let circle = new Path2D()
-  // x, y, radius, start_angle, end_angle
-  circle.arc(x, y, r, 0, 2 * Math.PI);
-  canvas_ctx.fillStyle = `rgb(${colour[0]},${colour[1]},${colour[2]})`
-  canvas_ctx.fill(circle)
-}
+const clockmod = (i,m) => i % m ? i % m : m
+const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
+const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
 
 
 class Instructionificator {
+  /* There are a lot of magic numbers in this class.
+   * We all need more ~~~magic~~~ in our lives!!!
+   * You are welcome.
+   */
 
   static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, scale, factor) => {
-    /* There are a lot of magic numbers in this function.
-     * We all need more ~~~magic~~~ in our lives!!!
-     */
 
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
@@ -23,6 +19,10 @@ class Instructionificator {
     const pdfWidth = 297
     const pdfHeight = 210
     const mosaicDim = 140
+    const numMajorSquares = Math.pow(size[0] / 16, 2)
+
+    if (name === "")
+      name = "Instructions"
 
     const doc = new jspdf.jsPDF({
       orientation: 'landscape',
@@ -30,29 +30,70 @@ class Instructionificator {
       format: 'a4'
     })
 
-    if (name === "")
-      name = "Instructions"
-
     doc.setFontSize(20)
     doc.setTextColor(192, 192, 192)
 
     // TITLE PAGE
-    // Make black background
     doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
     doc.text(name, pdfWidth / 2, 20, { align: "center" })
-    doc.addImage(mainMosaic, 'PNG', (pdfWidth - mosaicDim) / 2, (pdfHeight - mosaicDim) / 2, mosaicDim, mosaicDim, '', 'NONE')
+    doc.addImage(
+      mainMosaic,
+      'PNG',
+      (pdfWidth - mosaicDim) / 2,
+      (pdfHeight - mosaicDim) / 2,
+      mosaicDim,
+      mosaicDim,
+      '',
+      'NONE'
+    )
+
+    // INSTRUCTION PAGE
+    doc.addPage('a4', 'landscape')
+    doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
+    doc.setFontSize(16)
+    doc.setTextColor(192, 192, 192)
+    doc.text(
+      `The following pages have each 16x16 tile section displayed, with the corresponding colour code on the margin. Fill it all in!\nThere are ${size[0] * size[1]} total pieces.`,
+      mosaicDim / 4,
+      (pdfHeight - mosaicDim) / 2,
+      {maxWidth: mosaicDim / 2}
+    )
+    doc.addImage(
+      mainMosaic,
+      'PNG',
+      (pdfWidth - mosaicDim / 2) / 2,
+      (pdfHeight - mosaicDim) / 2,
+      mosaicDim,
+      mosaicDim,
+      '',
+      'NONE'
+    )
+
+    const gridOverlay = this.makeGridOverlay(mosaicDim, size)
+    doc.addImage(
+      gridOverlay,
+      'PNG',
+      (pdfWidth - mosaicDim / 2) / 2,
+      (pdfHeight - mosaicDim) / 2,
+      mosaicDim,
+      mosaicDim,
+      '',
+      'NONE'
+    )
 
     const pieceListCanvas = this.generatePieceListCanvas(pieceList, factor)
     const pieceListImage  = pieceListCanvas.toDataURL('image/png')
     const pieceListAR     = pieceListCanvas.height / pieceListCanvas.width
 
+    doc.setFontSize(20)
+    doc.setTextColor(192, 192, 192)
+
     // REST OF THE PAGES
-    const num_major_squares = Math.pow(size[0] / 16, 2)
-    for (let gridIdx = 1; gridIdx < num_major_squares; gridIdx++) {
+    for (let gridIdx = 1; gridIdx < numMajorSquares + 1; gridIdx++) {
       doc.addPage('a4', 'landscape')
       // Make black background
       doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
-      doc.addImage(pieceListImage, 'PNG', 20, 20, 80, pieceListAR * 80, '', 'NONE')
+      doc.addImage(pieceListImage, 'PNG', 20, 10, 80, pieceListAR * 80, '', 'NONE')
 
       const numberedMosaic = this.generateNumberedMosaicSegmentImage(
         gridIdx,
@@ -63,9 +104,43 @@ class Instructionificator {
         idxToColour
       )
       doc.addImage(numberedMosaic, 'PNG', 120, 20, mosaicDim, mosaicDim, '', 'NONE')
+
+      doc.setFontSize(24)
+      doc.setTextColor(192, 192, 192)
+      doc.text(`Tile ${gridIdx}`, 120 + mosaicDim / 2, 40 + mosaicDim, { align: "center" })
     }
 
     doc.save(`${name}.pdf`)
+  }
+
+  static makeGridOverlay = (mosaicDim, size) => {
+    const gridOverlay = document.createElement('canvas')
+    const gridOverlayCtx = gridOverlay.getContext('2d')
+    gridOverlay.height = mosaicDim
+    gridOverlay.width = mosaicDim
+
+    // when the size is 64 pixels across, there are 16 squares,
+    // meaning that we need a much lower font size
+    const fontSize = size[0] == 64 ? 16 : 12 * (6 - size[0] / 16)
+
+    gridOverlayCtx.font = `${fontSize}pt serif`
+    gridOverlayCtx.fillStyle = '#FFFFFF'
+    gridOverlayCtx.textBaseline = 'middle'
+    gridOverlayCtx.textAlign = 'center'
+
+    const numMajorSquares = Math.pow(size[0] / 16, 2)
+    for (let gridIdx = 1; gridIdx < numMajorSquares + 1; gridIdx++) {
+      const xStart = getColFromGridIdx(gridIdx, size)
+      const yStart = getRowFromGridIdx(gridIdx, size)
+
+      gridOverlayCtx.fillText(
+        gridIdx,
+        (xStart + 8) * mosaicDim / size[0],
+        (yStart + 8) * mosaicDim / size[1] + 4
+      )
+    }
+
+    return gridOverlay.toDataURL('image/png')
   }
 
   static generatePieceListCanvas = (pieceList, factor) => {
@@ -139,13 +214,13 @@ class Instructionificator {
 
     const fontSize = factor
 
-    const clockmod = (i,m) => i % m ? i % m : m
-    const startX = (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
-    const startY = Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
-
     for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 16; j++) {
-        const mosaicColourAtij = idxToColour[[i,j]]
+        const xStart = getColFromGridIdx(gridIdx, size)
+        const yStart = getRowFromGridIdx(gridIdx, size)
+
+        const mosaicColourAtij = idxToColour[[xStart + i, yStart + j]]
+
         drawCircle(
           scale * (i * factor + factor / 2),
           scale * (j * factor + factor / 2),
@@ -153,6 +228,7 @@ class Instructionificator {
           legoColours[mosaicColourAtij],
           mosaicCtx
         )
+
         mosaicCtx.font = `${fontSize}pt serif`
         mosaicCtx.fillStyle =
           legoColours[mosaicColourAtij].reduce(add) > 127 * 3
