@@ -39,9 +39,9 @@ const legoColours = {
   "yellowish_green" : [226,249,154]
 }
 
-
+// functions for kwargs, reduce, e.t.c.
 const IDENTITY = x => x
-
+const add = (a,b) => a + b
 
 class Legoificator {
 
@@ -51,15 +51,15 @@ class Legoificator {
     this.size = size
     this.scale = scale
 
-    this.pieceList = undefined
+    this.idxToColour = {}
+    this.pieceList = {}
     this.mini_input_ctx = undefined
 
     this.resizeImage()
   }
 
   updateSize(s) {
-    if (![1,2,3,4].includes(s))
-      return
+    if (![1,2,3,4].includes(s)) return
     this.size = [16 * s, 16 * s]
   }
 
@@ -73,12 +73,8 @@ class Legoificator {
 
   init_colours_used = () => {
     const coloursUsed = {}
-    for (const colour in legoColours) {
-      coloursUsed[colour] = {
-        'pieceCount': 0,
-        'colourID': undefined,
-      }
-    }
+    for (const colour in legoColours)
+      coloursUsed[colour] = { 'pieceCount': 0, 'colourID': undefined }
     return coloursUsed
   }
 
@@ -122,9 +118,9 @@ class Legoificator {
         const rs = this.nthOfArray(vals, 4, 0)
         const gs = this.nthOfArray(vals, 4, 1)
         const bs = this.nthOfArray(vals, 4, 2)
-        const R = rs.reduce((a,b) => a + b) / rs.length
-        const G = gs.reduce((a,b) => a + b) / gs.length
-        const B = bs.reduce((a,b) => a + b) / bs.length
+        const R = rs.reduce(add) / rs.length
+        const G = gs.reduce(add) / gs.length
+        const B = bs.reduce(add) / bs.length
         small_ctx.fillStyle = `rgb(${R}, ${G}, ${B})`
         small_ctx.fillRect(i, j, 1, 1)
       }
@@ -176,7 +172,7 @@ class Legoificator {
     return closest_colour
   }
 
-  generatePDF = (name, image, img_width, img_height) => {
+  generatePDF = (name, mainMosaic, img_width, img_height) => {
     /* There are a lot of magic numbers in this function.
      * We all need more ~~~magic~~~ in our lives!!!
      */
@@ -184,10 +180,9 @@ class Legoificator {
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
 
-    const pdfWidth = 297,
-      pdfHeight = 210;
-
-    const px_to_mm = px => px * 25.4 / 72
+    const pdfWidth = 297
+    const pdfHeight = 210
+    const mosaicDim = 140
 
     const doc = new jspdf.jsPDF({
       orientation: 'landscape',
@@ -204,41 +199,45 @@ class Legoificator {
     // TITLE PAGE
     // Make black background
     doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
-
-    // Name
     doc.text(name, pdfWidth / 2, 20, { align: "center" })
-    doc.addImage(image, 'PNG', (pdfWidth - 100) / 2, (pdfHeight - 100 - 20) / 2, 100, 100, '', 'NONE')
+    doc.addImage(mainMosaic, 'PNG', (pdfWidth - mosaicDim) / 2, (pdfHeight - mosaicDim) / 2, mosaicDim, mosaicDim, '', 'NONE')
 
-    const pieceListCanvas = this.generatePieceListImage()
+    const pieceListCanvas = this.generatePieceListCanvas()
     const pieceListImage  = pieceListCanvas.toDataURL('image/png')
     const pieceListAR     = pieceListCanvas.height / pieceListCanvas.width
 
     // REST OF THE PAGES
     const num_major_squares = Math.pow(this.size[0] / 16, 2)
-    for (let i = 0; i < num_major_squares; i++) {
+    for (let gridIdx = 1; gridIdx < num_major_squares; gridIdx++) {
       doc.addPage('a4', 'landscape')
       // Make black background
       doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
-      doc.addImage(pieceListImage, 'PNG', 20, 20, 60, pieceListAR * 60, '', 'NONE')
+      doc.addImage(pieceListImage, 'PNG', 20, 20, 80, pieceListAR * 80, '', 'NONE')
+
+      const numberedMosaic = this.generateNumberedMosaicSegmentImage(gridIdx)
+      doc.addImage(numberedMosaic, 'PNG', 120, 20, mosaicDim, mosaicDim, '', 'NONE')
     }
 
     doc.save("test.pdf")
   }
 
-  generatePieceListImage = () => {
+  generatePieceListCanvas = () => {
     if (this.pieceList === undefined) return
 
+    const prevFactor = this.factor
+    this.factor = 16
+
     const pieceListCanvas = document.createElement('canvas')
-    pieceListCanvas.width = 400
-    pieceListCanvas.height = 1075 // == 35 * (r * 2.5) + 25
     const pieceListCTX = pieceListCanvas.getContext('2d', {alpha: false})
+    pieceListCanvas.height = 35 * (this.factor * 2.5) + 25
+    pieceListCanvas.width = pieceListCanvas.height / 2.4
 
     const pieceKVs = Object.entries(this.pieceList)
       .filter(e => e[1]['colourID'] != undefined)
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
 
-    const fontSize = 12
-    const r = 12
+    const r = this.factor
+    const fontSize = this.factor
     for (const [colourName, colourInfo] of pieceKVs) {
       const x = 2 * r
       const y = (r * 2.5) * colourInfo['colourID']
@@ -253,10 +252,11 @@ class Legoificator {
         y + fontSize / 2
       )
     }
+    this.factor = prevFactor
     return pieceListCanvas
   }
 
-  generateNumberedMosaicSlice = (gridIdx) => {
+  generateNumberedMosaicSegmentImage = (gridIdx) => {
     /*
      *  Mosaics can be size 1, 2, 3, 4:
      *
@@ -280,7 +280,55 @@ class Legoificator {
      *  Each # represents a 16x16 grid of studs. This function
      *  returns a blown-up canvas of the grid at pos. gridIdx,
      *  where the grids are numbered across the rows.
+     *
+     *  "this.mini_input_ctx" is of size "this.size"
      */
+    if (this.mini_input_ctx === undefined) {
+      throw `Legoificator has not been initialized; mini_input_ctx is undefined`
+    }
+
+    // this is going to be big, so we want high res
+    const prevFactor = this.factor
+    this.factor = 32
+
+    const mosaicSeg = document.createElement('canvas')
+    const mosaicCtx = mosaicSeg.getContext('2d', {alpha: false})
+
+    mosaicSeg.width  = this.scale * this.factor * 16
+    mosaicSeg.height = this.scale * this.factor * 16
+
+    const fontSize = this.factor
+
+    const clockmod = (i,m) => i % m ? i % m : m
+    const startX = (clockmod(gridIdx, (this.size[0] / 16)) - 1) * 16
+    const startY = Math.floor((gridIdx - 1) / (this.size[1] / 16)) * 16
+
+    for (let i = 0; i < 16; i++) {
+      for (let j = 0; j < 16; j++) {
+        const mosaicColourAtij = this.idxToColour[[i,j]]
+        this.drawCircle(
+          this.scale * (i * this.factor + this.factor / 2),
+          this.scale * (j * this.factor + this.factor / 2),
+          this.scale * this.factor / 2,
+          legoColours[mosaicColourAtij],
+          mosaicCtx
+        )
+        mosaicCtx.font = `${fontSize}pt serif`
+        mosaicCtx.fillStyle =
+          legoColours[mosaicColourAtij].reduce(add) > 127 * 3
+          ? '#000000'
+          : '#ffffff'
+        mosaicCtx.textBaseline = 'middle'
+        mosaicCtx.textAlign = 'center'
+        mosaicCtx.fillText(
+          this.pieceList[mosaicColourAtij]["colourID"],
+          this.scale * (i * this.factor + this.factor / 2),
+          this.scale * (j * this.factor + fontSize / 2),
+        )
+      }
+    }
+    this.factor = prevFactor
+    return mosaicSeg.toDataURL('image/png')
   }
 
   commenceLegoification = (output_ctx, useLAB = false)  => {
@@ -300,6 +348,7 @@ class Legoificator {
 
     let current_colour_id = 1  // this is used in the PDF
     const coloursUsed = this.init_colours_used()  // this holds information for PDF generation
+    this.idxToColour = {}
 
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
@@ -320,6 +369,8 @@ class Legoificator {
           coloursUsed[closest_lego_colour]['colourID'] = current_colour_id
           current_colour_id++
         }
+
+        this.idxToColour[[i,j]] = closest_lego_colour
 
         this.drawCircle(
           this.scale * (i * this.factor + this.factor / 2),
