@@ -50,6 +50,8 @@ class Legoificator {
     this.factor = factor
     this.size = size
     this.scale = scale
+
+    this.pieceList = undefined
     this.mini_input_ctx = undefined
 
     this.resizeImage()
@@ -61,13 +63,12 @@ class Legoificator {
     this.size = [16 * s, 16 * s]
   }
 
-  draw_circle = (x, y, r, colour, canvas_ctx) => {
+  drawCircle = (x, y, r, colour, canvas_ctx) => {
     let circle = new Path2D()
     // x, y, radius, start_angle, end_angle
-    circle.arc(this.scale * x, this.scale * y, this.scale * r, 0, 2 * Math.PI);
+    circle.arc(x, y, r, 0, 2 * Math.PI);
     canvas_ctx.fillStyle = `rgb(${colour[0]},${colour[1]},${colour[2]})`
     canvas_ctx.fill(circle)
-    canvas_ctx.fillStyle = 'black'
   }
 
   init_colours_used = () => {
@@ -175,7 +176,11 @@ class Legoificator {
     return closest_colour
   }
 
-  generatePDF = (name, pieceInformation, image, img_width, img_height) => {
+  generatePDF = (name, image, img_width, img_height) => {
+    /* There are a lot of magic numbers in this function.
+     * We all need more ~~~magic~~~ in our lives!!!
+     */
+
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
 
@@ -185,28 +190,97 @@ class Legoificator {
     const px_to_mm = px => px * 25.4 / 72
 
     const doc = new jspdf.jsPDF({
-      orientation: 'l',
+      orientation: 'landscape',
       unit: 'mm',
       format: 'a4'
     })
 
     if (name === "")
-      name = "Lego Mosaic, made with fury directed at javascript"
+      name = "Placeholder"
 
     doc.setFontSize(20)
     doc.setTextColor(192, 192, 192)
 
+    // TITLE PAGE
     // Make black background
-    doc.rect(0, 0, 297, 210, 'F')
+    doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
 
-    // Title Name
+    // Name
     doc.text(name, pdfWidth / 2, 20, { align: "center" })
-
-
-    // TODO: deal w/ different mosaic sizes nicely!
     doc.addImage(image, 'PNG', (pdfWidth - 100) / 2, (pdfHeight - 100 - 20) / 2, 100, 100, '', 'NONE')
 
+    const pieceListCanvas = this.generatePieceListImage()
+    const pieceListImage  = pieceListCanvas.toDataURL('image/png')
+    const pieceListAR     = pieceListCanvas.height / pieceListCanvas.width
+
+    // REST OF THE PAGES
+    const num_major_squares = Math.pow(this.size[0] / 16, 2)
+    for (let i = 0; i < num_major_squares; i++) {
+      doc.addPage('a4', 'landscape')
+      // Make black background
+      doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
+      doc.addImage(pieceListImage, 'PNG', 20, 20, 60, pieceListAR * 60, '', 'NONE')
+    }
+
     doc.save("test.pdf")
+  }
+
+  generatePieceListImage = () => {
+    if (this.pieceList === undefined) return
+
+    const pieceListCanvas = document.createElement('canvas')
+    pieceListCanvas.width = 400
+    pieceListCanvas.height = 1075 // == 35 * (r * 2.5) + 25
+    const pieceListCTX = pieceListCanvas.getContext('2d', {alpha: false})
+
+    const pieceKVs = Object.entries(this.pieceList)
+      .filter(e => e[1]['colourID'] != undefined)
+      .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
+
+    const fontSize = 12
+    const r = 12
+    for (const [colourName, colourInfo] of pieceKVs) {
+      const x = 2 * r
+      const y = (r * 2.5) * colourInfo['colourID']
+
+      this.drawCircle(x, y, r, legoColours[colourName], pieceListCTX)
+
+      pieceListCTX.font = `${fontSize}pt serif`
+      pieceListCTX.fillStyle = '#ffffff'
+      pieceListCTX.fillText(
+        `${colourInfo['colourID']}: ${colourName}, ${colourInfo['pieceCount']}`,
+        x + 1.618 * r,
+        y + fontSize / 2
+      )
+    }
+    return pieceListCanvas
+  }
+
+  generateNumberedMosaicSlice = (gridIdx) => {
+    /*
+     *  Mosaics can be size 1, 2, 3, 4:
+     *
+     *                     gridIdx Numbering
+     *                     -----------------
+     *
+     *  Size 1:  #         1
+     *          
+     *  Size 2:  ##        1 2
+     *           ##        3 4
+     *
+     *  Size 3:  ###       1 2 3
+     *           ###       4 5 6
+     *           ###       7 8 9
+     *
+     *  Size 4:  ####      1  2  3  4
+     *           ####      5  6  7  8
+     *           ####      9 10 11 12
+     *           ####     13 14 15 16
+     *
+     *  Each # represents a 16x16 grid of studs. This function
+     *  returns a blown-up canvas of the grid at pos. gridIdx,
+     *  where the grids are numbered across the rows.
+     */
   }
 
   commenceLegoification = (output_ctx, useLAB = false)  => {
@@ -247,21 +321,21 @@ class Legoificator {
           current_colour_id++
         }
 
-        this.draw_circle(
-          i * this.factor + this.factor / 2,
-          j * this.factor + this.factor / 2,
-          this.factor / 2,
+        this.drawCircle(
+          this.scale * (i * this.factor + this.factor / 2),
+          this.scale * (j * this.factor + this.factor / 2),
+          this.scale * this.factor / 2,
           legoColours[closest_lego_colour],
           output_ctx
         )
       }
     }
-    return coloursUsed
+    this.pieceList = coloursUsed
   }
 
   updateLegoificatedEntity = (output_ctx, useLAB = false) => {
     this.resizeImage()
-    return this.commenceLegoification(output_ctx, useLAB)
+    this.commenceLegoification(output_ctx, useLAB)
   }
 
 }

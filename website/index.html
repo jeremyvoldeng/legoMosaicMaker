@@ -107,7 +107,6 @@
     let L;
     let input_texture;
     let album_art_img;
-    let pieceInformation;
 
     function handleFiles() {
           album_art_img = new Image
@@ -120,7 +119,7 @@
 
                 L = new Legoificator(input_texture)
                 out_ctx.alpha = 0
-                pieceInformation = L.commenceLegoification(out_ctx, useLABCheck.checked)
+                L.commenceLegoification(out_ctx, useLABCheck.checked)
 
                 document.getElementById("imgdiv").prepend(fxcanvas)
               }
@@ -139,7 +138,7 @@
                 input_texture.loadContentsOf(album_art_img)
                 fxcanvas.draw(input_texture).update()
                 L.updateSize(parseInt(sizeSlider.value))
-                pieceInformation = L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
               }
         }
 
@@ -152,7 +151,7 @@
                   .update()
 
                 L.updateSize(parseInt(sizeSlider.value))
-                pieceInformation = L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
               }
         }
 
@@ -161,7 +160,6 @@
                 const mosaic = output_canvas.toDataURL('image/png')
                 L.generatePDF(
                       albumName.value,
-                      pieceInformation,
                       mosaic,
                       output_canvas.width,
                       output_canvas.height

@@ -1,4 +1,5 @@
-// Thanks to http://www.easyrgb.com/en/math.php#text2
+// Thanks to http://www.easyrgb.com/en/math.php#text2 for formulas
+
 'use strict'
 
 const valInBounds = (val, min, max) => {
