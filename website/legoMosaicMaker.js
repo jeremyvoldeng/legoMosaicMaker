@@ -91,6 +91,10 @@ class Legoificator {
     /* notes:
      *  This is almost certainly an absurdly stupid way to do this in webgl, but I
      *  am stupid and just trying to move quickly so c'est la vie
+     *
+     *  Should make this a webGL thing too w/ glfx, and when a texture is applied to
+     *  the input image, also apply it to this small image. This is probably the
+     *  method with the greatest performance returns.
      */
     const canvas = document.createElement('canvas')
     canvas.width = this.input_image_gl.width
@@ -138,7 +142,7 @@ class Legoificator {
     this.mini_input_ctx = small_ctx
   }
 
-  EuclideanDistance = (v1, v2) => {
+  SquaredEuclideanDist = (v1, v2) => {
     const [x0, y0, z0] = v1
     const [x1, y1, z1] = v2
 
@@ -146,9 +150,10 @@ class Legoificator {
     const d2 = y0 - y1
     const d3 = z0 - z1
 
-    return Math.sqrt(
-      d1 * d1 + d2 * d2 + d3 * d3
-    )
+    // Don't need to take the sqrt, since we will just be
+    // comparing two of these squared Euclidean  distances.
+    // We wanna go fast! SQRT Slow! SQRT Pointless!
+    return d1 * d1 + d2 * d2 + d3 * d3
   }
 
   getClosestLegoColour = (rgb, colours=legoColours) => {
@@ -169,7 +174,7 @@ class Legoificator {
     let closestColour = ""
     for (let colour in colours) {
       const legoRGB = colours[colour]
-      const colourDist = this.EuclideanDistance(rgb, legoRGB)
+      const colourDist = this.SquaredEuclideanDist(rgb, legoRGB)
       if (colourDist < minimumColourDist) {
         minimumColourDist = colourDist
         closestColour = colour
