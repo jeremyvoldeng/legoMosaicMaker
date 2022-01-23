@@ -62,6 +62,7 @@ class Legoificator {
 
     this.idxToColour = {}
     this.pieceList = {}
+    this.LABColours = undefined
     this.mini_input_ctx = undefined
 
     this.resizeImage()
@@ -72,11 +73,18 @@ class Legoificator {
     this.size = [16 * s, 16 * s]
   }
 
-  init_colours_used = () => {
+  initColoursUsed = () => {
     const coloursUsed = {}
     for (const colour in legoColours)
       coloursUsed[colour] = { 'pieceCount': 0, 'colourID': undefined }
     return coloursUsed
+  }
+
+  initLABColours = () => {
+    const LABColours = {}
+    for (let [key,rgb] of Object.entries(legoColours))
+      LABColours[key] = RGBtoLAB(rgb)
+    return LABColours
   }
 
   resizeImage = () => {
@@ -143,7 +151,7 @@ class Legoificator {
     )
   }
 
-  getClosestLegoColour = (rgb, colorScheme=IDENTITY) => {
+  getClosestLegoColour = (rgb, colours=legoColours) => {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -157,20 +165,17 @@ class Legoificator {
      * [2] stackoverflow link https://stackoverflow.com/questions/9018016/how-to-compare-two-colors-for-similarity-difference
      * [3] how to convert http://www.easyrgb.com/en/math.php#text2
      */
-    let minimum_colour_dist = 256
-    let closest_colour = ""
-    for (let colour in legoColours) {
-      const lego_rgb = legoColours[colour]
-      const colour_dist = this.EuclideanDistance(
-        colorScheme(rgb),
-        colorScheme(lego_rgb)
-      )
-      if (colour_dist < minimum_colour_dist) {
-        minimum_colour_dist = colour_dist
-        closest_colour = colour
+    let minimumColourDist = Number.MAX_SAFE_INTEGER
+    let closestColour = ""
+    for (let colour in colours) {
+      const legoRGB = colours[colour]
+      const colourDist = this.EuclideanDistance(rgb, legoRGB)
+      if (colourDist < minimumColourDist) {
+        minimumColourDist = colourDist
+        closestColour = colour
       }
     }
-    return closest_colour
+    return closestColour
   }
 
   commenceLegoification = (output_ctx, useLAB = false)  => {
@@ -188,22 +193,25 @@ class Legoificator {
     output_ctx.fillStyle = 'black';
     output_ctx.fillRect(0, 0, output_ctx.canvas.width, output_ctx.canvas.width)
 
-    let current_colour_id = 1  // this is used in the PDF
-    const coloursUsed = this.init_colours_used()  // this holds information for PDF generation
     this.idxToColour = {}
+    let current_colour_id = 1  // this is used in the PDF
+    const coloursUsed = this.initColoursUsed()  // this holds information for PDF generation
+
+    if (useLAB && this.LABColours == undefined) {
+      this.LABColours = this.initLABColours()
+    }
+    const colourPalette = useLAB ? this.LABColours : legoColours
 
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
         // gimme a pixel!
         const [r, g, b, a] = this.mini_input_ctx.getImageData(i, j, 1, 1).data
 
+        const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
         // find the closest colour
-        let closest_lego_colour
-        if (useLAB) {
-          closest_lego_colour = this.getClosestLegoColour([r, g, b], RGBtoLAB)
-        } else {
-          closest_lego_colour = this.getClosestLegoColour([r, g, b])
-        }
+        const closest_lego_colour = this.getClosestLegoColour(
+          targetColour, colourPalette
+        )
 
         // update the colours that were used
         coloursUsed[closest_lego_colour]['pieceCount']++
