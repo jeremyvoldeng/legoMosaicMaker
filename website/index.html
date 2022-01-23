@@ -66,11 +66,7 @@
 
       <!-- Some nice looking images -->
       <div class="row-cls" id="imgdiv">
-        <canvas id="outcvs">
-          Sorry, your browser does not support "canvas" elements - this is typically because
-          the browser is relatively old. You can try updating your browser, or view the project
-          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-        </canvas>
+        <svg id="mosaicSVG"></svg>
       </div>
     </div>
   </body>
@@ -102,8 +98,7 @@
           alert("Sorry, your browser does not support WebGL. I need to get on this, and make it backwards compatible.\n Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
         }
 
-    const output_canvas = document.getElementById("outcvs")
-    const out_ctx = output_canvas.getContext('2d')
+    const imgContainer = document.getElementById("imgdiv")
 
     let L;
     let input_texture;
@@ -119,10 +114,10 @@
                 fxcanvas.draw(input_texture).update()
 
                 L = new Legoificator(input_texture)
-                out_ctx.alpha = 0
-                L.commenceLegoification(out_ctx, useLABCheck.checked)
+                const newMosaicSVG = L.updateLegoificatedEntity(useLABCheck.checked, false)
 
-                document.getElementById("imgdiv").prepend(fxcanvas)
+                imgContainer.querySelector("#mosaicSVG").replaceWith(newMosaicSVG)
+                imgContainer.prepend(fxcanvas)
               }
           album_art_img.src = album_art_url
         }
@@ -139,7 +134,9 @@
                 input_texture.loadContentsOf(album_art_img)
                 fxcanvas.draw(input_texture).update()
                 L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+
+                const newMosaicSVG = L.updateLegoificatedEntity(useLABCheck.checked)
+                imgContainer.querySelector("#mosaicSVG").replaceWith(newMosaicSVG)
               }
         }
 
@@ -152,11 +149,14 @@
                   .update()
 
                 L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+
+                const newMosaicSVG = L.updateLegoificatedEntity(useLABCheck.checked)
+                imgContainer.querySelector("#mosaicSVG").replaceWith(newMosaicSVG)
               }
         }
 
     function genInstructions() {
+          // TODO output_canvas to SVG
           if (L) {
                 const mosaic = output_canvas.toDataURL('image/png')
                 L.makeMosaicInstructions(

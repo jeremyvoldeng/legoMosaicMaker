@@ -11,7 +11,7 @@ class Instructionificator {
    * You are welcome.
    */
 
-  static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, scale, factor) => {
+  static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, factor) => {
 
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
@@ -98,7 +98,6 @@ class Instructionificator {
       const numberedMosaic = this.generateNumberedMosaicSegmentImage(
         gridIdx,
         size,
-        scale,
         factor,
         pieceList,
         idxToColour
@@ -178,7 +177,7 @@ class Instructionificator {
     return pieceListCanvas
   }
 
-  static generateNumberedMosaicSegmentImage = (gridIdx, size, scale, factor, pieceList, idxToColour) => {
+  static generateNumberedMosaicSegmentImage = (gridIdx, size, factor, pieceList, idxToColour) => {
     /*
      *  Mosaics can be size 1, 2, 3, 4:
      *
@@ -209,8 +208,8 @@ class Instructionificator {
     const mosaicSeg = document.createElement('canvas')
     const mosaicCtx = mosaicSeg.getContext('2d', {alpha: false})
 
-    mosaicSeg.width  = scale * factor * 16
-    mosaicSeg.height = scale * factor * 16
+    mosaicSeg.width  = factor * 16
+    mosaicSeg.height = factor * 16
 
     const fontSize = factor
 
@@ -222,9 +221,9 @@ class Instructionificator {
         const mosaicColourAtij = idxToColour[[xStart + i, yStart + j]]
 
         drawCircle(
-          scale * (i * factor + factor / 2),
-          scale * (j * factor + factor / 2),
-          scale * factor / 2,
+          i * factor + factor / 2,
+          (j * factor + factor / 2,
+          factor / 2,
           legoColours[mosaicColourAtij],
           mosaicCtx
         )
@@ -238,8 +237,8 @@ class Instructionificator {
         mosaicCtx.textAlign = 'center'
         mosaicCtx.fillText(
           pieceList[mosaicColourAtij]["colourID"],
-          scale * (i * factor + factor / 2),
-          scale * (j * factor + fontSize / 2),
+          i * factor + factor / 2,
+          j * factor + fontSize / 2,
         )
       }
     }
