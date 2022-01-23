@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="styles/main.css">
 
     <script type='text/javascript' src='glfx.js'></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/amstockchart/3.10.0/exporting/canvg.min.js"></script>
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
     <script type='text/javascript' src='instructionMaker.js'></script>
     <script type='text/javascript' src='colorConversions.js'></script>
@@ -158,12 +159,9 @@
     function genInstructions() {
           // TODO output_canvas to SVG
           if (L) {
-                const mosaic = output_canvas.toDataURL('image/png')
                 L.makeMosaicInstructions(
                       albumName.value,
-                      mosaic,
-                      output_canvas.width,
-                      output_canvas.height
+                      imgContainer.querySelector("#mosaicSVG")
                     )
               }
         }

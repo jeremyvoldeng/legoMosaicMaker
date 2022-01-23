@@ -43,22 +43,22 @@ const legoColours = {
 const IDENTITY = x => x
 const add = (a,b) => a + b
 
-const drawCircle = (x, y, r, colour, canvas_ctx) => {
-  let circle = new Path2D()
-  // x, y, radius, start_angle, end_angle
-  circle.arc(x, y, r, 0, 2 * Math.PI);
-  canvas_ctx.fillStyle = `rgb(${colour[0]},${colour[1]},${colour[2]})`
-  canvas_ctx.fill(circle)
+const drawCircle = (x, y, r, colour, parentSVG) => {
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", x)
+  circle.setAttribute("cy", y)
+  circle.setAttribute("r", r)
+  circle.setAttribute("fill", `rgb(${colour[0]},${colour[1]},${colour[2]})`)
+  parentSVG.appendChild(circle)
 }
 
 
 class Legoificator {
 
-  constructor(input_image, factor = 9, scale = 3, size = [48, 48]) {
+  constructor(input_image, factor = 9, size = [48, 48]) {
     this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
     this.size = size
-    this.scale = scale
 
     this.idxToColour = {}
     this.pieceList = {}
@@ -173,20 +173,25 @@ class Legoificator {
     return closest_colour
   }
 
-  commenceLegoification = (output_ctx, useLAB = false)  => {
+  commenceLegoification = (useLAB = false)  => {
     if (this.mini_input_ctx === undefined) {
       throw `Legoificator has not been initialized; mini_input_ctx is undefined`
     }
 
-    // Set canvas size, with appropriate css scaling to make it look good
-    output_ctx.canvas.style.width = `${this.factor * this.size[0]}px`
-    output_ctx.canvas.style.height = `${this.factor * this.size[1]}px`
-    output_ctx.canvas.width = this.factor * this.size[0] * this.scale
-    output_ctx.canvas.height = this.factor * this.size[1] * this.scale
+    const width = this.factor * this.size[0]
+    const height = this.factor * this.size[1]
 
-    // make the output canvas' background black
-    output_ctx.fillStyle = 'black';
-    output_ctx.fillRect(0, 0, output_ctx.canvas.width, output_ctx.canvas.width)
+    const mosaicSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    mosaicSVG.setAttribute("width", width)
+    mosaicSVG.setAttribute("height", height)
+    mosaicSVG.setAttribute("id", "mosaicSVG")
+
+    const background = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+    background.setAttribute("width", width)
+    background.setAttribute("height", height)
+    background.setAttribute("fill", 'black')
+
+    mosaicSVG.appendChild(background)
 
     let current_colour_id = 1  // this is used in the PDF
     const coloursUsed = this.init_colours_used()  // this holds information for PDF generation
@@ -212,23 +217,25 @@ class Legoificator {
           current_colour_id++
         }
 
+        // update small image coordinate to colour, making mosaic instruction creation faster
         this.idxToColour[[i,j]] = closest_lego_colour
 
         drawCircle(
-          this.scale * (i * this.factor + this.factor / 2),
-          this.scale * (j * this.factor + this.factor / 2),
-          this.scale * this.factor / 2,
+          i * this.factor + this.factor / 2,
+          j * this.factor + this.factor / 2,
+          this.factor / 2,
           legoColours[closest_lego_colour],
-          output_ctx
+          mosaicSVG
         )
       }
     }
     this.pieceList = coloursUsed
+    return mosaicSVG
   }
 
-  updateLegoificatedEntity = (output_ctx, useLAB = false) => {
-    this.resizeImage()
-    this.commenceLegoification(output_ctx, useLAB)
+  updateLegoificatedEntity = (useLAB = false, resize = true) => {
+    if (resize) this.resizeImage()
+    return this.commenceLegoification(useLAB)
   }
 
   makeMosaicInstructions = (name, mosaicImg) => {
@@ -238,7 +245,6 @@ class Legoificator {
       this.pieceList,
       this.idxToColour,
       this.size,
-      this.scale,
       this.factor
     )
   }
