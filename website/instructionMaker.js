@@ -11,7 +11,7 @@ class Instructionificator {
    * You are welcome.
    */
 
-  static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, scale, factor) => {
+  static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, factor) => {
 
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
@@ -36,15 +36,15 @@ class Instructionificator {
     // TITLE PAGE
     doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
     doc.text(name, pdfWidth / 2, 20, { align: "center" })
-    doc.addImage(
-      mainMosaic,
-      'PNG',
-      (pdfWidth - mosaicDim) / 2,
+
+    const mosaicCircleRadius = mosaicDim / (2 * size[0])
+
+    this.generateFullMosaic(
+      doc,
+      (pdfWidth - mosaicDim / 2) / 2 - mosaicCircleRadius * size[0] / 2,
       (pdfHeight - mosaicDim) / 2,
-      mosaicDim,
-      mosaicDim,
-      '',
-      'NONE'
+      mosaicCircleRadius,
+      idxToColour
     )
 
     // INSTRUCTION PAGE
@@ -54,56 +54,46 @@ class Instructionificator {
     doc.setTextColor(192, 192, 192)
     doc.text(
       `The following pages have each 16x16 tile section displayed, with the corresponding colour code on the margin. Fill it all in!\nThere are ${size[0] * size[1]} total pieces.`,
-      mosaicDim / 4,
+      mosaicDim / 6,
       (pdfHeight - mosaicDim) / 2,
       {maxWidth: mosaicDim / 2}
     )
-    doc.addImage(
-      mainMosaic,
-      'PNG',
+
+    this.generateFullMosaic(
+      doc,
+      (pdfWidth - mosaicDim / 2) / 2,
+      (pdfHeight - mosaicDim) / 2,
+      mosaicCircleRadius,
+      idxToColour
+    )
+
+    this.makeGridOverlay(
+      doc,
       (pdfWidth - mosaicDim / 2) / 2,
       (pdfHeight - mosaicDim) / 2,
       mosaicDim,
-      mosaicDim,
-      '',
-      'NONE'
+      size
     )
-
-    const gridOverlay = this.makeGridOverlay(mosaicDim, size)
-    doc.addImage(
-      gridOverlay,
-      'PNG',
-      (pdfWidth - mosaicDim / 2) / 2,
-      (pdfHeight - mosaicDim) / 2,
-      mosaicDim,
-      mosaicDim,
-      '',
-      'NONE'
-    )
-
-    const pieceListCanvas = this.generatePieceListCanvas(pieceList, factor)
-    const pieceListImage  = pieceListCanvas.toDataURL('image/png')
-    const pieceListAR     = pieceListCanvas.height / pieceListCanvas.width
-
-    doc.setFontSize(20)
-    doc.setTextColor(192, 192, 192)
 
     // REST OF THE PAGES
     for (let gridIdx = 1; gridIdx < numMajorSquares + 1; gridIdx++) {
       doc.addPage('a4', 'landscape')
+
       // Make black background
       doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
-      doc.addImage(pieceListImage, 'PNG', 20, 10, 80, pieceListAR * 80, '', 'NONE')
 
-      const numberedMosaic = this.generateNumberedMosaicSegmentImage(
+      this.generatePieceList(doc, 20, 8, pieceList, factor)
+
+      this.generateNumberedMosaicSegment(
+        doc,
+        120,
+        10,
         gridIdx,
         size,
-        scale,
         factor,
         pieceList,
         idxToColour
       )
-      doc.addImage(numberedMosaic, 'PNG', 120, 20, mosaicDim, mosaicDim, '', 'NONE')
 
       doc.setFontSize(24)
       doc.setTextColor(192, 192, 192)
@@ -113,78 +103,71 @@ class Instructionificator {
     doc.save(`${name}.pdf`)
   }
 
-  static makeGridOverlay = (mosaicDim, size) => {
-    const gridOverlay = document.createElement('canvas')
-    const gridOverlayCtx = gridOverlay.getContext('2d')
-    gridOverlay.height = mosaicDim
-    gridOverlay.width = mosaicDim
+  static makeGridOverlay = (doc, x0, y0, mosaicDim, size) => {
+    // const fontSize = size[0] == 64 ? 16 : 12 * (6 - size[0] / 16)
+    const fontSize = 12 * (6 - size[0] / 16)
 
-    // when the size is 64 pixels across, there are 16 squares,
-    // meaning that we need a much lower font size
-    const fontSize = size[0] == 64 ? 16 : 12 * (6 - size[0] / 16)
-
-    gridOverlayCtx.font = `${fontSize}pt serif`
-    gridOverlayCtx.fillStyle = '#FFFFFF'
-    gridOverlayCtx.textBaseline = 'middle'
-    gridOverlayCtx.textAlign = 'center'
+    doc.setFontSize(fontSize)
+    doc.setTextColor(255,255,255)
 
     const numMajorSquares = Math.pow(size[0] / 16, 2)
     for (let gridIdx = 1; gridIdx < numMajorSquares + 1; gridIdx++) {
       const xStart = getColFromGridIdx(gridIdx, size)
       const yStart = getRowFromGridIdx(gridIdx, size)
 
-      gridOverlayCtx.fillText(
-        gridIdx,
-        (xStart + 8) * mosaicDim / size[0],
-        (yStart + 8) * mosaicDim / size[1] + 4
+      doc.text(
+        gridIdx.toString(),
+        (xStart + 8) * mosaicDim / size[0] + x0,
+        (yStart + 8) * mosaicDim / size[1] + y0,
+        { baseline: 'middle', align: 'center' }
       )
     }
-
-    return gridOverlay.toDataURL('image/png')
   }
 
-  static generatePieceListCanvas = (pieceList, factor) => {
-    if (pieceList === undefined) return
-
-    const prevFactor = factor
-    factor = 16
-
-    const pieceListCanvas = document.createElement('canvas')
-    const pieceListCTX = pieceListCanvas.getContext('2d', {alpha: false})
-    pieceListCanvas.height = 35 * (factor * 2.5) + 25
-    pieceListCanvas.width = pieceListCanvas.height / 2.4
+  static generatePieceList = (doc, x0, y0, pieceList, factor) => {
+    const height = 35 * (factor * 2.5) + 25
+    const width = height / 2.4
 
     const pieceKVs = Object.entries(pieceList)
       .filter(e => e[1]['colourID'] != undefined)
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
 
-    const r = factor
+    const r = factor / 4
     const fontSize = factor
     for (const [colourName, colourInfo] of pieceKVs) {
-      const x = 2 * r
-      const y = (r * 2.5) * colourInfo['colourID']
+      const x = x0 + 2 * r
+      const y = y0 + 2.5 * r * colourInfo['colourID']
 
-      drawCircle(x, y, r, legoColours[colourName], pieceListCTX)
+      doc.setFillColor(...legoColours[colourName])
+      doc.circle(x, y, r, 'F')
 
-      pieceListCTX.font = `${fontSize}pt serif`
-      pieceListCTX.fillStyle = '#ffffff'
-      pieceListCTX.fillText(
+      doc.setFontSize(fontSize)
+      doc.setTextColor(255,255,255)
+      doc.text(
         `${colourInfo['colourID']}: ${colourName}, ${colourInfo['pieceCount']}`,
         x + 1.618 * r,
-        y + fontSize / 2
+        y,
+        { baseline: "middle" }
       )
     }
-    factor = prevFactor
-    return pieceListCanvas
   }
 
-  static generateNumberedMosaicSegmentImage = (gridIdx, size, scale, factor, pieceList, idxToColour) => {
+  static generateFullMosaic = (doc, x0, y0, r, idxToColour) => {
+    for (let [idx, colour] of Object.entries(idxToColour)) {
+      const [i,j] = idx.split(",").map(Number)
+      const x = i * 2 * r + x0
+      const y = j * 2 * r + y0
+      doc.setFillColor(...legoColours[colour])
+      doc.circle(x, y, r, 'F')
+    }
+  }
+
+  static generateNumberedMosaicSegment = (doc, x0, y0, gridIdx, size, factor, pieceList, idxToColour) => {
     /*
-     *  Mosaics can be size 1, 2, 3, 4:
+     *  Mosaics can be size 16, 32, 48, 64 (multiples of 16):
      *
      *                     gridIdx Numbering
      *                     -----------------
-     *
      *  Size 1:  #         1
      *          
      *  Size 2:  ##        1 2
@@ -203,48 +186,30 @@ class Instructionificator {
      *  returns a blown-up canvas of the grid at pos. gridIdx,
      *  where the grids are numbered across the rows.
      */
-    const prevFactor = factor
-    factor = 32
-
-    const mosaicSeg = document.createElement('canvas')
-    const mosaicCtx = mosaicSeg.getContext('2d', {alpha: false})
-
-    mosaicSeg.width  = scale * factor * 16
-    mosaicSeg.height = scale * factor * 16
-
-    const fontSize = factor
-
     for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 16; j++) {
         const xStart = getColFromGridIdx(gridIdx, size)
         const yStart = getRowFromGridIdx(gridIdx, size)
 
         const mosaicColourAtij = idxToColour[[xStart + i, yStart + j]]
+        const x = i * factor + factor / 2 + x0
+        const y = j * factor + factor / 2 + y0
 
-        drawCircle(
-          scale * (i * factor + factor / 2),
-          scale * (j * factor + factor / 2),
-          scale * factor / 2,
-          legoColours[mosaicColourAtij],
-          mosaicCtx
-        )
+        doc.setFillColor(...legoColours[mosaicColourAtij])
+        doc.circle(x, y, factor / 2, 'F')
 
-        mosaicCtx.font = `${fontSize}pt serif`
-        mosaicCtx.fillStyle =
-          legoColours[mosaicColourAtij].reduce(add) > 127 * 3
-          ? '#000000'
-          : '#ffffff'
-        mosaicCtx.textBaseline = 'middle'
-        mosaicCtx.textAlign = 'center'
-        mosaicCtx.fillText(
-          pieceList[mosaicColourAtij]["colourID"],
-          scale * (i * factor + factor / 2),
-          scale * (j * factor + fontSize / 2),
+        if (legoColours[mosaicColourAtij].reduce(add) > 127 * 3)
+          doc.setTextColor(0, 0, 0)
+        else
+          doc.setTextColor(255, 255, 255)
+
+        doc.setFontSize(12)
+        doc.text(
+          '' + pieceList[mosaicColourAtij]["colourID"], // fastest way to convert to str
+          x, y, { align: "center" , baseline: "middle" }
         )
       }
     }
-    factor = prevFactor
-    return mosaicSeg.toDataURL('image/png')
   }
 
 }

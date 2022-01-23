@@ -221,8 +221,7 @@ class Legoificator {
         // update the colours that were used
         coloursUsed[closest_lego_colour]['pieceCount']++
         if (coloursUsed[closest_lego_colour]['colourID'] == undefined) {
-          coloursUsed[closest_lego_colour]['colourID'] = current_colour_id
-          current_colour_id++
+          coloursUsed[closest_lego_colour]['colourID'] = current_colour_id++
         }
 
         this.idxToColour[[i,j]] = closest_lego_colour
@@ -251,7 +250,6 @@ class Legoificator {
       this.pieceList,
       this.idxToColour,
       this.size,
-      this.scale,
       this.factor
     )
   }
