@@ -51,6 +51,14 @@ const drawCircle = (x, y, r, colour, canvas_ctx) => {
   canvas_ctx.fill(circle)
 }
 
+const nthOfArray = (array, period, start) => {
+  const vs = []
+  for (let i = start; i < array.length; i += period) {
+    vs.push(array[i])
+  }
+  return vs
+}
+
 
 class Legoificator {
 
@@ -95,6 +103,9 @@ class Legoificator {
      *  Should make this a webGL thing too w/ glfx, and when a texture is applied to
      *  the input image, also apply it to this small image. This is probably the
      *  method with the greatest performance returns.
+     *
+     *  The question is: does the resizing commute with any affects that are applied?
+     *  e.g. does local averaging commute with saturation, brightness, contrast?
      */
     const canvas = document.createElement('canvas')
     canvas.width = this.input_image_gl.width
@@ -111,14 +122,6 @@ class Legoificator {
 
     const width_chunk_size = canvas.width / this.size[0]
     const height_chunk_size = canvas.height / this.size[1]
-
-    const nthOfArray = (array, period, start) => {
-      const vs = []
-      for (let i = start; i < array.length; i += period) {
-        vs.push(array[i])
-      }
-      return vs
-    }
 
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
@@ -210,6 +213,8 @@ class Legoificator {
     for (let i = 0; i < this.size[0]; i++) {
       for (let j = 0; j < this.size[1]; j++) {
         // gimme a pixel!
+        // If we could load all the pixels into a matrix or smth, that'd be nice
+        // ~7% of runtime is gettings these pixels individually 
         const [r, g, b, a] = this.mini_input_ctx.getImageData(i, j, 1, 1).data
 
         const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
