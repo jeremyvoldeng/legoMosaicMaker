@@ -196,10 +196,6 @@ while True:
         bri = int(values['BRIINPUT'])
         sha = int(values['SHAINPUT'])
         con = int(values['CONINPUT'])
-        # print(sat/100)
-        # print(bri/100)
-        # print(sha/100)
-        # print(con/100)
         try:
             saturation = sat/100
             brightness = bri/100
