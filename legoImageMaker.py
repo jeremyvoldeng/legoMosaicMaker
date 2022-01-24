@@ -5,6 +5,7 @@ from math import sqrt
 from reportlab.pdfgen import textobject
 from reportlab.pdfgen.canvas import Canvas
 from tempfile import NamedTemporaryFile
+from fontTools.ttLib import TTFont
 
 ### LEGO MOSAIC DESIGNER ###
 # This code takes an image and converts it to a mosaic using the available solid LEGO colours.
@@ -88,13 +89,15 @@ coloursUsed = {
     "yellowish_green" : [0,0]
 }
 
+totalColours = len(legoColours)
+
 # Scale factor to create high-res images
 factor = 100
 
 # Assumed starting size of the mosaic. Adjustable in GUI
 size = 48, 48
 
-font = ImageFont.truetype("arial.ttf", 19)
+font = ImageFont.truetype("arial.ttf", 20)
 numberTileFont = ImageFont.truetype("arial.ttf", 70)
 
 newImage = Image
@@ -248,3 +251,23 @@ def createPieceList():
             name = str(key)
             name = name.replace('_', ' ')
             draw.text((40, 3+(25*values[1])), ": " + name + ", " + str(coloursUsed[key][0]), font=font, fill=textColour)
+
+def createPieceListAlternate():
+    global pieceCountList
+    pieceCountList = Image.new('RGB', (1300,250), (255,255,255))
+    draw = ImageDraw.Draw(pieceCountList)
+    textColour = (55,55,55)
+
+    x = 0
+    y = 0
+    for key, values in coloursUsed.items():
+        if values[1] > 0:
+            fill = (legoColours[key][0],legoColours[key][1],legoColours[key][2])
+            draw.ellipse((10 + x*250, 10 + y*30, 30 + x*250, 30 + y*30), fill=fill, outline=(0,0,0))
+            name = str(key)
+            name = name.replace('_', ' ')
+            draw.text((35 + x*250, 10 + y*30), ": " + name + " | " + str(coloursUsed[key][0]), font=font, fill=textColour)
+            x = x + 1
+            if x > 4:
+                x = 0
+                y = y + 1
