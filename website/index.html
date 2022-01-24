@@ -107,6 +107,7 @@
 
     const output_canvas = document.getElementById("outcvs")
     const out_ctx = output_canvas.getContext('2d')
+    out_ctx.alpha = 0 // opacity == 0
 
     let L;
     let input_texture;
@@ -119,11 +120,8 @@
           album_art_img.onload = (data) => {
                 input_texture = fxcanvas.texture(album_art_img)
 
-                fxcanvas.draw(input_texture).update()
-
-                L = new Legoificator(input_texture)
-                out_ctx.alpha = 0
-                L.commenceLegoification(out_ctx, useLABCheck.checked)
+                L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+                legoify()
 
                 document.getElementById("imgdiv").prepend(fxcanvas)
               }

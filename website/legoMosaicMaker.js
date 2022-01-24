@@ -62,22 +62,35 @@ const nthOfArray = (array, period, start) => {
 
 class Legoificator {
 
-  constructor(input_image, factor = 9, scale = 3, size = [48, 48]) {
+  constructor(input_image, size = 3, factor = 9, scale = 3) {
+    /*
+     * factor is roughly the diameter of the lego pieces (in px) (though it can be
+     * different depending on the context e.g. while generating different parts of
+     * the instructions)
+     *
+     * size gives the number of lego pieces along width and height by this formula
+     *    [width, height] = [size * 16, size * 16]
+     *
+     * scale is used to incrase the scale of the image
+     */
     this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
-    this.size = size
     this.scale = scale
 
     this.idxToColour = {}
     this.pieceList = {}
+
     this.LABColours = undefined
     this.mini_input_ctx = undefined
+    this.size = undefined
 
+    this.updateSize(size)
     this.resizeImage()
+
   }
 
   updateSize(s) {
-    if (![1,2,3,4].includes(s)) return
+    if (![1,2,3,4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof(size)} (must be int)`
     this.size = [16 * s, 16 * s]
   }
 
