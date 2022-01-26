@@ -237,11 +237,9 @@ class Legoificator {
         const idx = j * this.size[1] + i
         const [r, g, b] = [Rs[idx], Gs[idx], Bs[idx]]
 
-        const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
         // find the closest colour
-        const closest_lego_colour = this.getClosestLegoColour(
-          targetColour, colourPalette
-        )
+        const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
+        const closest_lego_colour = this.getClosestLegoColour(targetColour, colourPalette)
 
         // update the colours that were used
         coloursUsed[closest_lego_colour]['pieceCount']++
@@ -250,7 +248,6 @@ class Legoificator {
         }
 
         this.idxToColour[[i,j]] = closest_lego_colour
-
         drawCircle(
           this.scale * (i * this.factor + this.factor / 2),
           this.scale * (j * this.factor + this.factor / 2),
