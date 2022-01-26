@@ -81,7 +81,6 @@ class Instructionificator {
       doc,
       mosaicLeftEdge,
       mosaicTopEdge,
-      this.mosaicDim,
       size
     )
 
@@ -119,7 +118,6 @@ class Instructionificator {
   }
 
   static makeGridOverlay = (doc, x0, y0, size) => {
-    // const fontSize = size[0] == 64 ? 16 : 12 * (6 - size[0] / 16)
     const fontSize = 12 * (6 - size[0] / 16)
 
     doc.setFontSize(fontSize)
