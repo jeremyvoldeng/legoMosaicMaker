@@ -11,7 +11,7 @@ class Instructionificator {
    * You are welcome.
    */
 
-  static Instructionificate = (name, mainMosaic, pieceList, idxToColour, size, factor) => {
+  static Instructionificate = (name, mainMosaic, coloursUsed, idxToColour, size, factor) => {
 
     // 210 x 297 mm
     // 793.706 x 1,122.52 px
@@ -82,22 +82,24 @@ class Instructionificator {
       // Make black background
       doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
 
-      this.generatePieceList(doc, 20, 8, pieceList, factor)
+      this.generatePagePieceList(doc, 20, 8, gridIdx, size, factor, coloursUsed, idxToColour)
 
+      const mosaicLeftEdge = 140
+      const mosaicTopEdge = 20
       this.generateNumberedMosaicSegment(
         doc,
-        120,
-        10,
+        mosaicLeftEdge,
+        mosaicTopEdge,
         gridIdx,
         size,
         factor,
-        pieceList,
+        coloursUsed,
         idxToColour
       )
 
       doc.setFontSize(24)
       doc.setTextColor(192, 192, 192)
-      doc.text(`Tile ${gridIdx}`, 120 + mosaicDim / 2, 40 + mosaicDim, { align: "center" })
+      doc.text(`Tile ${gridIdx}`, mosaicLeftEdge + mosaicDim / 2, 30 + mosaicTopEdge + mosaicDim, { align: "center" })
     }
 
     doc.save(`${name}.pdf`)
@@ -124,11 +126,56 @@ class Instructionificator {
     }
   }
 
-  static generatePieceList = (doc, x0, y0, pieceList, factor) => {
+  static generatePagePieceList = (doc, x0, y0, gridIdx, size, factor, coloursUsed, idxToColour) => {
     const height = 35 * (factor * 2.5) + 25
     const width = height / 2.4
 
-    const pieceKVs = Object.entries(pieceList)
+    const pageColourCount = {}
+    for (let i = 0; i < 16; i++) {
+      for (let j = 0; j < 16; j++) {
+        const xStart = getColFromGridIdx(gridIdx, size)
+        const yStart = getRowFromGridIdx(gridIdx, size)
+
+        const mosaicColourAtij = idxToColour[[xStart + i, yStart + j]]
+        if (!pageColourCount[mosaicColourAtij]) {
+          pageColourCount[mosaicColourAtij] = 0
+        }
+        pageColourCount[mosaicColourAtij]++
+      }
+    }
+
+    const pieceKVs = Object.entries(coloursUsed)
+      .filter(e => Object.keys(pageColourCount).includes(e[0]))
+      .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
+
+    let ypos = 0
+    const r = factor / 4 + (35 - Object.keys(pieceKVs).length) / 10
+    const fontSize = factor + (35 - Object.keys(pieceKVs).length) / 5
+
+    doc.setFontSize(fontSize)
+    doc.setTextColor(255,255,255)
+
+    for (const [colourName, colourInfo] of pieceKVs) {
+      const x = x0 + 2 * r
+      const y = 3 * r + 2.5 * r * ypos++
+
+      doc.setFillColor(...legoColours[colourName])
+      doc.circle(x, y, r, 'F')
+
+      doc.text(
+        `${colourInfo['colourID']}: ${beautifyLegoColourName(colourName)}, ${pageColourCount[colourName]}`,
+        x + 1.618 * r,
+        y,
+        { baseline: "middle" }
+      )
+    }
+  }
+
+  static generateFullPieceList = (doc, x0, y0, coloursUsed, factor) => {
+    const height = 35 * (factor * 2.5) + 25
+    const width = height / 2.4
+
+    const pieceKVs = Object.entries(coloursUsed)
       .filter(e => e[1]['colourID'] != undefined)
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
 
@@ -162,7 +209,7 @@ class Instructionificator {
     }
   }
 
-  static generateNumberedMosaicSegment = (doc, x0, y0, gridIdx, size, factor, pieceList, idxToColour) => {
+  static generateNumberedMosaicSegment = (doc, x0, y0, gridIdx, size, factor, coloursUsed, idxToColour) => {
     /*
      *  Mosaics can be size 16, 32, 48, 64 (multiples of 16):
      *
@@ -205,7 +252,7 @@ class Instructionificator {
 
         doc.setFontSize(12)
         doc.text(
-          '' + pieceList[mosaicColourAtij]["colourID"], // fastest way to convert to str
+          '' + coloursUsed[mosaicColourAtij]["colourID"], // fastest way to convert to str
           x, y, { align: "center" , baseline: "middle" }
         )
       }
