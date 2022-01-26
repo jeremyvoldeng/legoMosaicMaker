@@ -169,5 +169,34 @@
                     )
               }
         }
+
+    function linspace(start, stop, num) {
+          const div = num
+          const step = (stop - start) / div
+          return Array.from({length: num}, (_, i) => start + step * i)
+        }
+
+    function testMe() {
+          console.log("starting test")
+          for (let LAB of [false, true]) {
+                for (let size of [1,2,3,4]) {
+                      for (let saturation of linspace(-0.2, 0.2, 3)) {
+                            for (let bright of linspace(-0.2, 0.2, 3)) {
+                                  for (let contrast of linspace(-0.2, 0.2, 3)) {
+                                        input_texture.loadContentsOf(album_art_img)
+                                        fxcanvas.draw(input_texture)
+                                          .hueSaturation(0, saturation)
+                                          .brightnessContrast(bright, contrast)
+                                          .update()
+
+                                        L.updateSize(size)
+                                        L.updateLegoificatedEntity(out_ctx, LAB)
+                                      }
+                                }
+                          }
+                    }
+              }
+          console.log("test done")
+        }
   </script>
 </html>
