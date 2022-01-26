@@ -85,22 +85,28 @@ class Instructionificator {
 
       this.generatePagePieceList(doc, 20, 8, gridIdx, size, factor, coloursUsed, idxToColour)
 
+      const mosaicTopEdge = 30
       const mosaicLeftEdge = 140
-      const mosaicTopEdge = 20
+
+      doc.setFontSize(24)
+      doc.setTextColor(192, 192, 192)
+      doc.text(
+        `Tile ${gridIdx}`,
+        mosaicLeftEdge + this.mosaicDim / 2,
+        mosaicTopEdge,
+        { align: "center" }
+      )
+
       this.generateNumberedMosaicSegment(
         doc,
         mosaicLeftEdge,
-        mosaicTopEdge,
+        mosaicTopEdge + 10,
         gridIdx,
         size,
         factor,
         coloursUsed,
         idxToColour
       )
-
-      doc.setFontSize(24)
-      doc.setTextColor(192, 192, 192)
-      doc.text(`Tile ${gridIdx}`, mosaicLeftEdge + this.mosaicDim / 2, 30 + mosaicTopEdge + this.mosaicDim, { align: "center" })
     }
 
     doc.save(`${name}.pdf`)
@@ -146,8 +152,21 @@ class Instructionificator {
       doc.setFillColor(...legoColours[colourName])
       doc.circle(x, y, r, 'F')
 
+      if (legoColours[colourName].reduce(add) > 127 * 3)
+        doc.setTextColor(0, 0, 0)
+      else
+        doc.setTextColor(255, 255, 255)
+
       doc.text(
-        `${colourInfo['colourID']}: ${beautifyLegoColourName(colourName)}, ${colourInfo['pageCount']}`,
+        `${colourInfo['colourID']}`,
+        x,
+        y,
+        { baseline: "middle", align: "center" }
+      )
+
+      doc.setTextColor(255, 255, 255)
+      doc.text(
+        `${beautifyLegoColourName(colourName)}, ${colourInfo['pageCount']}`,
         x + 1.618 * r,
         y,
         { baseline: "middle" }
