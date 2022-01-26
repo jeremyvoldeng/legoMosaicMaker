@@ -107,7 +107,6 @@
 
     const output_canvas = document.getElementById("outcvs")
     const out_ctx = output_canvas.getContext('2d')
-    out_ctx.alpha = 0 // opacity == 0
 
     let L;
     let input_texture;
@@ -119,6 +118,8 @@
 
           album_art_img.onload = (data) => {
                 input_texture = fxcanvas.texture(album_art_img)
+                // either this, or EXT_color_buffer_float
+                input_texture._.gl.getExtension('WEBGL_color_buffer_float')
 
                 L = new Legoificator(input_texture, parseInt(sizeSlider.value))
                 legoify()
