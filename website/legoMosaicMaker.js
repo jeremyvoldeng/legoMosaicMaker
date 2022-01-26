@@ -223,12 +223,19 @@ class Legoificator {
     }
     const colourPalette = useLAB ? this.LABColours : legoColours
 
-    for (let i = 0; i < this.size[0]; i++) {
-      for (let j = 0; j < this.size[1]; j++) {
+    const RGBAs = this.mini_input_ctx.getImageData(
+      0, 0,
+      this.mini_input_ctx.canvas.width, this.mini_input_ctx.canvas.height
+    ).data
+    const Rs = nthOfArray(RGBAs, 4, 0)
+    const Gs = nthOfArray(RGBAs, 4, 1)
+    const Bs = nthOfArray(RGBAs, 4, 2)
+
+    for (let j = 0; j < this.size[1]; j++) {
+      for (let i = 0; i < this.size[0]; i++) {
         // gimme a pixel!
-        // If we could load all the pixels into a matrix or smth, that'd be nice
-        // ~7% of runtime is gettings these pixels individually 
-        const [r, g, b, a] = this.mini_input_ctx.getImageData(i, j, 1, 1).data
+        const idx = j * this.size[1] + i
+        const [r, g, b] = [Rs[idx], Gs[idx], Bs[idx]]
 
         const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
         // find the closest colour
