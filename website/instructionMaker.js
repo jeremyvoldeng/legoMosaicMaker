@@ -10,15 +10,16 @@ class Instructionificator {
    * We all need more ~~~magic~~~ in our lives!!!
    * You are welcome.
    */
+  // 210 x 297 mm
+  // 793.706 x 1,122.52 px
+
+  static {
+    this.pdfWidth = 297
+    this.pdfHeight = 210
+    this.mosaicDim = 140
+  }
 
   static Instructionificate = (name, mainMosaic, coloursUsed, idxToColour, size, factor) => {
-
-    // 210 x 297 mm
-    // 793.706 x 1,122.52 px
-
-    const pdfWidth = 297
-    const pdfHeight = 210
-    const mosaicDim = 140
     const numMajorSquares = Math.pow(size[0] / 16, 2)
 
     if (name === "")
@@ -34,44 +35,44 @@ class Instructionificator {
     doc.setTextColor(192, 192, 192)
 
     // TITLE PAGE
-    doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
-    doc.text(name, pdfWidth / 2, 20, { align: "center" })
+    doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
+    doc.text(name, this.pdfWidth / 2, 20, { align: "center" })
 
-    const mosaicCircleRadius = mosaicDim / (2 * size[0])
+    const mosaicCircleRadius = this.mosaicDim / (2 * size[0])
 
     this.generateFullMosaic(
       doc,
-      (pdfWidth - mosaicDim / 2) / 2 - mosaicCircleRadius * size[0] / 2,
-      (pdfHeight - mosaicDim) / 2,
+      (this.pdfWidth - this.mosaicDim / 2) / 2 - mosaicCircleRadius * size[0] / 2,
+      (this.pdfHeight - this.mosaicDim) / 2,
       mosaicCircleRadius,
       idxToColour
     )
 
     // INSTRUCTION PAGE
     doc.addPage('a4', 'landscape')
-    doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
+    doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
     doc.setFontSize(16)
     doc.setTextColor(192, 192, 192)
     doc.text(
       `The following pages have each 16x16 tile section displayed, with the corresponding colour code on the margin. Fill it all in!\nThere are ${size[0] * size[1]} total pieces.`,
-      mosaicDim / 6,
-      (pdfHeight - mosaicDim) / 2,
-      {maxWidth: mosaicDim / 2}
+      this.mosaicDim / 6,
+      (this.pdfHeight - this.mosaicDim) / 2,
+      {maxWidth: this.mosaicDim / 2}
     )
 
     this.generateFullMosaic(
       doc,
-      (pdfWidth - mosaicDim / 2) / 2,
-      (pdfHeight - mosaicDim) / 2,
+      (this.pdfWidth - this.mosaicDim / 2) / 2,
+      (this.pdfHeight - this.mosaicDim) / 2,
       mosaicCircleRadius,
       idxToColour
     )
 
     this.makeGridOverlay(
       doc,
-      (pdfWidth - mosaicDim / 2) / 2,
-      (pdfHeight - mosaicDim) / 2,
-      mosaicDim,
+      (this.pdfWidth - this.mosaicDim / 2) / 2,
+      (this.pdfHeight - this.mosaicDim) / 2,
+      this.mosaicDim,
       size
     )
 
@@ -80,7 +81,7 @@ class Instructionificator {
       doc.addPage('a4', 'landscape')
 
       // Make black background
-      doc.rect(0, 0, pdfWidth, pdfHeight, 'F')
+      doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
 
       this.generatePagePieceList(doc, 20, 8, gridIdx, size, factor, coloursUsed, idxToColour)
 
@@ -99,13 +100,13 @@ class Instructionificator {
 
       doc.setFontSize(24)
       doc.setTextColor(192, 192, 192)
-      doc.text(`Tile ${gridIdx}`, mosaicLeftEdge + mosaicDim / 2, 30 + mosaicTopEdge + mosaicDim, { align: "center" })
+      doc.text(`Tile ${gridIdx}`, mosaicLeftEdge + this.mosaicDim / 2, 30 + mosaicTopEdge + this.mosaicDim, { align: "center" })
     }
 
     doc.save(`${name}.pdf`)
   }
 
-  static makeGridOverlay = (doc, x0, y0, mosaicDim, size) => {
+  static makeGridOverlay = (doc, x0, y0, size) => {
     // const fontSize = size[0] == 64 ? 16 : 12 * (6 - size[0] / 16)
     const fontSize = 12 * (6 - size[0] / 16)
 
@@ -119,84 +120,71 @@ class Instructionificator {
 
       doc.text(
         gridIdx.toString(),
-        (xStart + 8) * mosaicDim / size[0] + x0,
-        (yStart + 8) * mosaicDim / size[1] + y0,
+        (xStart + 8) * this.mosaicDim / size[0] + x0,
+        (yStart + 8) * this.mosaicDim / size[1] + y0,
         { baseline: 'middle', align: 'center' }
       )
     }
   }
 
-  static generatePagePieceList = (doc, x0, y0, gridIdx, size, factor, coloursUsed, idxToColour) => {
-    const height = 35 * (factor * 2.5) + 25
-    const width = height / 2.4
+  static generatePieceList = (doc, x0, y0, factor, pieceKVs) => {
+    const numColours = Object.keys(pieceKVs).length
+    const r = factor / 4 + (35 - numColours) / 10
+    const fontSize = factor + (35 - numColours) / 5
 
-    const pageColourCount = {}
+    doc.setFontSize(fontSize)
+    doc.setTextColor(255,255,255)
+
+    const pieceListHeight = (2.5 * r * numColours)
+
+    let ypos = 0
+    for (const [colourName, colourInfo] of pieceKVs) {
+      const x = x0 + 2 * r
+      // const y = 3 * r + 2.5 * r * ypos++ - totalHeight / 2
+      const y = this.pdfHeight / 2 - pieceListHeight / 2 + 2.5 * r * ypos++
+
+      doc.setFillColor(...legoColours[colourName])
+      doc.circle(x, y, r, 'F')
+
+      doc.text(
+        `${colourInfo['colourID']}: ${beautifyLegoColourName(colourName)}, ${colourInfo['pageCount']}`,
+        x + 1.618 * r,
+        y,
+        { baseline: "middle" }
+      )
+    }
+  }
+
+  static generatePagePieceList = (doc, x0, y0, gridIdx, size, factor, coloursUsed, idxToColour) => {
+    const pageColours = {}
     for (let i = 0; i < 16; i++) {
       for (let j = 0; j < 16; j++) {
         const xStart = getColFromGridIdx(gridIdx, size)
         const yStart = getRowFromGridIdx(gridIdx, size)
 
         const mosaicColourAtij = idxToColour[[xStart + i, yStart + j]]
-        if (!pageColourCount[mosaicColourAtij]) {
-          pageColourCount[mosaicColourAtij] = 0
+        if (!pageColours[mosaicColourAtij]) {
+          pageColours[mosaicColourAtij] = 0
         }
-        pageColourCount[mosaicColourAtij]++
+        pageColours[mosaicColourAtij]++
       }
     }
 
     const pieceKVs = Object.entries(coloursUsed)
-      .filter(e => Object.keys(pageColourCount).includes(e[0]))
+      .filter(e => Object.keys(pageColours).includes(e[0]))
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
 
-    let ypos = 0
-    const r = factor / 4 + (35 - Object.keys(pieceKVs).length) / 10
-    const fontSize = factor + (35 - Object.keys(pieceKVs).length) / 5
+    pieceKVs.forEach(e => e[1]['pageCount'] = pageColours[e[0]])
 
-    doc.setFontSize(fontSize)
-    doc.setTextColor(255,255,255)
-
-    for (const [colourName, colourInfo] of pieceKVs) {
-      const x = x0 + 2 * r
-      const y = 3 * r + 2.5 * r * ypos++
-
-      doc.setFillColor(...legoColours[colourName])
-      doc.circle(x, y, r, 'F')
-
-      doc.text(
-        `${colourInfo['colourID']}: ${beautifyLegoColourName(colourName)}, ${pageColourCount[colourName]}`,
-        x + 1.618 * r,
-        y,
-        { baseline: "middle" }
-      )
-    }
+    this.generatePieceList(doc, x0, y0, factor, pieceKVs)
   }
 
   static generateFullPieceList = (doc, x0, y0, coloursUsed, factor) => {
-    const height = 35 * (factor * 2.5) + 25
-    const width = height / 2.4
-
     const pieceKVs = Object.entries(coloursUsed)
       .filter(e => e[1]['colourID'] != undefined)
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
 
-    const r = factor / 4
-    const fontSize = factor
-    for (const [colourName, colourInfo] of pieceKVs) {
-      const x = x0 + 2 * r
-      const y = y0 + 2.5 * r * colourInfo['colourID']
-
-      doc.setFillColor(...legoColours[colourName])
-      doc.circle(x, y, r, 'F')
-
-      doc.setFontSize(fontSize)
-      doc.setTextColor(255,255,255)
-      doc.text(
-        `${colourInfo['colourID']}: ${colourName}, ${colourInfo['pieceCount']}`,
-        x + 1.618 * r,
-        y,
-        { baseline: "middle" }
-      )
-    }
+    this.generatePieceList(doc, x0, y0, factor, pieceKVs)
   }
 
   static generateFullMosaic = (doc, x0, y0, r, idxToColour) => {
