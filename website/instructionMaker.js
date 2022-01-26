@@ -39,6 +39,8 @@ class Instructionificator {
     doc.text(name, this.pdfWidth / 2, 20, { align: "center" })
 
     const mosaicCircleRadius = this.mosaicDim / (2 * size[0])
+    const mosaicTopEdge = 30
+    const mosaicLeftEdge = 140
 
     this.generateFullMosaic(
       doc,
@@ -49,29 +51,36 @@ class Instructionificator {
     )
 
     // INSTRUCTION PAGE
+    doc.setFontSize(16)
     doc.addPage('a4', 'landscape')
     doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
-    doc.setFontSize(16)
-    doc.setTextColor(192, 192, 192)
     doc.text(
-      `The following pages have each 16x16 tile section displayed, with the corresponding colour code on the margin. Fill it all in!\nThere are ${size[0] * size[1]} total pieces.`,
-      this.mosaicDim / 6,
-      (this.pdfHeight - this.mosaicDim) / 2,
-      {maxWidth: this.mosaicDim / 2}
+      `Here is a bunch of text. A tonne of text. Entirely too much text to explain what this is. Fill in each tile, according to the numbers. Do it.`,
+      this.pdfWidth / 2,
+      this.pdfHeight / 2,
+      { align: "center", baseline: "middle", maxWidth: '' + 0.8 * this.pdfWidth }
     )
+
+    // FULL PIECE LIST
+    doc.addPage('a4', 'landscape')
+    doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
 
     this.generateFullMosaic(
       doc,
-      (this.pdfWidth - this.mosaicDim / 2) / 2,
-      (this.pdfHeight - this.mosaicDim) / 2,
+      mosaicLeftEdge,
+      mosaicTopEdge,
       mosaicCircleRadius,
       idxToColour
     )
 
+    this.generateFullPieceList(
+      doc, 20, 8, coloursUsed, factor
+    )
+
     this.makeGridOverlay(
       doc,
-      (this.pdfWidth - this.mosaicDim / 2) / 2,
-      (this.pdfHeight - this.mosaicDim) / 2,
+      mosaicLeftEdge,
+      mosaicTopEdge,
       this.mosaicDim,
       size
     )
@@ -84,9 +93,6 @@ class Instructionificator {
       doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
 
       this.generatePagePieceList(doc, 20, 8, gridIdx, size, factor, coloursUsed, idxToColour)
-
-      const mosaicTopEdge = 30
-      const mosaicLeftEdge = 140
 
       doc.setFontSize(24)
       doc.setTextColor(192, 192, 192)
@@ -202,6 +208,8 @@ class Instructionificator {
     const pieceKVs = Object.entries(coloursUsed)
       .filter(e => e[1]['colourID'] != undefined)
       .sort((e1, e2) => e1[1]['colourID'] > e2[1]['colourID'])
+
+    pieceKVs.forEach(e => e[1]['pageCount'] = coloursUsed[e[0]]['pieceCount'])
 
     this.generatePieceList(doc, x0, y0, factor, pieceKVs)
   }
