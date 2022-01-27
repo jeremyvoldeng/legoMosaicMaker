@@ -158,7 +158,7 @@ class Legoificator {
         const R = rs.reduce(add) / rs.length
         const G = gs.reduce(add) / gs.length
         const B = bs.reduce(add) / bs.length
-        small_ctx.fillStyle = `rgb(${R}, ${G}, ${B})`
+        small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
         small_ctx.fillRect(i, j, 1, 1)
       }
     }
