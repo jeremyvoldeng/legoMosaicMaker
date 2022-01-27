@@ -159,6 +159,9 @@ class Legoificator {
         const G = gs.reduce(add) / gs.length
         const B = bs.reduce(add) / bs.length
         small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
+        // can we somehow write to matrix, then once all colours are
+        // in place, write the matrix simultaneously? fewer calls
+        // to fillRect.
         small_ctx.fillRect(i, j, 1, 1)
       }
     }
@@ -167,12 +170,12 @@ class Legoificator {
   }
 
   SquaredEuclideanDist = (v0, v1) => {
-    const d1 = v0[0] - v1[0]
-    const d2 = v0[1] - v1[1]
-    const d3 = v0[2] - v1[2]
     // Don't need to take the sqrt, since we will just be
     // comparing two of these squared Euclidean  distances.
     // We wanna go fast! SQRT Slow! SQRT Pointless!
+    const d1 = v0[0] - v1[0]
+    const d2 = v0[1] - v1[1]
+    const d3 = v0[2] - v1[2]
     return d1 * d1 + d2 * d2 + d3 * d3
   }
 
