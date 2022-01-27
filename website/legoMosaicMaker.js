@@ -166,14 +166,10 @@ class Legoificator {
     this.mini_input_ctx = small_ctx
   }
 
-  SquaredEuclideanDist = (v1, v2) => {
-    const [x0, y0, z0] = v1
-    const [x1, y1, z1] = v2
-
-    const d1 = x0 - x1
-    const d2 = y0 - y1
-    const d3 = z0 - z1
-
+  SquaredEuclideanDist = (v0, v1) => {
+    const d1 = v0[0] - v1[0]
+    const d2 = v0[1] - v1[1]
+    const d3 = v0[2] - v1[2]
     // Don't need to take the sqrt, since we will just be
     // comparing two of these squared Euclidean  distances.
     // We wanna go fast! SQRT Slow! SQRT Pointless!
