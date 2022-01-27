@@ -165,7 +165,6 @@ class Legoificator {
         small_ctx.fillRect(i, j, 1, 1)
       }
     }
-
     this.mini_input_ctx = small_ctx
   }
 
@@ -242,7 +241,9 @@ class Legoificator {
       for (let i = 0; i < this.size[0]; i++) {
         // gimme a pixel!
         const idx = j * this.size[1] + i
-        const [r, g, b] = [Rs[idx], Gs[idx], Bs[idx]]
+        const r = Rs[idx]
+        const g = Gs[idx]
+        const b = Bs[idx]
 
         // find the closest colour
         const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
