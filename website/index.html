@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title> LEGO MOSAIC MAKER </Title>
 
@@ -10,7 +11,12 @@
     <!-- jsPDF lets us make PDF -->
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
     <!-- lets user crop images to size -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"
+      integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type='text/javascript' src='instructionMaker.js'></script>
     <script type='text/javascript' src='RGBtoLAB.js'></script>
     <script type='text/javascript' src='legoMosaicMaker.js'></script>
@@ -22,10 +28,10 @@
     web APIs as much as I can, in order to learn the absolute basics. I am SURE that
     there are better ways to do things here. If you have the motivation to help me
     out, create an issue here https://github.com/jeremyvoldeng/legoMosaicMaker/issues
-
+    \n
     Jeremy Voldeng had this great idea and created the first implementation, written
     in Python. I am here to just get it out onto the web.
-
+    \n
     Axel!
     -->
     <div class="homeheader">
@@ -41,8 +47,8 @@
 
         <!-- Modal content -->
         <div class="modal-content">
-          <span class="modal-close" id=modal-close>&times;</span>
-          <p>Some text in the Modal..</p>
+          <img id="cropperImg" style="max-width: 100%"></img>
+          <span class="modal-close" id=modal-close>Done</span>
         </div>
 
       </div>
@@ -112,7 +118,6 @@
       brightSlider.addEventListener("input", legoify)
       contrastSlider.addEventListener("input", legoify)
       generatePDFBtn.addEventListener("click", genInstructions)
-      modalCloseBtn.addEventListener("click", onModalClose)
 
       let fxcanvas
       try { fxcanvas = fx.canvas() } catch (e) {
@@ -133,29 +138,53 @@
         album_art_img.onload = (data) => {
           const validityMsg = invalidImage(album_art_img)
           if (validityMsg != '') {
-            // change some text somewhere instead of printing
+            // TODO change some text somewhere instead of alerting
+            alert(validityMsg)
             console.log(validityMsg)
             return
           }
 
-          if (imgRequiresResize(album_art_img) {
+          // <!--
+          // there is probably a cleaner way to do this modal, DRY and what not
+          // actually this is genuinely very ugly. I really hate it. the code works though.
+          // -->
+          if (imgRequiresResize(album_art_img)) {
             // trigger modal cropper
-            console.log("ASPECT RATIO NOT 1")
+            cropperModal.style.display = "block"
+            const cropImg = document.getElementById("cropperImg")
+            cropImg.src = album_art_url
 
+            cropper = new Cropper(cropImg, {
+              aspectRatio: 1,
+              restore: false,
+              rotatable: false,
+              crop: e => {
+                if (e.detail.width < 64 || e.detail.height < 64) {
+                  cropper.setData({ width: 64, height: 64 })
+                }
+              }
+            })
+
+            modalCloseBtn.addEventListener("click", () => {
+              cropperModal.style.display = "none"
+              album_art_img.src = cropper.getCroppedCanvas().toDataURL("image/png")
+              cropper.destroy()
+
+              input_texture = fxcanvas.texture(album_art_img)
+              input_texture._.gl.getExtension('WEBGL_color_buffer_float')
+              L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+              legoify()
+              document.getElementById("imgdiv").prepend(fxcanvas)
+            })
+          } else {
+            input_texture = fxcanvas.texture(album_art_img)
+            input_texture._.gl.getExtension('WEBGL_color_buffer_float')
+            L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+            legoify()
+            document.getElementById("imgdiv").prepend(fxcanvas)
           }
-
-          console.log(album_art_img.width, album_art_img.height)
-
-
-          input_texture = fxcanvas.texture(album_art_img)
-          // either this, or EXT_color_buffer_float
-          input_texture._.gl.getExtension('WEBGL_color_buffer_float')
-
-          L = new Legoificator(input_texture, parseInt(sizeSlider.value))
-          legoify()
-
-          document.getElementById("imgdiv").prepend(fxcanvas)
         }
+
         album_art_img.src = album_art_url
       }
 
@@ -179,9 +208,9 @@
         if (L) {
           input_texture.loadContentsOf(album_art_img)
           fxcanvas.draw(input_texture)
-          .hueSaturation(0, satSlider.value)
-          .brightnessContrast(brightSlider.value, contrastSlider.value)
-          .update()
+            .hueSaturation(0, satSlider.value)
+            .brightnessContrast(brightSlider.value, contrastSlider.value)
+            .update()
 
           L.updateSize(parseInt(sizeSlider.value))
           L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
@@ -191,18 +220,14 @@
       function genInstructions() {
         if (L) {
           const mosaic = output_canvas.toDataURL('image/png')
-          L.makeMosaicInstructions(
-          albumName.value,
-          mosaic,
-          output_canvas.width,
-          output_canvas.height
-          )
+          L.makeMosaicInstructions(albumName.value, mosaic, output_canvas.width, output_canvas.height)
         }
       }
 
       function invalidImage(img) {
-        if (img.width < 64 || img.height < 64)
-        return `Your image is too small: it has a width and height of ${img.width}px and ${img.height}px. The minimum dimensions are 64px by 64px`
+        if (img.width < 64 || img.height < 64) {
+          return `Your image is too small: it has a width and height of ${img.width}px and ${img.height}px. The minimum dimensions are 64px by 64px`
+        }
         return ''
       }
 
@@ -212,12 +237,7 @@
         return tooBig || unevenAspectRatio
       }
 
-      function onModalClose() {
-
-      }
-
       function testMe() {
-
         function linspace(start, stop, num) {
           const div = num
           const step = (stop - start) / div
@@ -232,9 +252,9 @@
                 for (let contrast of linspace(-0.2, 0.2, 3)) {
                   input_texture.loadContentsOf(album_art_img)
                   fxcanvas.draw(input_texture)
-                  .hueSaturation(0, saturation)
-                  .brightnessContrast(bright, contrast)
-                  .update()
+                    .hueSaturation(0, saturation)
+                    .brightnessContrast(bright, contrast)
+                    .update()
 
                   L.updateSize(size)
                   L.updateLegoificatedEntity(out_ctx, LAB)
@@ -246,4 +266,5 @@
         console.log("test done")
       }
     </script>
+
   </html>
