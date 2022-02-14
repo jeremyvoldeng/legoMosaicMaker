@@ -5,33 +5,31 @@
 $displayCanvasDim: 300px;
 $displayCanvasMargin: 20px;
 
+$sliderThumbDiam: 15px;
+
 $yellow: rgba(255, 227, 48);
 $yellowLight: rgba(255, 227, 48, 0.5);
 $yellowDark: rgba(206, 193, 111);
 $black: rgba(0, 0, 0, 0.5);
 
-
 @font-face {
   // Oh god this font stuff is messsyyyyyy
-  font-family:"Legothick";
-  src:url("Legothick.eot?")
-  format("eot"),
-  url("Legothick.woff")
-  format("woff"),
-  url("Legothick.ttf")
-  format("truetype"),
-  url("Legothick.svg#Legothick")
-  format("svg");
-  font-weight:normal;
-  font-style:normal;
+  font-family: "Legothick";
+  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"),
+    url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
+  font-weight: normal;
+  font-style: normal;
 }
 
 @mixin mobileDesign {
-  @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) { @content }
+  @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) {
+    @content;
+  }
 }
 
 // generic content
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -42,35 +40,77 @@ img {
   height: auto;
 }
 
+// see my fury below
+@mixin trackConsts {
+  border: 1px solid $black;
+  border-radius: 4px;
+  height: 4px;
+}
+@mixin thumbConsts {
+  height: $sliderThumbDiam;
+  width: $sliderThumbDiam;
+  margin-top: -5px;
+  background-color: $yellow;
+  border: 1px solid $black;
+  border-radius: $sliderThumbDiam;
+}
+
 input[type="range"] {
+  // This is the thing that reminded me of the horrors of web
+  // development. You can't include all of the pseudo-elements
+  // in one comma-seperated list, because webkit browsers will
+  // toss out the entire style if it doesn't recognize just one element
+  // in the list. I have to use mixins instead of just extending
+  // because SASS will automatically consolidate all similar
+  // extended styles into one. This is all before acknowledging that
+  // we have to pay attention to all these arbitrary rules for each
+  // individual browser, simply to style a gosh darn slider. I would
+  // guess that a modern web dev would tell me to use an autoprefixer
+  // for this, but like jeez man I don't want to have to deal with
+  // npm, babel, transpilers, postpilers, postmoderntranspilers, and
+  // all of their dependencies, just to style a GOSH DARN INPUT SLIDER.
+  // Web developers deserve every penny they get. I would not be willing
+  // to put up with this nonsense professionally. Good god! I am nauseous.
+  // I love that you need a website called "css-tricks" to do the basic
+  // job of a web dev.
+  // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
   -webkit-appearance: none;
+  background: transparent;
 
   &:focus {
     outline: none;
   }
 
-  &::-webkit-slider-track,
+  &::-webkit-slider-runnable-track {
+    @include trackConsts();
+  }
   &::-moz-range-track {
-    border: 1px solid $black;
-    border-radius: 4px 4px 4px 4px;
-    height: 4px;
+    @include trackConsts();
+  }
+  &::-ms-track {
+    @include trackConsts();
+    width: 100%;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
   }
 
-  &::-webkit-slider-thumb,
+  &::-webkit-slider-thumb {
+    @include thumbConsts();
+    -webkit-appearance: none;
+  }
   &::-moz-range-thumb {
-    height: 15px;
-    width: 15px;
-    margin-top: -5px;
-    background-color: $yellow;
-    border: 1px solid $black;
-    border-radius: 15px;
-
+    @include thumbConsts();
+  }
+  &::-ms-thumb {
+    @include thumbConsts();
   }
 
   &:disabled {
     &::-webkit-slider-thumb,
-    &::-moz-range-thumb {
-      background-color: $yellowDark
+    &::-moz-range-thumb,
+    &::-ms-thumb {
+      background-color: $yellowDark;
     }
   }
 }
@@ -94,7 +134,7 @@ input[type="range"] {
 }
 
 .legoFont {
-  font-family: 'Legothick';
+  font-family: "Legothick";
 }
 
 // specific stuff
@@ -105,7 +145,7 @@ input[type="range"] {
   width: 100%;
   background-color: $yellow;
   box-shadow: 0 20px 5px -5px $yellowLight;
-  margin-bottom: 30px
+  margin-bottom: 30px;
 }
 
 #imgdiv {
@@ -121,5 +161,4 @@ input[type="range"] {
 .displayCanvas {
   width: $displayCanvasDim;
   margin: $displayCanvasMargin;
-  height: auto;
 }
