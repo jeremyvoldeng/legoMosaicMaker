@@ -3,6 +3,7 @@
 
 <head>
   <title> LEGO MOSAIC MAKER </Title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <link rel="stylesheet" href="styles/main.css">
 
@@ -28,56 +29,54 @@
 
     Axel!
     -->
-  <div class="homeheader col-cls">
-    <h2 class="titleCard name">
-      LEGO MOSAIC MAKER
-    </h2>
-    <h3 id="errText" hidden>
-    </h3>
+  <div id="header" class="legoFont">
+    <h1> LEGO MOSAIC MAKER </h1>
   </div>
 
-  <div class="lego-zone" id="da-zone">
+  <b id="errText" hidden>
+  </b>
 
-    <!-- Inputs -->
-    <div class="col-cls">
+  <div>
+    <div class="col">
       <input type="file" id="albumArtIn" accept="image/*"> </input>
+
+      <!-- Some nice looking images -->
+      <div id="imgdiv">
+        <canvas id="outcvs" class="displayCanvas">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
+      </div>
+
       <input type="text" id="albumName" placeholder="Name of Album"></input>
 
-      <div class="col-cls">
-        <div class="row-cls">
+      <div class="col">
+        <div class="row">
           <input type="checkbox" id="useLAB"> use LAB color scheme </input>
         </div>
         <button id="reset">Reset image</input>
       </div>
 
-      <div class="slidecontainer row-cls">
-        <div class="col-cls">
+      <div class="row">
+        <div class="col">
           <b>Saturation</b>
           <b>Brightness</b>
           <b>Contrast</b>
           <b>Size</b>
         </div>
 
-        <div class="col-cls">
+        <div class="col">
           <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
           <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
           <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
           <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
         </div>
-
       </div>
 
       <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
     </div>
 
-    <!-- Some nice looking images -->
-    <div class="row-cls" id="imgdiv">
-      <canvas id="outcvs">
-        Sorry, your browser does not support "canvas" elements - this is typically because
-        the browser is relatively old. You can try updating your browser, or view the project
-        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-      </canvas>
-    </div>
   </div>
 </body>
 
@@ -114,11 +113,14 @@
     contrastSlider,
     generatePDFBtn
   ]
+  disableInputs()
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
     alert("Sorry, your browser does not support WebGL. Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
   }
+  fxcanvas.id = "incvs"
+  fxcanvas.className = "displayCanvas"
 
   const output_canvas = document.getElementById("outcvs")
   const out_ctx = output_canvas.getContext('2d')
@@ -133,12 +135,13 @@
     let valid = true
 
     album_art_img.onload = (data) => {
-      const reqsResize = imgRequiresResize(album_art_img)
-      if (reqsResize) {
+
+      if (imgRequiresResize(album_art_img)) {
         errTextBox.innerText = `Your image has dimensions that we can not handle.\
             Input images have to be square, with dimensions\
             greater than 64 pixels and less than 1500 pixels.\
             Yours is ${album_art_img.width} by ${album_art_img.height}`
+
         errTextBox.style.display = "block"
         valid = false
         disableInputs()
@@ -146,12 +149,13 @@
       } else {
         errTextBox.innerText = ""
         errTextBox.style.display = "none"
+        enableInputs()
       }
 
-      // enable input buttons since all is good w/ the img
-      enableInputs()
+      console.log(fxcanvas)
 
       input_texture = fxcanvas.texture(album_art_img)
+
       // either this, or EXT_color_buffer_float
       input_texture._.gl.getExtension('WEBGL_color_buffer_float')
 

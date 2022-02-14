@@ -1,4 +1,18 @@
+// Notes
+//   media query + sass stuff
+//   https://dev.to/paul_duvall/sass-and-media-queries-hb2
+
+$displayCanvasDim: 300px;
+$displayCanvasMargin: 20px;
+
+$yellow: rgba(255, 227, 48);
+$yellowLight: rgba(255, 227, 48, 0.5);
+$yellowDark: rgba(206, 193, 111);
+$black: rgba(0, 0, 0, 0.5);
+
+
 @font-face {
+  // Oh god this font stuff is messsyyyyyy
   font-family:"Legothick";
   src:url("Legothick.eot?")
   format("eot"),
@@ -12,100 +26,100 @@
   font-style:normal;
 }
 
-html {
-  height: 100%;
+@mixin mobileDesign {
+  @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) { @content }
+}
+
+// generic content
+html, body {
   width: 100%;
-}
-
-body {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #333;
-  background-color: rgb(240, 240, 240);
-  // font-family: 'Legothick';
-  padding-top: 25px;
-}
-
-a {
-  color: #333;
-  border-bottom: 0;
-  text-decoration: none;
-  display: inline;
-}
-
-.homeheader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: baseline;
-}
-
-.titleCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.name {
-  font-family: 'Legothick';
-  font-size: 30px;
+  height: 100%;
   margin: 0;
 }
 
-.ul {
-  border-bottom: 2px solid black;
+img {
+  max-width: 100%;
+  height: auto;
 }
 
-.row-cls {
+input[type="range"] {
+  -webkit-appearance: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-track,
+  &::-moz-range-track {
+    border: 1px solid $black;
+    border-radius: 4px 4px 4px 4px;
+    height: 4px;
+  }
+
+  &::-webkit-slider-thumb,
+  &::-moz-range-thumb {
+    height: 15px;
+    width: 15px;
+    margin-top: -5px;
+    background-color: $yellow;
+    border: 1px solid $black;
+    border-radius: 15px;
+
+  }
+
+  &:disabled {
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb {
+      background-color: $yellowDark
+    }
+  }
+}
+
+.row {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.col-cls {
+.col {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.wide {
-  width: 65%;
-  justify-content: space-between;
-}
-
-.content {
-  width: 100%;
-  height: 100%;
+.centre {
   display: flex;
-  display: -webkit-flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  margin-top: 2rem;
-  padding-bottom: 4rem;
-}
-
-.lego-zone {
-  width: 75%;
-  max-width: 850px;
-  height: 100%;
-  color: #333;
-  border-bottom: 0;
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-
-  a {
-    color: #0818A8;
-  }
-
-  img canvas {
-    max-height: 500px;
-    margin: 1rem 0 1rem 0;
-  }
 }
 
-#errText {
-  width: 50%;
+.legoFont {
+  font-family: 'Legothick';
+}
+
+// specific stuff
+
+#header {
+  @extend .centre;
+
+  width: 100%;
+  background-color: $yellow;
+  box-shadow: 0 20px 5px -5px $yellowLight;
+  margin-bottom: 30px
+}
+
+#imgdiv {
+  @extend .centre;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+
+  justify-content: space-around;
+}
+
+.displayCanvas {
+  width: $displayCanvasDim;
+  margin: $displayCanvasMargin;
+  height: auto;
 }
