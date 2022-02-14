@@ -32,7 +32,7 @@
     <h2 class="titleCard name">
       LEGO MOSAIC MAKER
     </h2>
-    <h3 id="errText">
+    <h3 id="errText" hidden>
     </h3>
   </div>
 
@@ -139,11 +139,13 @@
             Input images have to be square, with dimensions\
             greater than 64 pixels and less than 1500 pixels.\
             Yours is ${album_art_img.width} by ${album_art_img.height}`
+        errTextBox.style.display = "block"
         valid = false
         disableInputs()
         return
       } else {
         errTextBox.innerText = ""
+        errTextBox.style.display = "none"
       }
 
       // enable input buttons since all is good w/ the img
