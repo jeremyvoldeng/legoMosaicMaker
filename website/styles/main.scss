@@ -22,7 +22,7 @@ body {
   line-height: 1.5;
   color: #333;
   background-color: rgb(240, 240, 240);
-  font-family: 'Legothick';
+  // font-family: 'Legothick';
   padding-top: 25px;
 }
 
@@ -104,4 +104,8 @@ a {
     max-height: 500px;
     margin: 1rem 0 1rem 0;
   }
+}
+
+#errText {
+  width: 50%;
 }

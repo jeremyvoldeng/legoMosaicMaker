@@ -14,7 +14,6 @@ body {
   line-height: 1.5;
   color: #333;
   background-color: #f0f0f0;
-  font-family: "Legothick";
   padding-top: 25px;
 }
 
@@ -94,6 +93,10 @@ a {
 .lego-zone img canvas {
   max-height: 500px;
   margin: 1rem 0 1rem 0;
+}
+
+#errText {
+  width: 50%;
 }
 
 /*# sourceMappingURL=main.css.map */

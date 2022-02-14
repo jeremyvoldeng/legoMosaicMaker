@@ -1,202 +1,253 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title> LEGO MOSAIC MAKER </Title>
 
-    <link rel="stylesheet" href="styles/main.css">
+<head>
+  <title> LEGO MOSAIC MAKER </Title>
 
-    <!-- glfx gives quick textures -->
-    <script type='text/javascript' src='glfx.js'></script>
-    <!-- jsPDF lets us make PDF -->
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
+  <link rel="stylesheet" href="styles/main.css">
 
-    <script type='text/javascript' src='instructionMaker.js'></script>
-    <script type='text/javascript' src='RGBtoLAB.js'></script>
-    <script type='text/javascript' src='legoMosaicMaker.js'></script>
-  </head>
+  <!-- glfx gives quick textures -->
+  <script type='text/javascript' src='glfx.js'></script>
+  <!-- jsPDF lets us make PDF -->
+  <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
 
-  <body class="content">
-    <!--
-      I am very clearly a novice web developer. I have been sticking to the pure
-      web APIs as much as I can, in order to learn the absolute basics. I am SURE that
-      there are better ways to do things here. If you have the motivation to help me
-      out, create an issue here https://github.com/jeremyvoldeng/legoMosaicMaker/issues
+  <script type='text/javascript' src='instructionMaker.js'></script>
+  <script type='text/javascript' src='RGBtoLAB.js'></script>
+  <script type='text/javascript' src='legoMosaicMaker.js'></script>
+</head>
 
-      Jeremy Voldeng had this great idea and created the first implementation, written
-      in Python. I am here to just get it out onto the web.
+<body class="content">
+  <!--
+    I am very clearly a novice web developer. I have been sticking to the pure
+    web APIs as much as I can, in order to learn the absolute basics. I am SURE that
+    there are better ways to do things here. If you have the motivation to help me
+    out, create an issue here https://github.com/jeremyvoldeng/legoMosaicMaker/issues
 
-      Axel!
+    Jeremy Voldeng had this great idea and created the first implementation, written
+    in Python. I am here to just get it out onto the web.
+
+    Axel!
     -->
-    <div class="homeheader">
-      <h2 class="titleCard name">
-        LEGO MOSAIC MAKER
-      </h2>
-    </div>
+  <div class="homeheader col-cls">
+    <h2 class="titleCard name">
+      LEGO MOSAIC MAKER
+    </h2>
+    <h3 id="errText">
+    </h3>
+  </div>
 
-    <div class="lego-zone" id="da-zone">
+  <div class="lego-zone" id="da-zone">
 
-      <!-- Inputs -->
+    <!-- Inputs -->
+    <div class="col-cls">
+      <input type="file" id="albumArtIn" accept="image/*"> </input>
+      <input type="text" id="albumName" placeholder="Name of Album"></input>
+
       <div class="col-cls">
-        <input type="file" id="albumArtIn" accept="image/*"> </input>
-        <input type="text" id="albumName" placeholder="Name of Album"></input>
+        <div class="row-cls">
+          <input type="checkbox" id="useLAB"> use LAB color scheme </input>
+        </div>
+        <button id="reset">Reset image</input>
+      </div>
+
+      <div class="slidecontainer row-cls">
+        <div class="col-cls">
+          <b>Saturation</b>
+          <b>Brightness</b>
+          <b>Contrast</b>
+          <b>Size</b>
+        </div>
 
         <div class="col-cls">
-          <div class="row-cls">
-            <input type="checkbox" id="useLAB"> use LAB color scheme </input>
-          </div>
-          <button id="reset">Reset image</input>
+          <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
+          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
+          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
+          <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
         </div>
 
-        <div class="slidecontainer row-cls">
-          <div class="col-cls">
-            <b>Saturation</b>
-            <b>Brightness</b>
-            <b>Contrast</b>
-            <b>Size</b>
-          </div>
-
-          <div class="col-cls">
-            <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
-            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
-            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
-            <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
-          </div>
-
-        </div>
-
-        <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
       </div>
 
-      <!-- Some nice looking images -->
-      <div class="row-cls" id="imgdiv">
-        <canvas id="outcvs">
-          Sorry, your browser does not support "canvas" elements - this is typically because
-          the browser is relatively old. You can try updating your browser, or view the project
-          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-        </canvas>
-      </div>
+      <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
     </div>
-  </body>
 
-  <script>
-    // I am certain that CORS will be a PITA. How to deal?
-    // Nothing is easy in web development :(
-    const fileSelection  = document.getElementById("albumArtIn")
-    const albumName      = document.getElementById("albumName")
-    const resetButton    = document.getElementById("reset")
-    const useLABCheck    = document.getElementById("useLAB")
-    const sizeSlider     = document.getElementById("size")
-    const satSlider      = document.getElementById("saturation")
-    const brightSlider   = document.getElementById("brightness")
-    const contrastSlider = document.getElementById("contrast")
-    const generatePDFBtn = document.getElementById("generatePDFBtn")
+    <!-- Some nice looking images -->
+    <div class="row-cls" id="imgdiv">
+      <canvas id="outcvs">
+        Sorry, your browser does not support "canvas" elements - this is typically because
+        the browser is relatively old. You can try updating your browser, or view the project
+        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+      </canvas>
+    </div>
+  </div>
+</body>
 
-    fileSelection.addEventListener("change", handleFiles)
-    resetButton.addEventListener("click", reset)
-    useLABCheck.addEventListener("change", legoify)
-    sizeSlider.addEventListener("input", legoify)
-    satSlider.addEventListener("input", legoify)
-    brightSlider.addEventListener("input", legoify)
-    contrastSlider.addEventListener("input", legoify)
-    generatePDFBtn.addEventListener("click", genInstructions)
+<script>
+  // I am certain that CORS will be a PITA. How to deal?
+  // Nothing is easy in web development :(
+  const fileSelection = document.getElementById("albumArtIn")
+  const albumName = document.getElementById("albumName")
+  const resetButton = document.getElementById("reset")
+  const useLABCheck = document.getElementById("useLAB")
+  const sizeSlider = document.getElementById("size")
+  const satSlider = document.getElementById("saturation")
+  const brightSlider = document.getElementById("brightness")
+  const contrastSlider = document.getElementById("contrast")
+  const generatePDFBtn = document.getElementById("generatePDFBtn")
+  const errTextBox = document.getElementById("errText")
 
-    let fxcanvas
-    try { fxcanvas = fx.canvas() } catch (e) {
-          alert("Sorry, your browser does not support WebGL. I need to get on this, and make it backwards compatible.\n Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
+  fileSelection.addEventListener("change", handleFiles)
+  resetButton.addEventListener("click", reset)
+  useLABCheck.addEventListener("change", legoify)
+  sizeSlider.addEventListener("input", legoify)
+  satSlider.addEventListener("input", legoify)
+  brightSlider.addEventListener("input", legoify)
+  contrastSlider.addEventListener("input", legoify)
+  generatePDFBtn.addEventListener("click", genInstructions)
+
+  const inputElements = [
+    albumName,
+    resetButton,
+    useLABCheck,
+    sizeSlider,
+    satSlider,
+    brightSlider,
+    contrastSlider,
+    generatePDFBtn
+  ]
+
+  let fxcanvas
+  try { fxcanvas = fx.canvas() } catch (e) {
+    alert("Sorry, your browser does not support WebGL. Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
+  }
+
+  const output_canvas = document.getElementById("outcvs")
+  const out_ctx = output_canvas.getContext('2d')
+
+  let L;
+  let input_texture;
+  let album_art_img;
+
+  function handleFiles() {
+    album_art_img = new Image
+    const album_art_url = URL.createObjectURL(this.files[0])
+    let valid = true
+
+    album_art_img.onload = (data) => {
+      const reqsResize = imgRequiresResize(album_art_img)
+      if (reqsResize) {
+        errTextBox.innerText = `Your image has dimensions that we can not handle.\
+            Input images have to be square, with dimensions\
+            greater than 64 pixels and less than 1500 pixels.\
+            Yours is ${album_art_img.width} by ${album_art_img.height}`
+        valid = false
+        disableInputs()
+        return
+      } else {
+        errTextBox.innerText = ""
+      }
+
+      // enable input buttons since all is good w/ the img
+      enableInputs()
+
+      input_texture = fxcanvas.texture(album_art_img)
+      // either this, or EXT_color_buffer_float
+      input_texture._.gl.getExtension('WEBGL_color_buffer_float')
+
+      L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+      legoify()
+
+      document.getElementById("imgdiv").prepend(fxcanvas)
+    }
+
+    if (valid) {
+      album_art_img.src = album_art_url
+    }
+  }
+
+  function reset() {
+    useLABCheck.checked = false
+    sizeSlider.value = 3
+    contrastSlider.value = 0
+    brightSlider.value = 0
+    satSlider.value = 0
+    albumName.value = ""
+
+    if (L) {
+      input_texture.loadContentsOf(album_art_img)
+      fxcanvas.draw(input_texture).update()
+      L.updateSize(parseInt(sizeSlider.value))
+      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+    }
+  }
+
+  function legoify() {
+    if (L) {
+      input_texture.loadContentsOf(album_art_img)
+      fxcanvas.draw(input_texture)
+        .hueSaturation(0, satSlider.value)
+        .brightnessContrast(brightSlider.value, contrastSlider.value)
+        .update()
+
+      L.updateSize(parseInt(sizeSlider.value))
+      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+    }
+  }
+
+  function genInstructions() {
+    if (L) {
+      const mosaic = output_canvas.toDataURL('image/png')
+      L.makeMosaicInstructions(
+        albumName.value,
+        mosaic,
+        output_canvas.width,
+        output_canvas.height
+      )
+    }
+  }
+
+  function imgRequiresResize(img) {
+    const unevenAspectRatio = img.width != img.height
+    const tooSmall = img.width < 64 || img.height < 64
+    const tooBig = img.width > 1500 || img.height > 1500
+    return tooSmall || tooBig || unevenAspectRatio
+  }
+
+  function enableInputs() {
+    inputElements.forEach(el => el.disabled = false)
+  }
+
+  function disableInputs() {
+    inputElements.forEach(el => el.disabled = true)
+  }
+
+  function linspace(start, stop, num) {
+    const div = num
+    const step = (stop - start) / div
+    return Array.from({ length: num }, (_, i) => start + step * i)
+  }
+
+  function testMe() {
+    console.log("starting test")
+    for (let LAB of [false, true]) {
+      for (let size of [1, 2, 3, 4]) {
+        for (let saturation of linspace(-0.2, 0.2, 3)) {
+          for (let bright of linspace(-0.2, 0.2, 3)) {
+            for (let contrast of linspace(-0.2, 0.2, 3)) {
+              input_texture.loadContentsOf(album_art_img)
+              fxcanvas.draw(input_texture)
+                .hueSaturation(0, saturation)
+                .brightnessContrast(bright, contrast)
+                .update()
+
+              L.updateSize(size)
+              L.updateLegoificatedEntity(out_ctx, LAB)
+            }
+          }
         }
+      }
+    }
+    console.log("test done")
+  }
+</script>
 
-    const output_canvas = document.getElementById("outcvs")
-    const out_ctx = output_canvas.getContext('2d')
-
-    let L;
-    let input_texture;
-    let album_art_img;
-
-    function handleFiles() {
-          album_art_img = new Image
-          const album_art_url = URL.createObjectURL(this.files[0])
-
-          album_art_img.onload = (data) => {
-                input_texture = fxcanvas.texture(album_art_img)
-                // either this, or EXT_color_buffer_float
-                input_texture._.gl.getExtension('WEBGL_color_buffer_float')
-
-                L = new Legoificator(input_texture, parseInt(sizeSlider.value))
-                legoify()
-
-                document.getElementById("imgdiv").prepend(fxcanvas)
-              }
-          album_art_img.src = album_art_url
-        }
-
-    function reset() {
-          useLABCheck.checked = false
-          sizeSlider.value = 3
-          contrastSlider.value = 0
-          brightSlider.value = 0
-          satSlider.value = 0
-          albumName.value = ""
-
-          if (L) {
-                input_texture.loadContentsOf(album_art_img)
-                fxcanvas.draw(input_texture).update()
-                L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
-              }
-        }
-
-    function legoify() {
-          if (L) {
-                input_texture.loadContentsOf(album_art_img)
-                fxcanvas.draw(input_texture)
-                  .hueSaturation(0, satSlider.value)
-                  .brightnessContrast(brightSlider.value, contrastSlider.value)
-                  .update()
-
-                L.updateSize(parseInt(sizeSlider.value))
-                L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
-              }
-        }
-
-    function genInstructions() {
-          if (L) {
-                const mosaic = output_canvas.toDataURL('image/png')
-                L.makeMosaicInstructions(
-                      albumName.value,
-                      mosaic,
-                      output_canvas.width,
-                      output_canvas.height
-                    )
-              }
-        }
-
-    function linspace(start, stop, num) {
-          const div = num
-          const step = (stop - start) / div
-          return Array.from({length: num}, (_, i) => start + step * i)
-        }
-
-    function testMe() {
-          console.log("starting test")
-          for (let LAB of [false, true]) {
-                for (let size of [1,2,3,4]) {
-                      for (let saturation of linspace(-0.2, 0.2, 3)) {
-                            for (let bright of linspace(-0.2, 0.2, 3)) {
-                                  for (let contrast of linspace(-0.2, 0.2, 3)) {
-                                        input_texture.loadContentsOf(album_art_img)
-                                        fxcanvas.draw(input_texture)
-                                          .hueSaturation(0, saturation)
-                                          .brightnessContrast(bright, contrast)
-                                          .update()
-
-                                        L.updateSize(size)
-                                        L.updateLegoificatedEntity(out_ctx, LAB)
-                                      }
-                                }
-                          }
-                    }
-              }
-          console.log("test done")
-        }
-  </script>
 </html>
