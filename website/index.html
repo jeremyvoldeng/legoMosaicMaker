@@ -49,32 +49,34 @@
         </canvas>
       </div>
 
-      <input type="text" id="albumName" placeholder="Name of Album"></input>
+      <div id="inputDiv" style="display: none">
+        <input type="text" id="albumName" placeholder="Name of Album"></input>
 
-      <div class="col">
+        <div class="col">
+          <div class="row">
+            <input type="checkbox" id="useLAB"> use LAB color scheme </input>
+          </div>
+          <button id="reset">Reset image</input>
+        </div>
+
         <div class="row">
-          <input type="checkbox" id="useLAB"> use LAB color scheme </input>
+          <div class="col">
+            <b>Saturation</b>
+            <b>Brightness</b>
+            <b>Contrast</b>
+            <b>Size</b>
+          </div>
+
+          <div class="col">
+            <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
+            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
+            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
+            <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
+          </div>
         </div>
-        <button id="reset">Reset image</input>
+
+        <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
       </div>
-
-      <div class="row">
-        <div class="col">
-          <b>Saturation</b>
-          <b>Brightness</b>
-          <b>Contrast</b>
-          <b>Size</b>
-        </div>
-
-        <div class="col">
-          <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
-          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
-          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
-          <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
-        </div>
-      </div>
-
-      <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
     </div>
 
   </div>
@@ -102,18 +104,6 @@
   brightSlider.addEventListener("input", legoify)
   contrastSlider.addEventListener("input", legoify)
   generatePDFBtn.addEventListener("click", genInstructions)
-
-  const inputElements = [
-    albumName,
-    resetButton,
-    useLABCheck,
-    sizeSlider,
-    satSlider,
-    brightSlider,
-    contrastSlider,
-    generatePDFBtn
-  ]
-  disableInputs()
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
@@ -219,11 +209,11 @@
   }
 
   function enableInputs() {
-    inputElements.forEach(el => el.disabled = false)
+    document.getElementById("inputDiv").style.display = "block"
   }
 
   function disableInputs() {
-    inputElements.forEach(el => el.disabled = true)
+    document.getElementById("inputDiv").style.display = "none"
   }
 
   function linspace(start, stop, num) {
