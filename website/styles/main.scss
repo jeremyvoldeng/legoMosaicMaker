@@ -2,8 +2,9 @@
 //   media query + sass stuff
 //   https://dev.to/paul_duvall/sass-and-media-queries-hb2
 
-$displayCanvasDim: 300px;
-$displayCanvasMargin: 20px;
+$phi: 1.6180339887;
+$displayCanvasDim: 400px;
+$displayCanvasMargin: $displayCanvasDim / ($phi * 10);
 
 $sliderThumbDiam: 15px;
 
@@ -60,7 +61,7 @@ input[type="range"] {
   // development. You can't include all of the pseudo-elements
   // in one comma-seperated list, because webkit browsers will
   // toss out the entire style if it doesn't recognize just one element
-  // in the list. I have to use mixins instead of just extending
+  // in the list. Therefore I have to use mixins instead of just extending
   // because SASS will automatically consolidate all similar
   // extended styles into one. This is all before acknowledging that
   // we have to pay attention to all these arbitrary rules for each
@@ -156,6 +157,22 @@ input[type="range"] {
   }
 
   justify-content: space-around;
+}
+
+.sliderBoxBox {
+  @extend .row;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+}
+
+.sliderBox {
+  @extend .col;
+
+  @include mobileDesign {
+    flex-direction: row;
+  }
 }
 
 .displayCanvas {

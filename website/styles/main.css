@@ -71,13 +71,13 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   background-color: #cec16f;
 }
 
-.row {
+.row, .sliderBoxBox {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.col {
+.col, .sliderBox {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,15 +103,27 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 #imgdiv {
   justify-content: space-around;
 }
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 849.4427191015px) {
   #imgdiv {
     flex-direction: column;
   }
 }
 
+@media only screen and (max-width: 849.4427191015px) {
+  .sliderBoxBox {
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 849.4427191015px) {
+  .sliderBox {
+    flex-direction: row;
+  }
+}
+
 .displayCanvas {
-  width: 300px;
-  margin: 20px;
+  width: 400px;
+  margin: 24.7213595508px;
 }
 
 /*# sourceMappingURL=main.css.map */

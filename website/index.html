@@ -47,36 +47,40 @@
       <div id="imgdiv">
         <canvas id="outcvs" class="displayCanvas">
           Sorry, your browser does not support "canvas" elements - this is typically because
-          the browser is relatively old. You can try updating your browser, or view the project
+          the browser is relatively old, or any one of another million esoteric issues that
+          I am not smart enough to predict. You can try updating your browser, or view the project
           <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
         </canvas>
       </div>
 
-      <div id="inputDiv" style="display: none">
+      <!-- hidden before an image is chosen -->
+      <div id="inputDiv" class="col" style="display: none">
+
+        <div class="sliderBoxBox">
+          <div class="sliderBox">
+            <b class="sliderLabel">Saturation</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
+          </div>
+
+          <div class="sliderBox">
+            <b class="sliderLabel">Brightness</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
+          </div>
+
+          <div class="sliderBox">
+            <b class="sliderLabel">Contrast</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
+          </div>
+
+          <div class="sliderBox">
+            <b class="sliderLabel">Size</b>
+            <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
+          </div>
+        </div>
+
         <input type="text" id="albumName" placeholder="Name of Album"></input>
-
-        <div class="col">
-          <div class="row">
-            <input type="checkbox" id="useLAB"> use LAB color scheme </input>
-          </div>
-          <button id="reset">Reset image</input>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <b>Saturation</b>
-            <b>Brightness</b>
-            <b>Contrast</b>
-            <b>Size</b>
-          </div>
-
-          <div class="col">
-            <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
-            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
-            <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
-            <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
-          </div>
-        </div>
+        <input type="checkbox" id="useLAB"> use LAB color scheme </input>
+        <button id="reset">Reset image</button>
 
         <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
       </div>
@@ -125,7 +129,6 @@
   function handleFiles() {
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(this.files[0])
-    let valid = true
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
@@ -134,8 +137,7 @@
             greater than 64 pixels and less than 1500 pixels.\
             Yours is ${album_art_img.width} by ${album_art_img.height}`
 
-        errTextBox.style.display = "block"
-        valid = false
+        errTextBox.style.display = "flex"
         disableInputs()
         return
       } else {
@@ -155,9 +157,7 @@
       document.getElementById("imgdiv").prepend(fxcanvas)
     }
 
-    if (valid) {
-      album_art_img.src = album_art_url
-    }
+    album_art_img.src = album_art_url
   }
 
   function reset() {
@@ -209,7 +209,8 @@
   }
 
   function enableInputs() {
-    document.getElementById("inputDiv").style.display = "block"
+    // gotta be flex, or else the styling just falls apart
+    document.getElementById("inputDiv").style.display = "flex"
   }
 
   function disableInputs() {
