@@ -13,11 +13,9 @@ class Instructionificator {
   // 210 x 297 mm
   // 793.706 x 1,122.52 px
 
-  static {
-    this.pdfWidth = 297
-    this.pdfHeight = 210
-    this.mosaicDim = 140
-  }
+  static pdfWidth = 297
+  static pdfHeight = 210
+  static mosaicDim = 140
 
   static Instructionificate = (name, mainMosaic, coloursUsed, idxToColour, size, factor) => {
     const numMajorSquares = Math.pow(size[0] / 16, 2)
