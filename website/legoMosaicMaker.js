@@ -70,7 +70,7 @@ const nthOfArray = (array, period, start) => {
 
 class Legoificator {
 
-  constructor(input_image, size = 3, factor = 9, scale = 3) {
+  constructor(input_image, size = 3, factor = 9) {
     /*
      * factor is roughly the diameter of the lego pieces (in px) (though it can be
      * different depending on the context e.g. while generating different parts of
@@ -83,7 +83,6 @@ class Legoificator {
      */
     this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
-    this.scale = scale
 
     this.idxToColour = {}
     this.pieceList = {}
@@ -211,10 +210,8 @@ class Legoificator {
     }
 
     // Set canvas size, with appropriate css scaling to make it look good
-    output_ctx.canvas.style.width = `${this.factor * this.size[0]}px`
-    output_ctx.canvas.style.height = `${this.factor * this.size[1]}px`
-    output_ctx.canvas.width = this.factor * this.size[0] * this.scale
-    output_ctx.canvas.height = this.factor * this.size[1] * this.scale
+    output_ctx.canvas.width = this.factor * this.size[0] * window.devicePixelRatio
+    output_ctx.canvas.height = this.factor * this.size[1] * window.devicePixelRatio
 
     // make the output canvas' background black
     output_ctx.fillStyle = 'black';
@@ -257,9 +254,9 @@ class Legoificator {
 
         this.idxToColour[[i,j]] = closest_lego_colour
         drawCircle(
-          this.scale * (i * this.factor + this.factor / 2),
-          this.scale * (j * this.factor + this.factor / 2),
-          this.scale * this.factor / 2,
+          (i * this.factor + this.factor / 2) * window.devicePixelRatio,
+          (j * this.factor + this.factor / 2) * window.devicePixelRatio,
+          this.factor / 2 * window.devicePixelRatio,
           legoColours[closest_lego_colour],
           output_ctx
         )
