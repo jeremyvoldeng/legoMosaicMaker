@@ -3,16 +3,18 @@
 
 <head>
   <title> LEGO MOSAIC MAKER </Title>
+
+  <!-- people say i need this line -->
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/normalize.css">
 
   <!-- glfx gives quick textures -->
   <script type='text/javascript' src='glfx.js'></script>
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
 
+  <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
   <script type='text/javascript' src='RGBtoLAB.js'></script>
   <script type='text/javascript' src='legoMosaicMaker.js'></script>
@@ -126,7 +128,6 @@
     let valid = true
 
     album_art_img.onload = (data) => {
-
       if (imgRequiresResize(album_art_img)) {
         errTextBox.innerText = `Your image has dimensions that we can not handle.\
             Input images have to be square, with dimensions\
