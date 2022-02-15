@@ -81,7 +81,7 @@
           </div>
 
           <div class="colToRow">
-            <b class="sliderLabel">Size</b>
+            <b id="sizeLabel" class="sliderLabel">Size: 48 by 48</b>
             <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
           </div>
         </div>
@@ -132,13 +132,14 @@
   const satSlider = document.getElementById("saturation")
   const brightSlider = document.getElementById("brightness")
   const contrastSlider = document.getElementById("contrast")
+  const slizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
   fileSelection.addEventListener("change", handleFiles)
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
-  sizeSlider.addEventListener("input", legoify)
+  sizeSlider.addEventListener("input", updateSize)
   satSlider.addEventListener("input", legoify)
   brightSlider.addEventListener("input", legoify)
   contrastSlider.addEventListener("input", legoify)
@@ -199,6 +200,8 @@
     satSlider.value = 0
     albumName.value = ""
 
+    updateSize()
+
     if (L) {
       input_texture.loadContentsOf(album_art_img)
       fxcanvas.draw(input_texture).update()
@@ -230,6 +233,11 @@
         output_canvas.height
       )
     }
+  }
+
+  function updateSize() {
+    sizeLabel.innerHTML = `Size: ${16 * sizeSlider.value} by ${16 * sizeSlider.value}`
+    legoify()
   }
 
   function imgRequiresResize(img) {
