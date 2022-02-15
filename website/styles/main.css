@@ -91,7 +91,7 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 #header {
   width: 100%;
   background-color: #ffe330;
-  box-shadow: 10 20px 5px -5px rgba(255, 227, 48, 0.5);
+  box-shadow: 0 20px 5px 0 rgba(255, 227, 48, 0.5);
   margin-bottom: 48px;
 }
 
