@@ -148,7 +148,6 @@ class Instructionificator {
     let ypos = 0
     for (const [colourName, colourInfo] of pieceKVs) {
       const x = x0 + 2 * r
-      // const y = 3 * r + 2.5 * r * ypos++ - totalHeight / 2
       const y = this.pdfHeight / 2 - pieceListHeight / 2 + 2.5 * r * ypos++
 
       doc.setFillColor(...legoColours[colourName])
