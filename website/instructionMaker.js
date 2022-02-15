@@ -1,6 +1,6 @@
 'use strict';
 
-const clockmod = (i,m) => i % m ? i % m : m
+const clockmod = (i, m) => i % m ? i % m : m
 const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
 const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
 
@@ -121,7 +121,7 @@ class Instructionificator {
     const fontSize = 12 * (6 - size[0] / 16)
 
     doc.setFontSize(fontSize)
-    doc.setTextColor(255,255,255)
+    doc.setTextColor(255, 255, 255)
 
     const numMajorSquares = Math.pow(size[0] / 16, 2)
     for (let gridIdx = 1; gridIdx < numMajorSquares + 1; gridIdx++) {
@@ -143,7 +143,7 @@ class Instructionificator {
     const fontSize = factor + (35 - numColours) / 5
 
     doc.setFontSize(fontSize)
-    doc.setTextColor(255,255,255)
+    doc.setTextColor(255, 255, 255)
 
     const pieceListHeight = (2.5 * r * numColours)
 
@@ -214,7 +214,7 @@ class Instructionificator {
 
   static generateFullMosaic = (doc, x0, y0, r, idxToColour) => {
     for (let [idx, colour] of Object.entries(idxToColour)) {
-      const [i,j] = idx.split(",").map(Number)
+      const [i, j] = idx.split(",").map(Number)
       const x = i * 2 * r + x0
       const y = j * 2 * r + y0
       doc.setFillColor(...legoColours[colour])
@@ -266,7 +266,7 @@ class Instructionificator {
         doc.setFontSize(12)
         doc.text(
           '' + coloursUsed[mosaicColourAtij]["colourID"], // fastest way to convert to str
-          x, y, { align: "center" , baseline: "middle" }
+          x, y, { align: "center", baseline: "middle" }
         )
       }
     }

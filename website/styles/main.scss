@@ -64,7 +64,7 @@ label {
 @mixin thumbConsts {
   height: $smallSpacing;
   width: $smallSpacing;
-  margin-top: - math.div($smallSpacing, 2);
+  margin-top: -math.div($smallSpacing, 2);
   background-color: $yellow;
   border: 1px solid $black;
   border-radius: $smallSpacing;
