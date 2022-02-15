@@ -1,111 +1,312 @@
+// Notes
+//   media query + sass stuff
+//   https://dev.to/paul_duvall/sass-and-media-queries-hb2
+@use "sass:math";
+
+$phi: 1.6180339887;
+$smallSpacing: 16px;
+$displayCanvasDim: 320px;
+$paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
+$displayCanvasMargin: $paddingByCanvas * 2;
+
+$baseFontSize: 18px;
+$baseFontColor: rgba(10, 10, 10);
+
+$yellow: rgba(255, 227, 48);
+$yellowLight: rgba(255, 227, 48, 0.5);
+$yellowDark: rgba(175, 153, 7);
+$yellowDarkTransluscent: rgba(206, 193, 111, 0.5);
+$black: rgba(10, 10, 10, 0.5);
+
 @font-face {
-  font-family:"Legothick";
-  src:url("Legothick.eot?")
-  format("eot"),
-  url("Legothick.woff")
-  format("woff"),
-  url("Legothick.ttf")
-  format("truetype"),
-  url("Legothick.svg#Legothick")
-  format("svg");
-  font-weight:normal;
-  font-style:normal;
+  // Oh god this font stuff is messsyyyyyy
+  font-family: "Legothick";
+  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"),
+    url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
+  font-weight: normal;
+  font-style: normal;
 }
 
-html {
-  height: 100%;
-  width: 100%;
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
+
+@mixin mobileDesign {
+  @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) {
+    @content;
+  }
 }
 
+// generic content
+html,
 body {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #333;
-  background-color: rgb(240, 240, 240);
-  // font-family: 'Legothick';
-  padding-top: 25px;
-}
-
-a {
-  color: #333;
-  border-bottom: 0;
-  text-decoration: none;
-  display: inline;
-}
-
-.homeheader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: baseline;
-}
-
-.titleCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.name {
-  font-family: 'Legothick';
-  font-size: 30px;
-  margin: 0;
-}
-
-.ul {
-  border-bottom: 2px solid black;
-}
-
-.row-cls {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.col-cls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.wide {
-  width: 65%;
-  justify-content: space-between;
-}
-
-.content {
   width: 100%;
   height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2rem;
-  padding-bottom: 4rem;
+  margin: 0;
+  color: $baseFontColor;
+  font-size: $baseFontSize;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
-.lego-zone {
-  width: 75%;
-  max-width: 850px;
-  height: 100%;
-  color: #333;
-  border-bottom: 0;
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+img {
+  max-width: 100%;
+  height: auto;
+}
 
-  a {
-    color: #0818A8;
+label {
+  font-size: $baseFontSize;
+}
+
+// see my fury below
+@mixin trackConsts {
+  border: 1px solid $black;
+  border-radius: 4px;
+  height: 5px;
+}
+@mixin thumbConsts {
+  height: $smallSpacing;
+  width: $smallSpacing;
+  margin-top: -1 * math.div($smallSpacing, 2);
+  background-color: $yellow;
+  border: 1px solid $black;
+  border-radius: $smallSpacing;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="range"],
+input[type="text"] {
+  font-family: "Roboto Condensed", sans-serif;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="range"] {
+  // This is the thing that reminded me of the horrors of web
+  // development. You can't include all of the pseudo-elements
+  // in one comma-seperated list, because webkit browsers will
+  // toss out the entire style if it doesn't recognize just one element
+  // in the list. Therefore I have to use mixins instead of just extending
+  // because SASS will automatically consolidate all similar
+  // extended styles into one. This is all before acknowledging that
+  // we have to pay attention to all these arbitrary rules for each
+  // individual browser, simply to style a gosh darn slider. I would
+  // guess that a modern web dev would tell me to use an autoprefixer
+  // for this, but like jeez man I don't want to have to deal with
+  // npm, babel, transpilers, postpilers, postmoderntranspilers, and
+  // all of their dependencies, just to style a GOSH DARN INPUT SLIDER.
+  // Web developers deserve every penny they get. I would not be willing
+  // to put up with this nonsense professionally. Good god! I am nauseous.
+  // I love that you need a website called "css-tricks" to do the basic
+  // job of a web dev.
+  // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
+  background: transparent;
+
+  &:focus {
+    outline: none;
   }
 
-  img canvas {
-    max-height: 500px;
-    margin: 1rem 0 1rem 0;
+  &::-webkit-slider-runnable-track {
+    @include trackConsts();
   }
+  &::-moz-range-track {
+    @include trackConsts();
+  }
+  &::-ms-track {
+    @include trackConsts();
+    width: 100%;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+
+  &::-webkit-slider-thumb {
+    @include thumbConsts();
+    -webkit-appearance: none;
+  }
+  &::-moz-range-thumb {
+    @include thumbConsts();
+  }
+  &::-ms-thumb {
+    @include thumbConsts();
+  }
+
+  &:disabled {
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb,
+    &::-ms-thumb {
+      background-color: $yellowDarkTransluscent;
+    }
+  }
+}
+
+// specific stuff
+
+#header {
+  @extend .centre;
+
+  width: 100%;
+  background-color: $yellow;
+  box-shadow: 0 20px 5px 0 $yellowLight;
+  margin-bottom: 3 * $smallSpacing;
+}
+
+#albumArtIn {
+  cursor: pointer;
+  justify-content: flex-end;
 }
 
 #errText {
-  width: 50%;
+  max-width: 50%;
+  margin-bottom: 2 * $smallSpacing;
+  color: $yellowDark;
+}
+
+#initialMessage {
+  max-width: 50%;
+  text-align: center;
+}
+
+#imgdiv {
+  @extend .centre;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+}
+
+#inputdiv > * {
+  margin: $paddingByCanvas;
+}
+
+#albumName {
+  text-align: center;
+  font-size: $phi * $baseFontSize;
+  border: 0px;
+}
+
+#generatePDFBtn {
+  font-size: $phi * $baseFontSize;
+}
+
+#albumArtIn {
+  align-self: center;
+}
+
+#downloadTheWord {
+  font-size: $phi * $baseFontSize;
+}
+
+#instructionsTheWord {
+  font-size: ($phi + 0.5) * $baseFontSize;
+}
+
+%bigButton {
+  cursor: pointer;
+  padding: $smallSpacing;
+
+  background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+
+  border: none;
+  border-radius: $smallSpacing;
+}
+
+#resetBtn {
+  @extend %bigButton;
+  background-color: $yellowDarkTransluscent;
+  font-size: $baseFontSize;
+}
+
+#generatePDFBtn {
+  @extend %bigButton;
+  border: $smallSpacing solid $yellowLight;
+  background-color: $yellow;
+}
+
+#uploadImgBtn {
+  @extend %bigButton;
+  background-color: $yellow;
+  margin: $smallSpacing;
+}
+#divLine {
+  color: $black;
+  width: 100%;
+}
+
+.content {
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin: $smallSpacing;
+  margin-left: $smallSpacing;
+  margin-right: $smallSpacing;
+}
+
+.legoFont {
+  font-family: "Legothick";
+}
+
+.nonSliderInputs > * {
+  height: math.div($displayCanvasDim, 2);
+
+  @include mobileDesign {
+    height: math.div($displayCanvasDim, 3);
+  }
+}
+
+.rowToCol {
+  @extend .row;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+}
+
+.colToRow {
+  @extend .col;
+
+  @include mobileDesign {
+    flex-direction: row;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.slider {
+  margin: $smallSpacing;
+  margin-top: math.div($smallSpacing, 2);
+}
+
+.slider,
+.sliderLabel {
+  text-align: center;
+  width: 130px;
+}
+
+.displayCanvas {
+  width: $displayCanvasDim;
+  margin: math.div($displayCanvasMargin, 2) $displayCanvasMargin;
 }

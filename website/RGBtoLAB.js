@@ -13,7 +13,7 @@ const idunnowhatthisdoesXYZtoLAB = (c) => {
   if (c > 0.008856) {
     return Math.pow(c, 0.33333333333)
   }
-  return 7.787 * c  + 16 / 116
+  return 7.787 * c + 16 / 116
 }
 
 // smaller function == faster function?

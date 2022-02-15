@@ -4,6 +4,9 @@
 <head>
   <title> LEGO MOSAIC MAKER </Title>
 
+  <!-- people say i need this line -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <link rel="stylesheet" href="styles/main.css">
 
   <!-- glfx gives quick textures -->
@@ -11,12 +14,13 @@
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
 
+  <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
   <script type='text/javascript' src='RGBtoLAB.js'></script>
   <script type='text/javascript' src='legoMosaicMaker.js'></script>
 </head>
 
-<body class="content">
+<body>
   <!--
     I am very clearly a novice web developer. I have been sticking to the pure
     web APIs as much as I can, in order to learn the absolute basics. I am SURE that
@@ -28,98 +32,125 @@
 
     Axel!
     -->
-  <div class="homeheader col-cls">
-    <h2 class="titleCard name">
-      LEGO MOSAIC MAKER
-    </h2>
-    <h3 id="errText" hidden>
+  <div id="header" class="legoFont">
+    <h1> LEGO MOSAIC MAKER </h1>
+  </div>
+
+
+  <div class="content col">
+    <b id="errText" hidden> </b>
+
+    <h3 id="initialMessage">
+      Hello, World!
+      <br>
+      Try uploading an image of an album cover you like.
     </h3>
-  </div>
 
-  <div class="lego-zone" id="da-zone">
+    <label id="uploadImgBtn" class="pointer" for="albumArtIn">Upload Image</label>
+    <input type="file" id="albumArtIn" accept="image/*" style="display: none"> </input>
 
-    <!-- Inputs -->
-    <div class="col-cls">
-      <input type="file" id="albumArtIn" accept="image/*"> </input>
-      <input type="text" id="albumName" placeholder="Name of Album"></input>
+    <!-- hidden before an image is chosen -->
+    <div id="hideableContent" style="display: none">
 
-      <div class="col-cls">
-        <div class="row-cls">
-          <input type="checkbox" id="useLAB"> use LAB color scheme </input>
-        </div>
-        <button id="reset">Reset image</input>
+      <!-- Some nice looking images -->
+      <div id="imgdiv">
+        <canvas id="outcvs" class="displayCanvas">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old, or any one of another million esoteric issues that
+          I am not smart enough to predict. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
       </div>
 
-      <div class="slidecontainer row-cls">
-        <div class="col-cls">
-          <b>Saturation</b>
-          <b>Brightness</b>
-          <b>Contrast</b>
-          <b>Size</b>
+      <div id="inputBox" class="col">
+
+        <div class="rowToCol">
+          <div class="colToRow">
+            <b class="sliderLabel">Saturation</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Brightness</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Contrast</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
+          </div>
+
+          <div class="colToRow">
+            <b id="sizeLabel" class="sliderLabel">Size: 48 by 48</b>
+            <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
+          </div>
         </div>
 
-        <div class="col-cls">
-          <input type="range" min=-0.5 max=0.5 value=0 step=0.01 class="slider" id="saturation">
-          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="brightness">
-          <input type="range" min=-0.2 max=0.2 value=0 step=0.01 class="slider" id="contrast">
-          <input type="range" min=1 max=4 value=3 step=1 class="slider" id="size">
+        <hr id="divLine">
+        <div class="rowToCol">
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <input type="text" id="albumName" placeholder="Name of Album"></input>
+            </div>
+            <div class="centre">
+              <div class="row pointer">
+                <label for="useLAB">use LAB color scheme</label>
+                <input type="checkbox" id="useLAB"></input>
+              </div>
+            </div>
+          </div>
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <div id="generatePDFBtn" class="col">
+                <span id="downloadTheWord">Download</span>
+                <span id="instructionsTheWord">Instructions</span>
+              </div>
+            </div>
+            <div class="centre">
+              <input type="submit" id="resetBtn" value="Reset"></input>
+            </div>
+          </div>
+
         </div>
 
       </div>
-
-      <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
-    </div>
-
-    <!-- Some nice looking images -->
-    <div class="row-cls" id="imgdiv">
-      <canvas id="outcvs">
-        Sorry, your browser does not support "canvas" elements - this is typically because
-        the browser is relatively old. You can try updating your browser, or view the project
-        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-      </canvas>
     </div>
   </div>
+
 </body>
 
-<script>
+<script type="text/javascript">
   // I am certain that CORS will be a PITA. How to deal?
   // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
   const albumName = document.getElementById("albumName")
-  const resetButton = document.getElementById("reset")
+  const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
   const sizeSlider = document.getElementById("size")
   const satSlider = document.getElementById("saturation")
   const brightSlider = document.getElementById("brightness")
   const contrastSlider = document.getElementById("contrast")
+  const slizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
   fileSelection.addEventListener("change", handleFiles)
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
-  sizeSlider.addEventListener("input", legoify)
+  sizeSlider.addEventListener("input", updateSize)
   satSlider.addEventListener("input", legoify)
   brightSlider.addEventListener("input", legoify)
   contrastSlider.addEventListener("input", legoify)
   generatePDFBtn.addEventListener("click", genInstructions)
 
-  const inputElements = [
-    albumName,
-    resetButton,
-    useLABCheck,
-    sizeSlider,
-    satSlider,
-    brightSlider,
-    contrastSlider,
-    generatePDFBtn
-  ]
-  disableInputs()
-
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
     alert("Sorry, your browser does not support WebGL. Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
   }
+  fxcanvas.id = "incvs"
+  fxcanvas.className = "displayCanvas"
 
   const output_canvas = document.getElementById("outcvs")
   const out_ctx = output_canvas.getContext('2d')
@@ -131,40 +162,34 @@
   function handleFiles() {
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(this.files[0])
-    let valid = true
 
     album_art_img.onload = (data) => {
-      const reqsResize = imgRequiresResize(album_art_img)
-      if (reqsResize) {
-        errTextBox.innerText = `Your image has dimensions that we can not handle.\
-            Input images have to be square, with dimensions\
-            greater than 64 pixels and less than 1500 pixels.\
-            Yours is ${album_art_img.width} by ${album_art_img.height}`
+      if (imgRequiresResize(album_art_img)) {
+        errTextBox.innerText = "Your image has dimensions that we can not handle. "
+          + "We need square images with edges larger than 64px and smaller than 1500px. "
+          + "Your image is " + album_art_img.width + " by " + album_art_img.height
+
         errTextBox.style.display = "block"
-        valid = false
-        disableInputs()
+        hideContents()
         return
       } else {
         errTextBox.innerText = ""
         errTextBox.style.display = "none"
+        showContents()
       }
 
-      // enable input buttons since all is good w/ the img
-      enableInputs()
-
       input_texture = fxcanvas.texture(album_art_img)
+
       // either this, or EXT_color_buffer_float
       input_texture._.gl.getExtension('WEBGL_color_buffer_float')
 
       L = new Legoificator(input_texture, parseInt(sizeSlider.value))
-      legoify()
+      reset()
 
       document.getElementById("imgdiv").prepend(fxcanvas)
     }
 
-    if (valid) {
-      album_art_img.src = album_art_url
-    }
+    album_art_img.src = album_art_url
   }
 
   function reset() {
@@ -174,6 +199,8 @@
     brightSlider.value = 0
     satSlider.value = 0
     albumName.value = ""
+
+    updateSize()
 
     if (L) {
       input_texture.loadContentsOf(album_art_img)
@@ -208,6 +235,11 @@
     }
   }
 
+  function updateSize() {
+    sizeLabel.innerHTML = `Size: ${16 * sizeSlider.value} by ${16 * sizeSlider.value}`
+    legoify()
+  }
+
   function imgRequiresResize(img) {
     const unevenAspectRatio = img.width != img.height
     const tooSmall = img.width < 64 || img.height < 64
@@ -215,12 +247,15 @@
     return tooSmall || tooBig || unevenAspectRatio
   }
 
-  function enableInputs() {
-    inputElements.forEach(el => el.disabled = false)
+  function showContents() {
+    // gotta be flex, or else the styling just falls apart
+    document.getElementById("hideableContent").style.display = "block"
+    document.getElementById("initialMessage").style.display = "none"
   }
 
-  function disableInputs() {
-    inputElements.forEach(el => el.disabled = true)
+  function hideContents() {
+    document.getElementById("hideableContent").style.display = "none"
+    document.getElementById("initialMessage").style.display = "block"
   }
 
   function linspace(start, stop, num) {

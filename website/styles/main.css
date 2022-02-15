@@ -1,102 +1,250 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
 @font-face {
   font-family: "Legothick";
   src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"), url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
   font-weight: normal;
   font-style: normal;
 }
-html {
-  height: 100%;
-  width: 100%;
-}
-
+html,
 body {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #333;
-  background-color: #f0f0f0;
-  padding-top: 25px;
-}
-
-a {
-  color: #333;
-  border-bottom: 0;
-  text-decoration: none;
-  display: inline;
-}
-
-.homeheader {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: baseline;
-}
-
-.titleCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.name {
-  font-family: "Legothick";
-  font-size: 30px;
-  margin: 0;
-}
-
-.ul {
-  border-bottom: 2px solid black;
-}
-
-.row-cls {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.col-cls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.wide {
-  width: 65%;
-  justify-content: space-between;
-}
-
-.content {
   width: 100%;
   height: 100%;
-  display: flex;
-  display: -webkit-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2rem;
-  padding-bottom: 4rem;
+  margin: 0;
+  color: #0a0a0a;
+  font-size: 18px;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
-.lego-zone {
-  width: 75%;
-  max-width: 850px;
-  height: 100%;
-  color: #333;
-  border-bottom: 0;
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+img {
+  max-width: 100%;
+  height: auto;
 }
-.lego-zone a {
-  color: #0818A8;
+
+label {
+  font-size: 18px;
 }
-.lego-zone img canvas {
-  max-height: 500px;
-  margin: 1rem 0 1rem 0;
+
+input[type=button],
+input[type=submit],
+input[type=range],
+input[type=text] {
+  font-family: "Roboto Condensed", sans-serif;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type=range] {
+  background: transparent;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 4px;
+  height: 5px;
+}
+input[type=range]::-moz-range-track {
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 4px;
+  height: 5px;
+}
+input[type=range]::-ms-track {
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 4px;
+  height: 5px;
+  width: 100%;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+  height: 16px;
+  width: 16px;
+  margin-top: -8px;
+  background-color: #ffe330;
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 16px;
+  -webkit-appearance: none;
+}
+input[type=range]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  margin-top: -8px;
+  background-color: #ffe330;
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 16px;
+}
+input[type=range]::-ms-thumb {
+  height: 16px;
+  width: 16px;
+  margin-top: -8px;
+  background-color: #ffe330;
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 16px;
+}
+input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-moz-range-thumb, input[type=range]:disabled::-ms-thumb {
+  background-color: rgba(206, 193, 111, 0.5);
+}
+
+#header {
+  width: 100%;
+  background-color: #ffe330;
+  box-shadow: 0 20px 5px 0 rgba(255, 227, 48, 0.5);
+  margin-bottom: 48px;
+}
+
+#albumArtIn {
+  cursor: pointer;
+  justify-content: flex-end;
 }
 
 #errText {
-  width: 50%;
+  max-width: 50%;
+  margin-bottom: 32px;
+  color: #af9907;
+}
+
+#initialMessage {
+  max-width: 50%;
+  text-align: center;
+}
+
+@media only screen and (max-width: 719.1083505624px) {
+  #imgdiv {
+    flex-direction: column;
+  }
+}
+
+#inputdiv > * {
+  margin: 19.7770876406px;
+}
+
+#albumName {
+  text-align: center;
+  font-size: 29.1246117966px;
+  border: 0px;
+}
+
+#generatePDFBtn {
+  font-size: 29.1246117966px;
+}
+
+#albumArtIn {
+  align-self: center;
+}
+
+#downloadTheWord {
+  font-size: 29.1246117966px;
+}
+
+#instructionsTheWord {
+  font-size: 38.1246117966px;
+}
+
+#uploadImgBtn, #generatePDFBtn, #resetBtn {
+  cursor: pointer;
+  padding: 16px;
+  background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: none;
+  border-radius: 16px;
+}
+
+#resetBtn {
+  background-color: rgba(206, 193, 111, 0.5);
+  font-size: 18px;
+}
+
+#generatePDFBtn {
+  border: 16px solid rgba(255, 227, 48, 0.5);
+  background-color: #ffe330;
+}
+
+#uploadImgBtn {
+  background-color: #ffe330;
+  margin: 16px;
+}
+
+#divLine {
+  color: rgba(10, 10, 10, 0.5);
+  width: 100%;
+}
+
+.content {
+  text-align: center;
+}
+
+.row, .rowToCol {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col, .colToRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centre, #header, #imgdiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin: 16px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.legoFont {
+  font-family: "Legothick";
+}
+
+.nonSliderInputs > * {
+  height: 160px;
+}
+@media only screen and (max-width: 719.1083505624px) {
+  .nonSliderInputs > * {
+    height: 106.6666666667px;
+  }
+}
+
+@media only screen and (max-width: 719.1083505624px) {
+  .rowToCol {
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 719.1083505624px) {
+  .colToRow {
+    flex-direction: row;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.slider {
+  margin: 16px;
+  margin-top: 8px;
+}
+
+.slider,
+.sliderLabel {
+  text-align: center;
+  width: 130px;
+}
+
+.displayCanvas {
+  width: 320px;
+  margin: 19.7770876406px 39.5541752812px;
 }
 
 /*# sourceMappingURL=main.css.map */
