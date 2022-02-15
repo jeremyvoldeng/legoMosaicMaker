@@ -36,81 +36,94 @@
     <h1> LEGO MOSAIC MAKER </h1>
   </div>
 
-  <b id="errText" hidden> </b>
 
   <div class="content col">
-    <input type="file" id="albumArtIn" accept="image/*"> </input>
+    <b id="errText" hidden> </b>
 
-    <!-- Some nice looking images -->
-    <div id="imgdiv">
-      <canvas id="outcvs" class="displayCanvas">
-        Sorry, your browser does not support "canvas" elements - this is typically because
-        the browser is relatively old, or any one of another million esoteric issues that
-        I am not smart enough to predict. You can try updating your browser, or view the project
-        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-      </canvas>
+    <h3 id="initialMessage">
+      Hello, World!
+      <br>
+      Try uploading an image of an album cover you like.
+    </h3>
+
+    <div class="row pointer">
+      <label for="albumArtIn">Upload Image</label>
+      <input type="file" id="albumArtIn" accept="image/*"> </input>
     </div>
 
     <!-- hidden before an image is chosen -->
-    <div id="inputBox" class="col" style="display: none">
+    <div id="hideableContent" style="display: none">
 
-      <div class="rowToCol">
-        <div class="colToRow">
-          <b class="sliderLabel">Saturation</b>
-          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
-        </div>
-
-        <div class="colToRow">
-          <b class="sliderLabel">Brightness</b>
-          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
-        </div>
-
-        <div class="colToRow">
-          <b class="sliderLabel">Contrast</b>
-          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
-        </div>
-
-        <div class="colToRow">
-          <b class="sliderLabel">Size</b>
-          <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
-        </div>
+      <!-- Some nice looking images -->
+      <div id="imgdiv">
+        <canvas id="outcvs" class="displayCanvas">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old, or any one of another million esoteric issues that
+          I am not smart enough to predict. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
       </div>
 
-      <hr id="divLine">
-      <div class="rowToCol">
+      <div id="inputBox" class="col">
 
-        <div class="nonSliderInputs col withspace">
-          <div class="centre">
-            <input type="text" id="albumName" placeholder="Name of Album"></input>
+        <div class="rowToCol">
+          <div class="colToRow">
+            <b class="sliderLabel">Saturation</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
           </div>
-          <div class="centre">
-            <div class="row useLABBox">
-              <label for="useLAB">use LAB color scheme</label>
-              <input type="checkbox" id="useLAB"></input>
-            </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Brightness</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Contrast</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Size</b>
+            <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
           </div>
         </div>
 
-        <div class="nonSliderInputs col withspace">
-          <div class="centre">
-            <div id="generatePDFBtn" class="col">
-              <span id="downloadTheWord">Download</span>
-              <span id="instructionsTheWord">Instructions</span>
+        <hr id="divLine">
+        <div class="rowToCol">
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <input type="text" id="albumName" placeholder="Name of Album"></input>
+            </div>
+            <div class="centre">
+              <div class="row pointer">
+                <label for="useLAB">use LAB color scheme</label>
+                <input type="checkbox" id="useLAB"></input>
+              </div>
             </div>
           </div>
-          <div class="centre">
-            <input type="submit" id="resetBtn" value="Reset"></input>
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <div id="generatePDFBtn" class="col">
+                <span id="downloadTheWord">Download</span>
+                <span id="instructionsTheWord">Instructions</span>
+              </div>
+            </div>
+            <div class="centre">
+              <input type="submit" id="resetBtn" value="Reset"></input>
+            </div>
           </div>
+
         </div>
 
       </div>
-
     </div>
   </div>
 
 </body>
 
-<script>
+<script type="text/javascript">
   // I am certain that CORS will be a PITA. How to deal?
   // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
@@ -153,18 +166,17 @@
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
-        errTextBox.innerText = `Your image has dimensions that we can not handle.\
-          Input images have to be square, with dimensions\
-          greater than 64 pixels and less than 1500 pixels.\
-          Yours is ${album_art_img.width} by ${album_art_img.height}`
+        errTextBox.innerText = "Your image has dimensions that we can not handle. "
+          + "We need square images with edges larger than 64px and smaller than 1500px. "
+          + "Your image is " + album_art_img.width + " by " + album_art_img.height
 
-        errTextBox.style.display = "flex"
-        disableInputs()
+        errTextBox.style.display = "block"
+        hideContents()
         return
       } else {
         errTextBox.innerText = ""
         errTextBox.style.display = "none"
-        enableInputs()
+        showContents()
       }
 
       input_texture = fxcanvas.texture(album_art_img)
@@ -229,13 +241,15 @@
     return tooSmall || tooBig || unevenAspectRatio
   }
 
-  function enableInputs() {
+  function showContents() {
     // gotta be flex, or else the styling just falls apart
-    document.getElementById("inputBox").style.display = "flex"
+    document.getElementById("hideableContent").style.display = "block"
+    document.getElementById("initialMessage").style.display = "none"
   }
 
-  function disableInputs() {
-    document.getElementById("inputBox").style.display = "none"
+  function hideContents() {
+    document.getElementById("hideableContent").style.display = "none"
+    document.getElementById("initialMessage").style.display = "block"
   }
 
   function linspace(start, stop, num) {

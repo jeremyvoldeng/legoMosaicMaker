@@ -5,16 +5,18 @@
 
 $phi: 1.6180339887;
 $smallSpacing: 15px;
-$displayCanvasDim: 300px;
+$displayCanvasDim: 320px;
 $paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
 $displayCanvasMargin: $paddingByCanvas * 2;
 
 $baseFontSize: 18px;
+$baseFontColor: rgba(10, 10, 10);
 
 $yellow: rgba(255, 227, 48);
 $yellowLight: rgba(255, 227, 48, 0.5);
-$yellowDark: rgba(206, 193, 111, 0.5);
-$black: rgba(0, 0, 0, 0.5);
+$yellowDark: rgba(175, 153, 7);
+$yellowDarkTransluscent: rgba(206, 193, 111, 0.5);
+$black: rgba(10, 10, 10, 0.5);
 
 @font-face {
   // Oh god this font stuff is messsyyyyyy
@@ -39,6 +41,7 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
+  color: $baseFontColor;
   font-size: $baseFontSize;
   font-family: "Roboto Condensed", sans-serif;
 }
@@ -131,7 +134,7 @@ input[type="range"] {
     &::-webkit-slider-thumb,
     &::-moz-range-thumb,
     &::-ms-thumb {
-      background-color: $yellowDark;
+      background-color: $yellowDarkTransluscent;
     }
   }
 }
@@ -144,7 +147,22 @@ input[type="range"] {
   width: 100%;
   background-color: $yellow;
   box-shadow: 0 20px 5px -5px $yellowLight;
-  margin-bottom: 4 * $smallSpacing;
+  margin-bottom: 3 * $smallSpacing;
+}
+
+#albumArtIn {
+  cursor: pointer;
+}
+
+#errText {
+  max-width: 50%;
+  margin-bottom: 2 * $smallSpacing;
+  color: $yellowDark;
+}
+
+#initialMessage {
+  max-width: 50%;
+  text-align: center;
 }
 
 #imgdiv {
@@ -173,10 +191,6 @@ input[type="range"] {
   align-self: center;
 }
 
-#useLABBox {
-  cursor: pointer;
-}
-
 #downloadTheWord {
   font-size: $phi * $baseFontSize;
 }
@@ -198,7 +212,7 @@ input[type="range"] {
 
 #resetBtn {
   @extend %bigButton;
-  background-color: $yellowDark;
+  background-color: $yellowDarkTransluscent;
   font-size: $baseFontSize;
 }
 
@@ -211,6 +225,10 @@ input[type="range"] {
 #divLine {
   color: $black;
   width: 100%;
+}
+
+.content {
+  text-align: center;
 }
 
 .row {
@@ -265,6 +283,10 @@ input[type="range"] {
   @include mobileDesign {
     flex-direction: row;
   }
+}
+
+.pointer {
+  cursor: pointer;
 }
 
 .slider {
