@@ -4,7 +4,7 @@
 @use "sass:math";
 
 $phi: 1.6180339887;
-$smallSpacing: 15px;
+$smallSpacing: 16px;
 $displayCanvasDim: 320px;
 $paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
 $displayCanvasMargin: $paddingByCanvas * 2;
@@ -59,12 +59,12 @@ label {
 @mixin trackConsts {
   border: 1px solid $black;
   border-radius: 4px;
-  height: 4px;
+  height: 5px;
 }
 @mixin thumbConsts {
   height: $smallSpacing;
   width: $smallSpacing;
-  margin-top: -5px;
+  margin-top: - math.div($smallSpacing, 2);
   background-color: $yellow;
   border: 1px solid $black;
   border-radius: $smallSpacing;
@@ -152,6 +152,7 @@ input[type="range"] {
 
 #albumArtIn {
   cursor: pointer;
+  justify-content: flex-end;
 }
 
 #errText {
@@ -222,6 +223,11 @@ input[type="range"] {
   background-color: $yellow;
 }
 
+#uploadImgBtn {
+  @extend %bigButton;
+  background-color: $yellow;
+  margin: $smallSpacing;
+}
 #divLine {
   color: $black;
   width: 100%;
@@ -291,6 +297,7 @@ input[type="range"] {
 
 .slider {
   margin: $smallSpacing;
+  margin-top: math.div($smallSpacing, 2);
 }
 
 .slider,
