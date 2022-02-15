@@ -104,6 +104,7 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 .withspace {
   height: 100%;
   justify-content: space-around;
+  margin: 10px;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -147,29 +148,31 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   cursor: pointer;
 }
 
-#secondInputBox {
-  height: 300px;
+.nonSliderInputs > * {
+  height: 150px;
 }
-#secondInputBox > * {
-  margin: 18.5410196631px;
+@media only screen and (max-width: 674.1640786523px) {
+  .nonSliderInputs > * {
+    height: 100px;
+  }
 }
 
 #generatePDFBtn, #resetBtn {
   cursor: pointer;
   padding: 10px;
-  background-color: #ffe330;
-  border: 10px solid rgba(255, 227, 48, 0.5);
-  -webkit-background-clip: padding-box;
   background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  border: none;
+  border-radius: 10px;
 }
 
 #resetBtn {
   background-color: rgba(206, 193, 111, 0.5);
-  border: none;
 }
 
 #generatePDFBtn {
-  border-radius: 10px;
+  border: 10px solid rgba(255, 227, 48, 0.5);
+  background-color: #ffe330;
 }
 
 #downloadTheWord {
@@ -196,7 +199,8 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   margin: 15px;
 }
 
-.slider, .sliderLabel {
+.slider,
+.sliderLabel {
   text-align: center;
   width: 130px;
 }

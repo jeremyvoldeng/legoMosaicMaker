@@ -76,24 +76,32 @@
         </div>
       </div>
 
-      <div id="secondInputBox" class="rowToCol">
-        <div class="col withspace">
-          <input type="text" id="albumName" placeholder="Name of Album"></input>
+      <div class="rowToCol">
 
-          <div class="row useLABBox">
-            <label for="useLAB">use LAB color scheme</label>
-            <input type="checkbox" id="useLAB"></input>
+        <div class="nonSliderInputs col withspace">
+          <div class="centre">
+            <input type="text" id="albumName" placeholder="Name of Album"></input>
+          </div>
+          <div class="centre">
+            <div class="row useLABBox">
+              <label for="useLAB">use LAB color scheme</label>
+              <input type="checkbox" id="useLAB"></input>
+            </div>
           </div>
         </div>
 
-        <div class="col withspace">
-          <div id="generatePDFBtn" class="col">
-            <span id="downloadTheWord">Download</span>
-            <span id="instructionsTheWord">Instructions</span>
+        <div class="nonSliderInputs col withspace">
+          <div class="centre">
+            <div id="generatePDFBtn" class="col">
+              <span id="downloadTheWord">Download</span>
+              <span id="instructionsTheWord">Instructions</span>
+            </div>
           </div>
-
-          <input type="submit" id="resetBtn" value="Reset"></input>
+          <div class="centre">
+            <input type="submit" id="resetBtn" value="Reset"></input>
+          </div>
         </div>
+
       </div>
 
     </div>
@@ -145,9 +153,9 @@
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
         errTextBox.innerText = `Your image has dimensions that we can not handle.\
-            Input images have to be square, with dimensions\
-            greater than 64 pixels and less than 1500 pixels.\
-            Yours is ${album_art_img.width} by ${album_art_img.height}`
+          Input images have to be square, with dimensions\
+          greater than 64 pixels and less than 1500 pixels.\
+          Yours is ${album_art_img.width} by ${album_art_img.height}`
 
         errTextBox.style.display = "flex"
         disableInputs()
