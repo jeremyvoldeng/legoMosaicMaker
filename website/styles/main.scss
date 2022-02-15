@@ -4,13 +4,12 @@
 @use "sass:math";
 
 $phi: 1.6180339887;
-$smallSpace: 10px;
-$sliderThumbDiam: 15px;
+$smallSpacing: 15px;
 $displayCanvasDim: 300px;
 $paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
 $displayCanvasMargin: $paddingByCanvas * 2;
 
-$baseFontSize: 16px;
+$baseFontSize: 18px;
 
 $yellow: rgba(255, 227, 48);
 $yellowLight: rgba(255, 227, 48, 0.5);
@@ -49,6 +48,10 @@ img {
   height: auto;
 }
 
+label {
+  font-size: $baseFontSize;
+}
+
 // see my fury below
 @mixin trackConsts {
   border: 1px solid $black;
@@ -56,12 +59,12 @@ img {
   height: 4px;
 }
 @mixin thumbConsts {
-  height: $sliderThumbDiam;
-  width: $sliderThumbDiam;
+  height: $smallSpacing;
+  width: $smallSpacing;
   margin-top: -5px;
   background-color: $yellow;
   border: 1px solid $black;
-  border-radius: $sliderThumbDiam;
+  border-radius: $smallSpacing;
 }
 
 input[type="button"],
@@ -133,36 +136,6 @@ input[type="range"] {
   }
 }
 
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.centre {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.withspace {
-  height: 100%;
-  justify-content: space-around;
-  margin: $smallSpace;
-  margin-left: $smallSpace;
-  margin-right: $smallSpace;
-}
-
-.legoFont {
-  font-family: "Legothick";
-}
-
 // specific stuff
 
 #header {
@@ -171,7 +144,7 @@ input[type="range"] {
   width: 100%;
   background-color: $yellow;
   box-shadow: 0 20px 5px -5px $yellowLight;
-  margin-bottom: 30px;
+  margin-bottom: 4 * $smallSpacing;
 }
 
 #imgdiv {
@@ -204,42 +177,78 @@ input[type="range"] {
   cursor: pointer;
 }
 
-.nonSliderInputs > * {
-  height: math.div($displayCanvasDim, 2);
-
-  @include mobileDesign {
-    height: math.div($displayCanvasDim, 3);
-  }
-}
-
-%bigButton {
-  cursor: pointer;
-  padding: $smallSpace;
-
-  background-clip: padding-box;
-  -webkit-background-clip: padding-box;
-
-  border: none;
-  border-radius: $smallSpace;
-}
-
-#resetBtn {
-  @extend %bigButton;
-  background-color: $yellowDark;
-}
-
-#generatePDFBtn {
-  @extend %bigButton;
-  border: $smallSpace solid $yellowLight;
-  background-color: $yellow;
-}
-
 #downloadTheWord {
   font-size: $phi * $baseFontSize;
 }
 
 #instructionsTheWord {
   font-size: ($phi + 0.5) * $baseFontSize;
+}
+
+%bigButton {
+  cursor: pointer;
+  padding: $smallSpacing;
+
+  background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+
+  border: none;
+  border-radius: $smallSpacing;
+}
+
+#resetBtn {
+  @extend %bigButton;
+  background-color: $yellowDark;
+  font-size: $baseFontSize;
+}
+
+#generatePDFBtn {
+  @extend %bigButton;
+  border: $smallSpacing solid $yellowLight;
+  background-color: $yellow;
+}
+
+#divLine {
+  color: $black;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin: $smallSpacing;
+  margin-left: $smallSpacing;
+  margin-right: $smallSpacing;
+}
+
+.legoFont {
+  font-family: "Legothick";
+}
+
+.nonSliderInputs > * {
+  height: math.div($displayCanvasDim, 2);
+
+  @include mobileDesign {
+    height: math.div($displayCanvasDim, 3);
+  }
 }
 
 .rowToCol {
@@ -259,7 +268,7 @@ input[type="range"] {
 }
 
 .slider {
-  margin: $sliderThumbDiam;
+  margin: $smallSpacing;
 }
 
 .slider,
