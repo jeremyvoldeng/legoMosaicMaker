@@ -1,16 +1,20 @@
 // Notes
 //   media query + sass stuff
 //   https://dev.to/paul_duvall/sass-and-media-queries-hb2
+@use "sass:math";
 
 $phi: 1.6180339887;
-$displayCanvasDim: 400px;
-$displayCanvasMargin: $displayCanvasDim / ($phi * 10);
-
+$smallSpace: 10px;
 $sliderThumbDiam: 15px;
+$displayCanvasDim: 300px;
+$paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
+$displayCanvasMargin: $paddingByCanvas * 2;
+
+$baseFontSize: 16px;
 
 $yellow: rgba(255, 227, 48);
 $yellowLight: rgba(255, 227, 48, 0.5);
-$yellowDark: rgba(206, 193, 111);
+$yellowDark: rgba(206, 193, 111, 0.5);
 $black: rgba(0, 0, 0, 0.5);
 
 @font-face {
@@ -21,6 +25,8 @@ $black: rgba(0, 0, 0, 0.5);
   font-weight: normal;
   font-style: normal;
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap');
 
 @mixin mobileDesign {
   @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) {
@@ -34,6 +40,8 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
+  font-size: $baseFontSize;
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
 img {
@@ -56,6 +64,16 @@ img {
   border-radius: $sliderThumbDiam;
 }
 
+input[type="button"],
+input[type="submit"],
+input[type="range"],
+input[type="text"] {
+  font-family: "Roboto Condensed", sans-serif;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 input[type="range"] {
   // This is the thing that reminded me of the horrors of web
   // development. You can't include all of the pseudo-elements
@@ -75,7 +93,6 @@ input[type="range"] {
   // I love that you need a website called "css-tricks" to do the basic
   // job of a web dev.
   // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
-  -webkit-appearance: none;
   background: transparent;
 
   &:focus {
@@ -134,6 +151,13 @@ input[type="range"] {
   align-items: center;
 }
 
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin-left: $smallSpace;
+  margin-right: $smallSpace;
+}
+
 .legoFont {
   font-family: "Legothick";
 }
@@ -155,11 +179,67 @@ input[type="range"] {
   @include mobileDesign {
     flex-direction: column;
   }
-
-  justify-content: space-around;
 }
 
-.sliderBoxBox {
+#inputdiv > * {
+  margin: $paddingByCanvas;
+}
+
+#albumName {
+  text-align: center;
+  font-size: $phi * $baseFontSize;
+  border: 0px;
+}
+
+#generatePDFBtn {
+  font-size: $phi * $baseFontSize;
+}
+
+#albumArtIn {
+  align-self: center;
+}
+
+#useLABBox {
+  cursor: pointer;
+}
+
+#secondInputBox {
+  height: $displayCanvasDim;
+
+  &> * {
+    margin: $paddingByCanvas;
+  }
+}
+
+%bigButton {
+  cursor: pointer;
+  padding: $smallSpace;
+  background-color: $yellow;
+  border: $smallSpace solid $yellowLight;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+#resetBtn {
+  @extend %bigButton;
+  background-color: $yellowDark;
+  border: none;
+}
+
+#generatePDFBtn {
+  @extend %bigButton;
+  border-radius: $smallSpace;
+}
+
+#downloadTheWord {
+  font-size: $phi * $baseFontSize;
+}
+
+#instructionsTheWord {
+  font-size: ($phi + 0.5) * $baseFontSize;
+}
+
+.rowToCol {
   @extend .row;
 
   @include mobileDesign {
@@ -167,7 +247,7 @@ input[type="range"] {
   }
 }
 
-.sliderBox {
+.colToRow {
   @extend .col;
 
   @include mobileDesign {
@@ -175,7 +255,16 @@ input[type="range"] {
   }
 }
 
+.slider {
+  margin: $sliderThumbDiam;
+}
+
+.slider, .sliderLabel {
+  text-align: center;
+  width: 130px;
+}
+
 .displayCanvas {
   width: $displayCanvasDim;
-  margin: $displayCanvasMargin;
+  margin: math.div($displayCanvasMargin, 2) $displayCanvasMargin;
 }

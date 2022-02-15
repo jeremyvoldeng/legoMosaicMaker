@@ -36,57 +36,69 @@
     <h1> LEGO MOSAIC MAKER </h1>
   </div>
 
-  <b id="errText" hidden>
-  </b>
+  <b id="errText" hidden> </b>
 
-  <div>
-    <div class="col">
-      <input type="file" id="albumArtIn" accept="image/*"> </input>
+  <div class="col">
+    <input type="file" id="albumArtIn" accept="image/*"> </input>
 
-      <!-- Some nice looking images -->
-      <div id="imgdiv">
-        <canvas id="outcvs" class="displayCanvas">
-          Sorry, your browser does not support "canvas" elements - this is typically because
-          the browser is relatively old, or any one of another million esoteric issues that
-          I am not smart enough to predict. You can try updating your browser, or view the project
-          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
-        </canvas>
+    <!-- Some nice looking images -->
+    <div id="imgdiv">
+      <canvas id="outcvs" class="displayCanvas">
+        Sorry, your browser does not support "canvas" elements - this is typically because
+        the browser is relatively old, or any one of another million esoteric issues that
+        I am not smart enough to predict. You can try updating your browser, or view the project
+        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+      </canvas>
+    </div>
+
+    <!-- hidden before an image is chosen -->
+    <div id="inputBox" class="col" style="display: none">
+
+      <div class="rowToCol">
+        <div class="colToRow">
+          <b class="sliderLabel">Saturation</b>
+          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
+        </div>
+
+        <div class="colToRow">
+          <b class="sliderLabel">Brightness</b>
+          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
+        </div>
+
+        <div class="colToRow">
+          <b class="sliderLabel">Contrast</b>
+          <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
+        </div>
+
+        <div class="colToRow">
+          <b class="sliderLabel">Size</b>
+          <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
+        </div>
       </div>
 
-      <!-- hidden before an image is chosen -->
-      <div id="inputDiv" class="col" style="display: none">
+      <div id="secondInputBox" class="rowToCol">
+        <div class="col withspace">
+          <input type="text" id="albumName" placeholder="Name of Album"></input>
 
-        <div class="sliderBoxBox">
-          <div class="sliderBox">
-            <b class="sliderLabel">Saturation</b>
-            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
-          </div>
-
-          <div class="sliderBox">
-            <b class="sliderLabel">Brightness</b>
-            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
-          </div>
-
-          <div class="sliderBox">
-            <b class="sliderLabel">Contrast</b>
-            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
-          </div>
-
-          <div class="sliderBox">
-            <b class="sliderLabel">Size</b>
-            <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
+          <div class="row useLABBox">
+            <label for="useLAB">use LAB color scheme</label>
+            <input type="checkbox" id="useLAB"></input>
           </div>
         </div>
 
-        <input type="text" id="albumName" placeholder="Name of Album"></input>
-        <input type="checkbox" id="useLAB"> use LAB color scheme </input>
-        <button id="reset">Reset image</button>
+        <div class="col withspace">
+          <div id="generatePDFBtn" class="col">
+            <span id="downloadTheWord">Download</span>
+            <span id="instructionsTheWord">Instructions</span>
+          </div>
 
-        <input type="submit" id="generatePDFBtn" value="Generate Instructions"></input>
+          <input type="submit" id="resetBtn" value="Reset"></input>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
+
 </body>
 
 <script>
@@ -94,7 +106,7 @@
   // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
   const albumName = document.getElementById("albumName")
-  const resetButton = document.getElementById("reset")
+  const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
   const sizeSlider = document.getElementById("size")
   const satSlider = document.getElementById("saturation")
@@ -210,11 +222,11 @@
 
   function enableInputs() {
     // gotta be flex, or else the styling just falls apart
-    document.getElementById("inputDiv").style.display = "flex"
+    document.getElementById("inputBox").style.display = "flex"
   }
 
   function disableInputs() {
-    document.getElementById("inputDiv").style.display = "none"
+    document.getElementById("inputBox").style.display = "none"
   }
 
   function linspace(start, stop, num) {

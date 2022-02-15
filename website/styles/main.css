@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
 @font-face {
   font-family: "Legothick";
   src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"), url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
@@ -9,6 +10,8 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
+  font-size: 16px;
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 img {
@@ -16,8 +19,17 @@ img {
   height: auto;
 }
 
-input[type=range] {
+input[type=button],
+input[type=submit],
+input[type=range],
+input[type=text] {
+  font-family: "Roboto Condensed", sans-serif;
   -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type=range] {
   background: transparent;
 }
 input[type=range]:focus {
@@ -68,16 +80,16 @@ input[type=range]::-ms-thumb {
   border-radius: 15px;
 }
 input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-moz-range-thumb, input[type=range]:disabled::-ms-thumb {
-  background-color: #cec16f;
+  background-color: rgba(206, 193, 111, 0.5);
 }
 
-.row, .sliderBoxBox {
+.row, .rowToCol {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.col, .sliderBox {
+.col, .colToRow {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,6 +99,13 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .legoFont {
@@ -100,30 +119,91 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   margin-bottom: 30px;
 }
 
-#imgdiv {
-  justify-content: space-around;
-}
-@media only screen and (max-width: 849.4427191015px) {
+@media only screen and (max-width: 674.1640786523px) {
   #imgdiv {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 849.4427191015px) {
-  .sliderBoxBox {
+#inputdiv > * {
+  margin: 18.5410196631px;
+}
+
+#albumName {
+  text-align: center;
+  font-size: 25.8885438192px;
+  border: 0px;
+}
+
+#generatePDFBtn {
+  font-size: 25.8885438192px;
+}
+
+#albumArtIn {
+  align-self: center;
+}
+
+#useLABBox {
+  cursor: pointer;
+}
+
+#secondInputBox {
+  height: 300px;
+}
+#secondInputBox > * {
+  margin: 18.5410196631px;
+}
+
+#generatePDFBtn, #resetBtn {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #ffe330;
+  border: 10px solid rgba(255, 227, 48, 0.5);
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+#resetBtn {
+  background-color: rgba(206, 193, 111, 0.5);
+  border: none;
+}
+
+#generatePDFBtn {
+  border-radius: 10px;
+}
+
+#downloadTheWord {
+  font-size: 25.8885438192px;
+}
+
+#instructionsTheWord {
+  font-size: 33.8885438192px;
+}
+
+@media only screen and (max-width: 674.1640786523px) {
+  .rowToCol {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 849.4427191015px) {
-  .sliderBox {
+@media only screen and (max-width: 674.1640786523px) {
+  .colToRow {
     flex-direction: row;
   }
 }
 
+.slider {
+  margin: 15px;
+}
+
+.slider, .sliderLabel {
+  text-align: center;
+  width: 130px;
+}
+
 .displayCanvas {
-  width: 400px;
-  margin: 24.7213595508px;
+  width: 300px;
+  margin: 18.5410196631px 37.0820393261px;
 }
 
 /*# sourceMappingURL=main.css.map */
