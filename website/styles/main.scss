@@ -64,7 +64,7 @@ label {
 @mixin thumbConsts {
   height: $smallSpacing;
   width: $smallSpacing;
-  margin-top: -math.div($smallSpacing, 2);
+  margin-top: -1 * math.div($smallSpacing, 2);
   background-color: $yellow;
   border: 1px solid $black;
   border-radius: $smallSpacing;
@@ -146,7 +146,7 @@ input[type="range"] {
 
   width: 100%;
   background-color: $yellow;
-  box-shadow: 0 20px 5px -5px $yellowLight;
+  box-shadow: 10 20px 5px -5px $yellowLight;
   margin-bottom: 3 * $smallSpacing;
 }
 

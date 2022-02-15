@@ -1,8 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
 @font-face {
   font-family: "Legothick";
-  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"),
-    url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
+  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"), url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -25,33 +24,33 @@ label {
   font-size: 18px;
 }
 
-input[type="button"],
-input[type="submit"],
-input[type="range"],
-input[type="text"] {
+input[type=button],
+input[type=submit],
+input[type=range],
+input[type=text] {
   font-family: "Roboto Condensed", sans-serif;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
 
-input[type="range"] {
+input[type=range] {
   background: transparent;
 }
-input[type="range"]:focus {
+input[type=range]:focus {
   outline: none;
 }
-input[type="range"]::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 4px;
   height: 5px;
 }
-input[type="range"]::-moz-range-track {
+input[type=range]::-moz-range-track {
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 4px;
   height: 5px;
 }
-input[type="range"]::-ms-track {
+input[type=range]::-ms-track {
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 4px;
   height: 5px;
@@ -60,7 +59,7 @@ input[type="range"]::-ms-track {
   border-color: transparent;
   color: transparent;
 }
-input[type="range"]::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
   height: 16px;
   width: 16px;
   margin-top: -8px;
@@ -69,7 +68,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 16px;
   -webkit-appearance: none;
 }
-input[type="range"]::-moz-range-thumb {
+input[type=range]::-moz-range-thumb {
   height: 16px;
   width: 16px;
   margin-top: -8px;
@@ -77,7 +76,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 16px;
 }
-input[type="range"]::-ms-thumb {
+input[type=range]::-ms-thumb {
   height: 16px;
   width: 16px;
   margin-top: -8px;
@@ -85,16 +84,14 @@ input[type="range"]::-ms-thumb {
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 16px;
 }
-input[type="range"]:disabled::-webkit-slider-thumb,
-input[type="range"]:disabled::-moz-range-thumb,
-input[type="range"]:disabled::-ms-thumb {
+input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-moz-range-thumb, input[type=range]:disabled::-ms-thumb {
   background-color: rgba(206, 193, 111, 0.5);
 }
 
 #header {
   width: 100%;
   background-color: #ffe330;
-  box-shadow: 0 20px 5px -5px rgba(255, 227, 48, 0.5);
+  box-shadow: 10 20px 5px -5px rgba(255, 227, 48, 0.5);
   margin-bottom: 48px;
 }
 
@@ -146,9 +143,7 @@ input[type="range"]:disabled::-ms-thumb {
   font-size: 38.1246117966px;
 }
 
-#uploadImgBtn,
-#generatePDFBtn,
-#resetBtn {
+#uploadImgBtn, #generatePDFBtn, #resetBtn {
   cursor: pointer;
   padding: 16px;
   background-clip: padding-box;
@@ -181,23 +176,19 @@ input[type="range"]:disabled::-ms-thumb {
   text-align: center;
 }
 
-.row,
-.rowToCol {
+.row, .rowToCol {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.col,
-.colToRow {
+.col, .colToRow {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.centre,
-#header,
-#imgdiv {
+.centre, #header, #imgdiv {
   display: flex;
   justify-content: center;
   align-items: center;
