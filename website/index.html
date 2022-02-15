@@ -49,6 +49,11 @@
     <label id="uploadImgBtn" class="pointer" for="albumArtIn">Upload Image</label>
     <input type="file" id="albumArtIn" accept="image/*" style="display: none"> </input>
 
+    <input type="url" id="albumArtURLIn" list="defaultURLs"></input>
+    <datalist id="defaultURLs">
+      <option value="https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png" label="Dark Side of the Moon">
+    </datalist>
+
     <!-- hidden before an image is chosen -->
     <div id="hideableContent" style="display: none">
 
@@ -125,6 +130,7 @@
   // I am certain that CORS will be a PITA. How to deal?
   // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
+  const urlSelection = document.getElementById("albumArtURLIn")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
@@ -136,7 +142,8 @@
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
-  fileSelection.addEventListener("change", handleFiles)
+  fileSelection.addEventListener("change", d => handleFile(d.target.files[0]))
+  urlSelection.addEventListener("change", d => handleURL(d.target.value))
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
@@ -159,9 +166,32 @@
   let input_texture;
   let album_art_img;
 
-  function handleFiles() {
+  function handleURL(url) {
+    /*
+    initial tesitng
+
+    https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+    https://javascript.info/fetch-crossorigin
+
+    kinda works!
+
+    */
+    fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache',
+    })
+      .then(r => r.blob())
+      .then(b => handleFile(b))
+      .catch(error => {
+        console.log("axel hasn't written error handling for url yet")
+        console.log(error)
+      })
+  }
+
+  function handleFile(file) {
     album_art_img = new Image
-    const album_art_url = URL.createObjectURL(this.files[0])
+    const album_art_url = URL.createObjectURL(file)
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
