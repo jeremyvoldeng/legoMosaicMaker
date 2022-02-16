@@ -30,7 +30,7 @@ $black: rgba(10, 10, 10, 0.5);
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
 
 @mixin mobileDesign {
-  @media only screen and (max-width: 2 * ($displayCanvasDim + $displayCanvasMargin)) {
+  @media only screen and (max-width: (2 * ($displayCanvasDim + $displayCanvasMargin))) {
     @content;
   }
 }
