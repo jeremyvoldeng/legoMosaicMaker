@@ -159,6 +159,7 @@
   const urlSelectionBtn = document.getElementById("albumArtURLBtn")
   const urlSubmission = document.getElementById("urlSubmission")
   const example = document.getElementById("example")
+  const imgdiv = document.getElementById("imgdiv")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
@@ -240,7 +241,8 @@
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
-        showError("Your image has dimensions that we can not handle. "
+        showError(
+          "Your image has dimensions that we can not handle. "
           + "We need square images with edges larger than 64px"
           + "Your image is " + album_art_img.width + " by " + album_art_img.height
         )
@@ -260,14 +262,14 @@
       L = new Legoificator(input_texture, parseInt(sizeSlider.value))
       reset()
 
-      document.getElementById("imgdiv").prepend(fxcanvas)
+      imgdiv.prepend(fxcanvas)
     }
 
     album_art_img.src = album_art_url
   }
 
   function reset() {
-    useLABCheck.checked = false
+    useLABCheck.checked = true
     sizeSlider.value = 3
     contrastSlider.value = 0
     brightSlider.value = 0
