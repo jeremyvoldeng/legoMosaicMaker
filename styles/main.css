@@ -102,6 +102,11 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   background-color: rgba(206, 193, 111, 0.5);
 }
 
+hr {
+  color: rgba(10, 10, 10, 0.5);
+  width: 100%;
+}
+
 #header {
   cursor: pointer;
   width: 100%;
@@ -126,14 +131,14 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   text-align: center;
 }
 
-@media only screen and (max-width: 719.1083505624px) {
+@media only screen and (max-width: 808.9968943827px) {
   #imgdiv {
     flex-direction: column;
   }
 }
 
 #inputdiv > * {
-  margin: 19.7770876406px;
+  margin: 22.2492235957px;
 }
 
 #albumName {
@@ -198,12 +203,12 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   display: inline-block;
   height: 100%;
   vertical-align: middle;
+  width: 320px;
   font-size: 18px;
   font-family: "Roboto Condensed", sans-serif;
   text-indent: 0.5em;
   margin: 0;
   padding: 0;
-  width: 320px;
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-right-width: 0;
   border-radius: 2px 0 0 2px;
@@ -212,7 +217,7 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 #urlSubmission {
   height: 36px;
 }
-@media only screen and (max-width: 719.1083505624px) {
+@media only screen and (max-width: 808.9968943827px) {
   #urlSubmission {
     max-width: 90%;
   }
@@ -225,11 +230,6 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 #example {
   background-color: #ffe330;
   margin-top: 32px;
-}
-
-.divLine {
-  color: rgba(10, 10, 10, 0.5);
-  width: 100%;
 }
 
 .content {
@@ -267,21 +267,21 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 }
 
 .nonSliderInputs > * {
-  height: 160px;
+  height: 180px;
 }
-@media only screen and (max-width: 719.1083505624px) {
+@media only screen and (max-width: 808.9968943827px) {
   .nonSliderInputs > * {
-    height: 106.6666666667px;
+    height: 120px;
   }
 }
 
-@media only screen and (max-width: 719.1083505624px) {
+@media only screen and (max-width: 808.9968943827px) {
   .rowToCol {
     flex-direction: column;
   }
 }
 
-@media only screen and (max-width: 719.1083505624px) {
+@media only screen and (max-width: 808.9968943827px) {
   .colToRow {
     flex-direction: row;
   }
@@ -303,8 +303,13 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 }
 
 .displayCanvas {
-  width: 320px;
-  margin: 19.7770876406px 39.5541752812px;
+  width: 360px;
+  margin: 22.2492235957px 44.4984471914px;
+}
+@media only screen and (max-width: 808.9968943827px) {
+  .displayCanvas {
+    width: 360px;
+  }
 }
 
 /*# sourceMappingURL=main.css.map */
