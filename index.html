@@ -32,15 +32,14 @@
 
     Axel!
     -->
-  <div id="header" class="legoFont">
+  <div id="header" class="legoFont" onclick="window.location.reload()">
     <h1> LEGO MOSAIC MAKER </h1>
   </div>
-
 
   <div class="content col">
     <b id="errText" hidden> </b>
 
-    <h3 id="initialMessage">
+    <h3 class="secondaryContent" id="initialMessage">
       Hello, World!
       <br>
       Try uploading an image of an album cover you like.
@@ -67,6 +66,10 @@
       <option value="https://media.pitchfork.com/photos/5929beaf5e6ef959693232a4/1:1/w_450%2Cc_limit/3b9fa8c5.jpg"
         label="Positive Force">
     </datalist>
+
+    <p id="example" class="secondaryContent">
+      Just want to try an example? Click Me!
+    </p>
 
     <!-- hidden before an image is chosen -->
     <div id="hideableContent" style="display: none">
@@ -157,6 +160,7 @@
   const urlSelection = document.getElementById("albumArtURL")
   const urlSelectionBtn = document.getElementById("albumArtURLBtn")
   const urlSubmission = document.getElementById("urlSubmission")
+  const example = document.getElementById("example")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
@@ -173,6 +177,9 @@
     e.preventDefault()
     handleURL(urlSelection.value)
   })
+  example.addEventListener("click", () => handleURL(
+    "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png")
+  )
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
@@ -320,12 +327,18 @@
   function showContents() {
     // gotta be flex, or else the styling just falls apart
     document.getElementById("hideableContent").style.display = "block"
-    document.getElementById("initialMessage").style.display = "none"
+    const secondaryElements = document.getElementsByClassName("secondaryContent")
+    Array.from(secondaryElements).forEach(el => {
+      el.style.display = "none"
+    })
   }
 
   function hideContents() {
     document.getElementById("hideableContent").style.display = "none"
-    document.getElementById("initialMessage").style.display = "block"
+    const secondaryElements = document.getElementsByClassName("secondaryContent")
+    Array.from(secondaryElements).forEach(el => {
+      el.style.display = "block"
+    })
   }
 
   function showError(msg) {

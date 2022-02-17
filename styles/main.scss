@@ -160,6 +160,8 @@ input[type="range"] {
 #header {
   @extend .centre;
 
+  cursor: pointer;
+
   width: 100%;
   background-color: $yellow;
   box-shadow: 0 20px 5px 0 $yellowLight;
@@ -290,6 +292,12 @@ input[type="range"] {
 
 #useLAB {
   font-size: $phi * $baseFontSize;
+}
+
+#example {
+  @extend %bigButton;
+  background-color: $yellow;
+  margin-top: 2 * $smallSpacing;
 }
 
 .divLine {
