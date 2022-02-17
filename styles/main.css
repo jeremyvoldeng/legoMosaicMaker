@@ -128,7 +128,6 @@ hr {
 
 #initialMessage {
   max-width: 50%;
-  text-align: center;
 }
 
 @media only screen and (max-width: 808.9968943827px) {
@@ -232,6 +231,13 @@ hr {
 #example {
   background-color: #ffe330;
   margin-top: 32px;
+}
+
+#informationText {
+  width: 80%;
+  max-width: 720px;
+  text-align: left;
+  font-size: 29.1246117966px;
 }
 
 .content {

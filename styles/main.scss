@@ -187,7 +187,6 @@ hr {
 
 #initialMessage {
   max-width: 50%;
-  text-align: center;
 }
 
 #imgdiv {
@@ -304,6 +303,13 @@ hr {
   @extend %bigButton;
   background-color: $yellow;
   margin-top: 2 * $smallSpacing;
+}
+
+#informationText {
+  width: 80%;
+  max-width: 2 * $displayCanvasDim;
+  text-align: left;
+  font-size: $phi * $baseFontSize;
 }
 
 .content {
