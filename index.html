@@ -239,6 +239,7 @@
   }
 
   function imgRequiresResize(img) {
+    const minDim = 64
     const unevenAspectRatio = img.width != img.height
     const tooSmall = img.width < minDim || img.height < minDim
     return tooSmall || unevenAspectRatio
