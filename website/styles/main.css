@@ -5,6 +5,12 @@
   font-weight: normal;
   font-style: normal;
 }
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 html,
 body {
   width: 100%;
@@ -32,6 +38,14 @@ input[type=text] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+input[type=url]:focus {
+  outline: none;
+}
+input[type=url]:focus > :invalid {
+  border: 2px solid red;
+  border-radius: 2px;
 }
 
 input[type=range] {
@@ -143,13 +157,14 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   font-size: 38.1246117966px;
 }
 
-#uploadImgBtn, #generatePDFBtn, #resetBtn {
+#albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
   cursor: pointer;
   padding: 16px;
   background-clip: padding-box;
   -webkit-background-clip: padding-box;
   border: none;
   border-radius: 16px;
+  font-size: 18px;
 }
 
 #resetBtn {
@@ -167,7 +182,41 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
   margin: 16px;
 }
 
-#divLine {
+#albumArtURLBtn {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  background-color: #ffe330;
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-radius: 0 9px 9px 0;
+  padding: 7.25px;
+  margin: 0;
+}
+
+#albumArtURL {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  font-size: 18px;
+  font-family: "Roboto Condensed", sans-serif;
+  text-indent: 0.5em;
+  margin: 0;
+  padding: 0;
+  width: 320px;
+  border: 1px solid rgba(10, 10, 10, 0.5);
+  border-right-width: 0;
+  border-radius: 2px 0 0 2px;
+}
+
+#urlSubmission {
+  height: 36px;
+}
+
+#useLAB {
+  font-size: 29.1246117966px;
+}
+
+.divLine {
   color: rgba(10, 10, 10, 0.5);
   width: 100%;
 }

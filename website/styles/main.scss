@@ -36,6 +36,13 @@ $black: rgba(10, 10, 10, 0.5);
 }
 
 // generic content
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 html,
 body {
   width: 100%;
@@ -78,6 +85,15 @@ input[type="text"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+input[type="url"]:focus {
+  outline: none;
+
+  & > :invalid {
+    border: 2px solid red;
+    border-radius: 2px;
+  }
 }
 
 input[type="range"] {
@@ -209,6 +225,8 @@ input[type="range"] {
 
   border: none;
   border-radius: $smallSpacing;
+
+  font-size: $baseFontSize;
 }
 
 #resetBtn {
@@ -228,7 +246,49 @@ input[type="range"] {
   background-color: $yellow;
   margin: $smallSpacing;
 }
-#divLine {
+
+#albumArtURLBtn {
+  @extend %bigButton;
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+
+  background-color: $yellow;
+
+  border: 1px solid $black;
+  border-radius: 0 math.div($baseFontSize, 2) math.div($baseFontSize, 2) 0;
+  padding: math.div($baseFontSize, 2) - 1.75px;
+  margin: 0;
+}
+
+#albumArtURL {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+
+  font-size: $baseFontSize;
+  font-family: "Roboto Condensed", sans-serif;
+  text-indent: 0.5em;
+
+  margin: 0;
+  padding: 0;
+
+  width: $displayCanvasDim;
+
+  border: 1px solid $black;
+  border-right-width: 0;
+  border-radius: 2px 0 0 2px;
+}
+
+#urlSubmission {
+  height: 2 * $baseFontSize;
+}
+
+#useLAB {
+  font-size: $phi * $baseFontSize;
+}
+
+.divLine {
   color: $black;
   width: 100%;
 }
