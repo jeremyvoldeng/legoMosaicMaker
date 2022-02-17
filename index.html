@@ -118,12 +118,14 @@
             </div>
             <div class="centre">
               <div class="row pointer">
+
                 <label for="useLAB">
                   <!-- Open in new tab -->
                   <a href="https://en.wikipedia.org/wiki/CIELAB_color_space" target="_blank" rel="noopener">
                     use LAB color scheme
                   </a>
                 </label>
+
                 <input type="checkbox" id="useLAB"></input>
               </div>
             </div>
@@ -165,7 +167,7 @@
   const satSlider = document.getElementById("saturation")
   const brightSlider = document.getElementById("brightness")
   const contrastSlider = document.getElementById("contrast")
-  const slizeLabel = document.getElementById("sizeLabel")
+  const sizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
@@ -174,7 +176,6 @@
     e.preventDefault()
     handleURL(urlSelection.value)
   })
-
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
@@ -313,10 +314,10 @@
   }
 
   function imgRequiresResize(img) {
+    const minDim = 64
     const unevenAspectRatio = img.width != img.height
-    const tooSmall = img.width < 64 || img.height < 64
-    const tooBig = img.width > 1500 || img.height > 1500
-    return tooSmall || tooBig || unevenAspectRatio
+    const tooSmall = img.width < minDim || img.height < minDim
+    return tooSmall || unevenAspectRatio
   }
 
   function showContents() {
