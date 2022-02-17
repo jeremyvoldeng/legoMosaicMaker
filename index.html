@@ -49,6 +49,28 @@
     <label id="uploadImgBtn" class="pointer" for="albumArtIn">Upload Image</label>
     <input type="file" id="albumArtIn" accept="image/*" style="display: none"> </input>
 
+    <p>
+      or, submit a URL to an image
+    </p>
+
+    <form id="urlSubmission" class="row">
+      <input type="url" id="albumArtURL" list="defaultURLs" pattern="https://.*" required></input>
+      <input type="submit" id="albumArtURLBtn" value="Submit URL">
+    </form>
+
+    <!-- datalist with id defaultURLs with URLs to album covers of Abbey Road, In Rainbows, Madvillany, and one more album cover, with the correct labels -->
+
+    <datalist id="defaultURLs">
+      <!-- option of a picture to Lenna -->
+      <option value="https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png">Lenna</option>
+      <option value="https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png"
+        label="Dark Side of the Moon">
+      <option value="https://upload.wikimedia.org/wikipedia/en/1/14/Inrainbowscover.png" label="In Rainbows">
+      <option value="https://upload.wikimedia.org/wikipedia/en/5/5e/Madvillainy_cover.png" label="Madvillany">
+      <option value="https://media.pitchfork.com/photos/5929beaf5e6ef959693232a4/1:1/w_450%2Cc_limit/3b9fa8c5.jpg"
+        label="Positive Force">
+    </datalist>
+
     <!-- hidden before an image is chosen -->
     <div id="hideableContent" style="display: none">
 
@@ -86,7 +108,8 @@
           </div>
         </div>
 
-        <hr id="divLine">
+        <hr class="divLine">
+
         <div class="rowToCol">
 
           <div class="nonSliderInputs col withspace">
@@ -95,7 +118,14 @@
             </div>
             <div class="centre">
               <div class="row pointer">
-                <label for="useLAB">use LAB color scheme</label>
+
+                <label for="useLAB">
+                  <!-- Open in new tab -->
+                  <a href="https://en.wikipedia.org/wiki/CIELAB_color_space" target="_blank" rel="noopener">
+                    use LAB color scheme
+                  </a>
+                </label>
+
                 <input type="checkbox" id="useLAB"></input>
               </div>
             </div>
@@ -122,7 +152,14 @@
 </body>
 
 <script type="text/javascript">
+  'use strict'
+
+  // I am certain that CORS will be a PITA. How to deal?
+  // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
+  const urlSelection = document.getElementById("albumArtURL")
+  const urlSelectionBtn = document.getElementById("albumArtURLBtn")
+  const urlSubmission = document.getElementById("urlSubmission")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
   const useLABCheck = document.getElementById("useLAB")
@@ -134,7 +171,11 @@
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
-  fileSelection.addEventListener("change", handleFiles)
+  fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
+  urlSubmission.addEventListener("submit", e => {
+    e.preventDefault()
+    handleURL(urlSelection.value)
+  })
   resetButton.addEventListener("click", reset)
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
@@ -157,22 +198,55 @@
   let input_texture;
   let album_art_img;
 
-  function handleFiles() {
+  function handleURL(url) {
+    /*
+    initial tesitng
+
+    https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+    https://javascript.info/fetch-crossorigin
+
+    kinda works!
+
+    */
+    hideError()
+    const errMsg = "Could not load image from your URL - make sure that the link is to JUST an image, and nothing else. This can be a bit finicky!"
+
+    fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'default',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      referrer: 'no-referrer',
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.blob()
+        } else {
+          showError(errMsg)
+        }
+      })
+      .then(blob => handleFile(blob))
+      .catch(error => {
+        showError(errMsg)
+      })
+  }
+
+  function handleFile(file) {
     album_art_img = new Image
-    const album_art_url = URL.createObjectURL(this.files[0])
+    const album_art_url = URL.createObjectURL(file)
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
-        errTextBox.innerText = "Your image has dimensions that we can not handle. "
-          + "We need square images with edges larger than 64px. "
+        showError("Your image has dimensions that we can not handle. "
+          + "We need square images with edges larger than 64px and smaller than 1500px. "
           + "Your image is " + album_art_img.width + " by " + album_art_img.height
+        )
 
-        errTextBox.style.display = "block"
         hideContents()
         return
       } else {
-        errTextBox.innerText = ""
-        errTextBox.style.display = "none"
+        hideError()
         showContents()
       }
 
@@ -197,6 +271,7 @@
     brightSlider.value = 0
     satSlider.value = 0
     albumName.value = ""
+    albumArtURL.value = ""
 
     updateSize()
 
@@ -254,6 +329,16 @@
   function hideContents() {
     document.getElementById("hideableContent").style.display = "none"
     document.getElementById("initialMessage").style.display = "block"
+  }
+
+  function showError(msg) {
+    errTextBox.innerText = msg
+    errTextBox.style.display = "block"
+  }
+
+  function hideError() {
+    errTextBox.innerText = ""
+    errTextBox.style.display = "none"
   }
 
   function linspace(start, stop, num) {
