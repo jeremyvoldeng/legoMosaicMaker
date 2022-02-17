@@ -211,6 +211,11 @@ input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-m
 #urlSubmission {
   height: 36px;
 }
+@media only screen and (max-width: 719.1083505624px) {
+  #urlSubmission {
+    max-width: 90%;
+  }
+}
 
 #useLAB {
   font-size: 29.1246117966px;

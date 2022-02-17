@@ -278,10 +278,14 @@ input[type="range"] {
   border: 1px solid $black;
   border-right-width: 0;
   border-radius: 2px 0 0 2px;
+
 }
 
 #urlSubmission {
   height: 2 * $baseFontSize;
+  @include mobileDesign {
+    max-width: 90%;
+  }
 }
 
 #useLAB {
