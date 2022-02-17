@@ -164,7 +164,7 @@
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
         errTextBox.innerText = "Your image has dimensions that we can not handle. "
-          + "We need square images with edges larger than 64px and smaller than 1500px. "
+          + "We need square images with edges larger than 64px. "
           + "Your image is " + album_art_img.width + " by " + album_art_img.height
 
         errTextBox.style.display = "block"
@@ -240,9 +240,8 @@
 
   function imgRequiresResize(img) {
     const unevenAspectRatio = img.width != img.height
-    const tooSmall = img.width < 64 || img.height < 64
-    const tooBig = img.width > 1500 || img.height > 1500
-    return tooSmall || tooBig || unevenAspectRatio
+    const tooSmall = img.width < minDim || img.height < minDim
+    return tooSmall || unevenAspectRatio
   }
 
   function showContents() {
