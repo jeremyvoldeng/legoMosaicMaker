@@ -4,7 +4,8 @@
 @use "sass:math";
 
 $phi: 1.6180339887;
-$smallSpacing: 16px;
+$smallMult: math.div(1.6180339887 - 1, 2) + 1;
+$smallSpacing: 18px;
 $displayCanvasDimSmall: 320px;
 $displayCanvasDim: 360px;
 $paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
@@ -174,6 +175,37 @@ hr {
   margin-bottom: 3 * $smallSpacing;
 }
 
+#footer {
+  @extend .col;
+
+  font-size: $baseFontSize;
+
+  width: 100%;
+
+  justify-content: space-around;
+
+  padding: $smallSpacing;
+  background-color: $yellow;
+  box-shadow: 0 -20px 5px 0 $yellowLight;
+  margin-top: 3 * $smallSpacing;
+}
+
+%footerSpacing {
+  max-width: 3 * $displayCanvasDim;
+  width: 60%;
+}
+
+#footerText {
+  @extend %footerSpacing;
+}
+
+#linksDiv {
+  @extend .rowToCol;
+  @extend .withspace;
+  @extend %footerSpacing;
+  margin: $smallSpacing;
+}
+
 #albumArtIn {
   cursor: pointer;
   justify-content: flex-end;
@@ -307,9 +339,10 @@ hr {
 
 #informationText {
   width: 80%;
+  margin-top: 4 * $smallSpacing;
   max-width: 2 * $displayCanvasDim;
   text-align: left;
-  font-size: $phi * $baseFontSize;
+  font-size: $smallMult * $baseFontSize;
 }
 
 .content {
