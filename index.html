@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title> LEGO MOSAIC MAKER </Title>
+  <title> LEGO MOSAIC DESIGNER </Title>
 
   <!-- people say i need this line -->
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Create a Lego Mosaic!">
+  <meta name="description" content="Create a Lego Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it and make something entirely different!">
 
   <!-- Add a goatcounter -->
   <!-- To those who are interested, this just lets us see how much attention this
@@ -41,7 +41,7 @@
     Axel!
     -->
   <div id="header" class="legoFont" onclick="window.location.reload()">
-    <h1> LEGO MOSAIC MAKER </h1>
+    <h1> LEGO MOSAIC DESIGNER </h1>
   </div>
 
   <div class="content col">
@@ -282,6 +282,7 @@
       })
       .then(blob => handleFile(blob))
       .catch(error => {
+        console.log(error)
         showError(errMsg)
       })
   }
@@ -294,7 +295,7 @@
       if (imgRequiresResize(album_art_img)) {
         showError(
           "Your image has dimensions that we can not handle. "
-          + "We need square images with edges larger than 64px"
+          + "We need square images with edges larger than 64px. "
           + "Your image is " + album_art_img.width + " by " + album_art_img.height
         )
 
