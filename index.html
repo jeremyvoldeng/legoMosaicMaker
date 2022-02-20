@@ -21,6 +21,9 @@
   <script type='text/javascript' async src='glfx.js'></script>
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript' async src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
+  <!-- croppie lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" integrity="sha512-zxBiDORGDEAYDdKLuYU9X/JaJo/DPzE42UubfBw9yg8Qvb2YRRIQ8v4KsGHOx2H1/+sdSXyXxLXv5r7tHc9ygg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
@@ -52,6 +55,8 @@
       <br>
       Try uploading an image of an album cover you like.
     </h3>
+
+    <div id="croppingModal"></div>
 
     <label for="albumArtIn" id="uploadImgBtn">
       <input type="file" id="albumArtIn" accept="image/*">
@@ -268,7 +273,7 @@
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
-    alert("Sorry, your browser does not support WebGL. Create an issue here? https://github.com/jeremyvoldeng/legoMosaicMaker/issues/new\nLove, Axel")
+    alert("Sorry, your browser does not support WebGL. Unfortunately, this website requires it to run.")
   }
   fxcanvas.id = "incvs"
   fxcanvas.className = "displayCanvas"
@@ -319,14 +324,19 @@
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
-        showError(
-          "Your image has dimensions that we can not handle. "
-          + "We need square images with edges larger than 64px. "
-          + "Your image is " + album_art_img.width + " by " + album_art_img.height
-        )
+        const c = new Croppie(document.getElementById("croppingModal"), {
+          showZoomer: false,
+          viewport: { width: 300, height: 300, type: 'square'},
+          boundary: { width: 500, height: 500 },
+        })
+        c.bind({url: album_art_url})
+        c.result('blob').then(blob => {
+          console.log("guh!")
+          album_art_img = blob
+        })
 
-        hideContents()
-        return
+        // hideContents()
+        // return
       } else {
         hideError()
         showContents()
