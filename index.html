@@ -6,14 +6,14 @@
 
   <!-- people say i need this line -->
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Create a Lego Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it and make something entirely different!">
+  <meta name="description"
+    content="Create a Lego Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it and make something entirely different!">
 
   <!-- Add a goatcounter -->
   <!-- To those who are interested, this just lets us see how much attention this
   site is getting. It doesn't track you, and is open source!
   -->
-  <script data-goatcounter="https://legomosaicdesigner.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+  <script data-goatcounter="https://legomosaicdesigner.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
   <link rel="stylesheet" href="styles/main.css">
 
@@ -53,8 +53,10 @@
       Try uploading an image of an album cover you like.
     </h3>
 
-    <label id="uploadImgBtn" class="pointer" for="albumArtIn">Upload Image</label>
-    <input type="file" id="albumArtIn" accept="image/*" style="display: none">
+    <label for="albumArtIn" id="uploadImgBtn">
+      <input type="file" id="albumArtIn" accept="image/*">
+      Upload Image
+    </label>
 
     <p>
       or, submit a URL to an image
@@ -73,9 +75,11 @@
       <option value="https://upload.wikimedia.org/wikipedia/en/5/5e/Madvillainy_cover.png" label="Madvillany">
     </datalist>
 
-    <p id="example" class="secondaryContent">
+    <!-- <div class="secondaryContent" role="button" tabIndex="0" aria-label="Just try an example"> -->
+    <p class="secondaryContent" role="button" tabIndex="0" aria-label="Just try an example" id="example">
       Just want to try an example? Click Me!
     </p>
+    <!-- </div> -->
 
     <div id="informationText" class="secondaryContent">
       <h4> What is this? </h4>
@@ -108,8 +112,10 @@
       <h3> More FAQs </h3>
       <h4> The "Submit URL" button is giving you trouble? </h4>
       <p>
-      You need to give it a URL to an image <i> only </i>. A good way to get this is to <b>right click on the image</b> and
-      then <b>click "copy image address" or "copy image link"</b>. You can also just upload an image from your computer, if
+        You need to give it a URL to an image <i> only </i>. A good way to get this is to <b>right click on the
+          image</b> and
+        then <b>click "copy image address" or "copy image link"</b>. You can also just upload an image from your
+        computer, if
         you like!
       </p>
     </div>
@@ -157,7 +163,7 @@
 
           <div class="nonSliderInputs col withspace">
             <div class="centre">
-              <input type="text" id="albumName" placeholder="Name of Album">
+              <input type="text" id="albumName" placeholder="Title">
             </div>
             <div class="centre">
               <div class="row pointer">
@@ -176,7 +182,7 @@
 
           <div class="nonSliderInputs col withspace">
             <div class="centre">
-              <div id="generatePDFBtn" class="col">
+              <div id="generatePDFBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
                 <span id="downloadTheWord">Download</span>
                 <span id="instructionsTheWord">Instructions</span>
               </div>
@@ -193,15 +199,20 @@
 
     <footer id="footer">
       <div id="footerText">
-        Thanks for using Lego Mosaic Designer! If you enjoyed using the website and want to support us, you can buy us a coffee below.
-        <br><br>Happy building! <a href="https://jeremyvoldeng.github.io/" target="_blank" rel="noopener">Jeremy</a> &amp; <a href="https://axel-jacobsen.github.io" target="_blank" rel="noopener">Axel</a>
+        Thanks for using Lego Mosaic Designer! If you enjoyed using the website and want to support us, you can buy us a
+        coffee below.
+        <br><br>Happy building! <a href="https://jeremyvoldeng.github.io/" target="_blank" rel="noopener">Jeremy</a>
+        &amp; <a href="https://axel-jacobsen.github.io" target="_blank" rel="noopener">Axel</a>
       </div>
 
       <div id="linksDiv">
-        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="AxelJ" data-color="#FFDD00" data-emoji=""  data-font="Poppins" data-text="Buy us a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
-  
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+          data-name="bmc-button" data-slug="AxelJ" data-color="#FFDD00" data-emoji="" data-font="Poppins"
+          data-text="Buy us a coffee" data-outline-color="#000000" data-font-color="#000000"
+          data-coffee-color="#ffffff"></script>
+
         <a href="https://github.com/jeremyvoldeng/legoMosaicMaker" target="_blank" rel="noopener">
-          <img src="resources/GitHub-Mark-32px.png" alt="GitHub logo" id="githubLogo" >
+          <img src="resources/GitHub-Mark-32px.png" alt="GitHub logo" id="githubLogo">
         </a>
       </div>
     </footer>
@@ -212,8 +223,6 @@
 <script type="text/javascript">
   'use strict'
 
-  // I am certain that CORS will be a PITA. How to deal?
-  // Nothing is easy in web development :(
   const fileSelection = document.getElementById("albumArtIn")
   const urlSelection = document.getElementById("albumArtURL")
   const urlSelectionBtn = document.getElementById("albumArtURLBtn")
@@ -231,21 +240,32 @@
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
-  fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
+  fileSelection.addEventListener("change", e => {
+    console.log(e)
+    handleFile(e.target.files[0])
+  })
+
   urlSubmission.addEventListener("submit", e => {
     e.preventDefault()
     handleURL(urlSelection.value)
   })
-  example.addEventListener("click", () => handleURL(
-    "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png")
+
+  const runExample = () => handleURL(
+    "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png"
   )
+
+  example.addEventListener("keydown", e => keyPressToClick(e, runExample))
+  example.addEventListener("click", runExample)
+
   resetButton.addEventListener("click", reset)
+  resetButton.addEventListener("keydown", e => keyPressToClick(e, reset))
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
   satSlider.addEventListener("input", legoify)
   brightSlider.addEventListener("input", legoify)
   contrastSlider.addEventListener("input", legoify)
   generatePDFBtn.addEventListener("click", genInstructions)
+  generatePDFBtn.addEventListener("keydown", e => keyPressToClick(e, genInstructions))
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
@@ -260,6 +280,13 @@
   let L;
   let input_texture;
   let album_art_img;
+
+  function keyPressToClick(e, cb, args) {
+    // 13 is enter, 32 is space (commonly used by assisted reader devices)
+    if (e.keyCode === 13 || e.keyCode === 32) {
+      cb(args)
+    }
+  }
 
   function handleURL(url) {
     hideError()
