@@ -19,6 +19,7 @@ body {
   color: #0a0a0a;
   font-size: 18px;
   font-family: "Roboto Condensed", sans-serif;
+  overflow-x: hidden;
 }
 
 img {
