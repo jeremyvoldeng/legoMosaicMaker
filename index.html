@@ -18,9 +18,9 @@
   <link rel="stylesheet" href="styles/main.css">
 
   <!-- glfx gives quick textures -->
-  <script type='text/javascript' src='glfx.js'></script>
+  <script type='text/javascript' async src='glfx.js'></script>
   <!-- jsPDF lets us make PDF -->
-  <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
+  <script type='text/javascript' async src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
 
   <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
@@ -240,10 +240,7 @@
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
 
-  fileSelection.addEventListener("change", e => {
-    console.log(e)
-    handleFile(e.target.files[0])
-  })
+  fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
 
   urlSubmission.addEventListener("submit", e => {
     e.preventDefault()
@@ -254,16 +251,18 @@
     "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png"
   )
 
-  example.addEventListener("keydown", e => keyPressToClick(e, runExample))
   example.addEventListener("click", runExample)
+  example.addEventListener("keydown", e => keyPressToClick(e, runExample))
 
   resetButton.addEventListener("click", reset)
   resetButton.addEventListener("keydown", e => keyPressToClick(e, reset))
+
   useLABCheck.addEventListener("change", legoify)
   sizeSlider.addEventListener("input", updateSize)
   satSlider.addEventListener("input", legoify)
   brightSlider.addEventListener("input", legoify)
   contrastSlider.addEventListener("input", legoify)
+
   generatePDFBtn.addEventListener("click", genInstructions)
   generatePDFBtn.addEventListener("keydown", e => keyPressToClick(e, genInstructions))
 
@@ -290,7 +289,7 @@
 
   function handleURL(url) {
     hideError()
-    const errMsg = "Could not load image from your URL - make sure that the link is to JUST an image, and nothing else. This can be a bit finicky!"
+    const errMsg = "Could not load image from your URL - make sure that the link is to JUST an image, and nothing else. This can be finicky!\n\nIf it is still not working, I suggest downloading the image, and then using the 'Upload Image' button below."
 
     fetch(url, {
       method: 'GET',
