@@ -55,6 +55,15 @@
   <div class="content col">
     <b id="errText" hidden> </b>
 
+    <!-- Satan's Modal of Satanity -->
+    <div id="cropperModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <img id="cropperImg"></img>
+        <span class="modal-close" id=modal-close>Done</span>
+      </div>
+    </div>
+
     <h3 class="secondaryContent" id="initialMessage">
       Hello, World!
       <br>
@@ -247,6 +256,7 @@
   const sizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
+  const modalCloseBtn  = document.getElementById("modal-close")
 
   fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
 
@@ -321,13 +331,54 @@
       })
   }
 
+  function fuckShitUp(img) {
+    input_texture = fxcanvas.texture(img)
+
+    // either this, or EXT_color_buffer_float
+    input_texture._.gl.getExtension('WEBGL_color_buffer_float')
+
+    L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+    reset()
+
+    imgdiv.prepend(fxcanvas)
+  }
+
   function handleFile(file) {
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
 
     album_art_img.onload = (data) => {
       if (imgRequiresResize(album_art_img)) {
+        cropperModal.style.display = "block"
+        const cropImg = document.getElementById("cropperImg")
+        cropImg.src = album_art_url
 
+        const cropper = new Cropper(cropImg, {
+          viewMode: 0,
+          aspectRatio: 1,
+          dragMode: 'none',
+          zoomable: false,
+          zoomOnTouch: false,
+          zoomOnWheel: false,
+          restore: false,
+          rotatable: false,
+          guides: false,
+          background: false,
+
+          crop: e => { // we dont extrapolate around these parts
+            if (e.detail.width < 64 || e.detail.height < 64) {
+              cropper.setData({ width: 64, height: 64 })
+            }
+          }
+        })
+
+        modalCloseBtn.addEventListener("click", () => {
+          cropperModal.style.display = "none"
+          album_art_img.src = cropper.getCroppedCanvas().toDataURL("image/png")
+          cropper.destroy()
+
+          fuckShitUp(album_art_img)
+        })
         // hideContents()
         // return
       } else {
@@ -335,15 +386,7 @@
         showContents()
       }
 
-      input_texture = fxcanvas.texture(album_art_img)
-
-      // either this, or EXT_color_buffer_float
-      input_texture._.gl.getExtension('WEBGL_color_buffer_float')
-
-      L = new Legoificator(input_texture, parseInt(sizeSlider.value))
-      reset()
-
-      imgdiv.prepend(fxcanvas)
+      fuckShitUp(album_art_img)
     }
 
     album_art_img.src = album_art_url
