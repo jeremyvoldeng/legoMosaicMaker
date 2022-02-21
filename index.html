@@ -273,27 +273,22 @@
   const runExample = () => handleURL(
     "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png"
   )
-  example.addEventListener("click", runExample)
-  example.addEventListener("keydown", e => keyPressToClick(e, runExample))
-
-  fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
-
-  urlSubmission.addEventListener("submit", e => {
+  example.onclick = runExample
+  example.onkeydown = e => keyPressToClick(e, runExample)
+  fileSelection.onchange = e => handleFile(e.target.files[0])
+  urlSubmission.onsubmit = e => {
     e.preventDefault()
     handleURL(urlSelection.value)
-  })
-
-  resetButton.addEventListener("click", reset)
-  resetButton.addEventListener("keydown", e => keyPressToClick(e, reset))
-
-  useLABCheck.addEventListener("change", legoify)
-  sizeSlider.addEventListener("input", updateSize)
-  satSlider.addEventListener("input", legoify)
-  brightSlider.addEventListener("input", legoify)
-  contrastSlider.addEventListener("input", legoify)
-
-  generatePDFBtn.addEventListener("click", genInstructions)
-  generatePDFBtn.addEventListener("keydown", e => keyPressToClick(e, genInstructions))
+  }
+  resetButton.onclick = reset
+  resetButton.onkeydown = e => keyPressToClick(e, reset)
+  useLABCheck.onchange = legoify
+  sizeSlider.oninput = updateSize
+  satSlider.oninput = legoify
+  brightSlider.oninput = legoify
+  contrastSlider.oninput = legoify
+  generatePDFBtn.onclick = genInstructions
+  generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
@@ -371,6 +366,7 @@
           modalCancelBtn.onclick = () => {
             cropperModal.style.display = "none"
             cropper.destroy()
+            cropImg.removeAttribute('src')
           }
 
           modalCloseBtn.onclick = () => {
