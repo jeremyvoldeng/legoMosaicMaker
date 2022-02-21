@@ -349,15 +349,17 @@
   }
 
   function handleFile(file) {
+    // I have a feeling that this could be done better.
+    // Therefore I would love some help here!
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
 
-    album_art_img.onload = (data) => {
+    album_art_img.onload = () => {
       if (imgRequiresResize(album_art_img)) {
         cropperModal.style.display = "block"
         const cropImg = document.getElementById("cropperImg")
 
-        cropImg.onload = (d2) => {
+        cropImg.onload = () => {
           const cropper = new Croppr(cropImg, {
             aspectRatio: 1,
             minSize: [64, 64, 'px'],
