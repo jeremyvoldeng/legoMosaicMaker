@@ -370,7 +370,7 @@
           guides: false,
           center: false,
           background: true,
-
+          autoCropArea: 1,
           crop: e => { // we dont extrapolate around these parts
             if (e.detail.width < 64 || e.detail.height < 64) {
               cropper.setData({ width: 64, height: 64 })
