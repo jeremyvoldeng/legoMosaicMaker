@@ -337,7 +337,6 @@
       })
       .then(blob => handleFile(blob))
       .catch(error => {
-        console.log(error)
         showError(errMsg)
       })
   }
@@ -359,7 +358,6 @@
     const album_art_url = URL.createObjectURL(file)
 
     album_art_img.onload = (data) => {
-      console.log(album_art_img)
       if (imgRequiresResize(album_art_img)) {
         cropperModal.style.display = "block"
         const cropImg = document.getElementById("cropperImg")
@@ -370,18 +368,19 @@
             minSize: [64, 64, 'px'],
           })
 
-          modalCancelBtn.addEventListener("click", () => {
+          modalCancelBtn.onclick = () => {
             cropperModal.style.display = "none"
             cropper.destroy()
-          })
+          }
 
-          modalCloseBtn.addEventListener("click", () => {
+          modalCloseBtn.onclick = () => {
             // let onload loop back around - album_art_img.src should be correctly cropped now
-            const cropBoxData = cropper.getValue('real')
+            const cropBoxData = cropper.getValue()
             cropperModal.style.display = "none"
             cropper.destroy()
+            cropImg.removeAttribute('src')
             album_art_img.src = cropImage(album_art_img, cropBoxData)
-          })
+          }
         }
         cropImg.src = album_art_url
       } else {
@@ -403,7 +402,7 @@
     const cropDim = Math.min(data['width'], data['height'])
     cv.width = cropDim
     cv.height = cropDim
-    ctx.drawImage(img, data['x'], data['y'], cropDim, cropDim)
+    ctx.drawImage(img, data['x'], data['y'], cropDim, cropDim, 0, 0, cropDim, cropDim)
     return cv.toDataURL("image/png")
   }
 
