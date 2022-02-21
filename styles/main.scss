@@ -178,6 +178,12 @@ hr {
   background-color: $yellow;
   box-shadow: 0 20px 5px 0 $yellowLight;
   margin-bottom: 3 * $smallSpacing;
+
+  @include mobileDesign {
+    & h1 {
+      font-size: $phi * $baseFontSize
+    }
+  }
 }
 
 #footer {
@@ -209,6 +215,9 @@ hr {
   @extend .withspace;
   @extend %footerSpacing;
   margin: $smallSpacing;
+  & > * {
+    margin: math.div($smallSpacing, 2)
+  }
 }
 
 #albumArtIn {

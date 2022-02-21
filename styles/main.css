@@ -118,6 +118,11 @@ hr {
   box-shadow: 0 20px 5px 0 rgba(255, 227, 48, 0.5);
   margin-bottom: 54px;
 }
+@media only screen and (max-width: 808.9968943827px) {
+  #header h1 {
+    font-size: 29.1246117966px;
+  }
+}
 
 #footer {
   font-size: 18px;
@@ -136,6 +141,9 @@ hr {
 
 #linksDiv {
   margin: 18px;
+}
+#linksDiv > * {
+  margin: 9px;
 }
 
 #albumArtIn {
