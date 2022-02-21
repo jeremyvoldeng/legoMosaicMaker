@@ -22,13 +22,10 @@
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript' async
     src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
-  <!-- croppie lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"
-    integrity="sha512-ooSWpxJsiXe6t4+PPjCgYmVfr1NS5QXJACcR/FPpsdm6kqG1FmQ2SVyg2RXeVuCRBLr0lWHnWJP6Zs1Efvxzww=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
-    integrity="sha512-0SPWAwpC/17yYyZ/4HSllgaK7/gg9OlVozq8K7rf3J8LvCjYEEIfzzpnA2/SSjpGIunCSD18r3UhvDcu/xncWA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- cropper lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.2/cropper.min.js" integrity="sha512-IlZV3863HqEgMeFLVllRjbNOoh8uVj0kgx0aYxgt4rdBABTZCl/h5MfshHD9BrnVs6Rs9yNN7kUQpzhcLkNmHw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.2/cropper.min.css" integrity="sha512-6QxSiaKfNSQmmqwqpTNyhHErr+Bbm8u8HHSiinMEz0uimy9nu7lc/2NaXJiUJj2y4BApd5vgDjSHyLzC8nP6Ng==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
@@ -60,7 +57,10 @@
       <!-- Modal content -->
       <div class="modal-content">
         <img id="cropperImg"></img>
-        <span class="modal-close" id=modal-close>Done</span>
+        <div class="row withspace">
+          <span class="modal-cancel" id=modal-cancel>Cancel</span>
+          <span class="modal-close" id=modal-close>Done</span>
+        </div>
       </div>
     </div>
 
@@ -257,6 +257,7 @@
   const generatePDFBtn = document.getElementById("generatePDFBtn")
   const errTextBox = document.getElementById("errText")
   const modalCloseBtn  = document.getElementById("modal-close")
+  const modalCancelBtn  = document.getElementById("modal-cancel")
 
   fileSelection.addEventListener("change", e => handleFile(e.target.files[0]))
 
@@ -331,7 +332,7 @@
       })
   }
 
-  function fuckShitUp(img) {
+  function createLegoificator(img) {
     input_texture = fxcanvas.texture(img)
 
     // either this, or EXT_color_buffer_float
@@ -354,7 +355,7 @@
         cropImg.src = album_art_url
 
         const cropper = new Cropper(cropImg, {
-          viewMode: 0,
+          viewMode: 1,
           aspectRatio: 1,
           dragMode: 'none',
           zoomable: false,
@@ -363,7 +364,8 @@
           restore: false,
           rotatable: false,
           guides: false,
-          background: false,
+          center: false,
+          background: true,
 
           crop: e => { // we dont extrapolate around these parts
             if (e.detail.width < 64 || e.detail.height < 64) {
@@ -372,12 +374,17 @@
           }
         })
 
+        modalCancelBtn.addEventListener("click", () => {
+          cropperModal.style.display = "none"
+          cropper.destroy()
+        })
+
         modalCloseBtn.addEventListener("click", () => {
           cropperModal.style.display = "none"
           album_art_img.src = cropper.getCroppedCanvas().toDataURL("image/png")
           cropper.destroy()
 
-          fuckShitUp(album_art_img)
+          createLegoificator(album_art_img)
         })
         // hideContents()
         // return
@@ -386,7 +393,7 @@
         showContents()
       }
 
-      fuckShitUp(album_art_img)
+      createLegoificator(album_art_img)
     }
 
     album_art_img.src = album_art_url

@@ -195,7 +195,7 @@ hr {
   font-size: 38.1246117966px;
 }
 
-#example, #albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
+.modal-cancel, .modal-close, #example, #albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
   cursor: pointer;
   padding: 18px;
   background-clip: padding-box;
@@ -204,7 +204,7 @@ hr {
   border-radius: 18px;
   font-size: 18px;
 }
-#example:focus, #albumArtURLBtn:focus, #uploadImgBtn:focus, #generatePDFBtn:focus, #resetBtn:focus {
+.modal-cancel:focus, .modal-close:focus, #example:focus, #albumArtURLBtn:focus, #uploadImgBtn:focus, #generatePDFBtn:focus, #resetBtn:focus {
   outline: 1px solid;
 }
 
@@ -380,24 +380,21 @@ hr {
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
+  border-radius: 0 0 18px 18px;
+  background-color: #ffe330;
+  margin: 10% auto;
   /* 15% from the top and centered */
   border: 1px solid #888;
-  width: 40%;
+  width: 80%;
   /* Could be more or less, depending on screen size */
+  max-width: 808.9968943827px;
 }
 
 /* The Close Button */
-.modal-close {
-  color: #aaa;
-  float: right;
+.modal-cancel, .modal-close {
   font-size: 28px;
-  font-weight: bold;
 }
-
-.modal-close:hover,
-.modal-close:focus {
+.modal-cancel:hover, .modal-close:hover, .modal-cancel:focus, .modal-close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer;
