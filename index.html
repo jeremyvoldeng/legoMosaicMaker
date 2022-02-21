@@ -90,8 +90,7 @@
 
     <datalist id="defaultURLs">
       <option value="https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png">Lenna</option>
-      <option value="https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png"
-        label="Dark Side of the Moon">
+      <option value="https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png" label="Dark Side of the Moon">
       <option value="https://upload.wikimedia.org/wikipedia/en/1/14/Inrainbowscover.png" label="In Rainbows">
       <option value="https://upload.wikimedia.org/wikipedia/en/5/5e/Madvillainy_cover.png" label="Madvillany">
     </datalist>
@@ -130,7 +129,7 @@
         </li>
       </ul>
 
-      <h3> More FAQs </h3>
+      <h3> More FAQs, and some Advice</h3>
       <h4> The "Submit URL" button is giving you trouble? </h4>
       <p>
         You need to give it a URL to an image <i> only </i>. A good way to get this is to <b>right click on the
@@ -138,6 +137,10 @@
         then <b>click "copy image address" or "copy image link"</b>. You can also just upload an image from your
         computer, if
         you like!
+      </p>
+      <h4> Which photos work best? </h4>
+      <p>
+        Photos with big, blocky colours. Fine details, such as text, often gets washed out.
       </p>
     </div>
 
@@ -228,10 +231,6 @@
 
       <div id="linksDiv">
         <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="AxelJ" data-color="#FF5F5F" data-emoji=""  data-font="Inter" data-text="Donate?" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
-        <!-- <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" -->
-        <!--   data-name="bmc-button" data-slug="AxelJ" data-color="#FFDD00" data-emoji="" data-font="Poppins" -->
-        <!--   data-text="Buy us a coffee" data-outline-color="#000000" data-font-color="#000000" -->
-        <!--   data-coffee-color="#ffffff"></script> -->
 
         <a href="https://github.com/jeremyvoldeng/legoMosaicMaker" target="_blank" rel="noopener">
           <img src="resources/GitHub-Mark-32px.png" alt="GitHub logo" id="githubLogo">
@@ -292,7 +291,6 @@
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
-    console.log(e)
     alert("Sorry, your browser does not support WebGL. Unfortunately, this website requires it to run.")
   }
   fxcanvas.id = "incvs"
