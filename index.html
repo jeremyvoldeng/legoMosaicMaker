@@ -292,6 +292,7 @@
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
+    console.log(e)
     alert("Sorry, your browser does not support WebGL. Unfortunately, this website requires it to run.")
   }
   fxcanvas.id = "incvs"
