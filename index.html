@@ -22,14 +22,10 @@
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript'
     src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
-  <!-- cropper lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.2/cropper.min.js"
-    integrity="sha512-IlZV3863HqEgMeFLVllRjbNOoh8uVj0kgx0aYxgt4rdBABTZCl/h5MfshHD9BrnVs6Rs9yNN7kUQpzhcLkNmHw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/2.0.0-alpha.2/cropper.min.css"
-    integrity="sha512-6QxSiaKfNSQmmqwqpTNyhHErr+Bbm8u8HHSiinMEz0uimy9nu7lc/2NaXJiUJj2y4BApd5vgDjSHyLzC8nP6Ng=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- cropper lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
+  <script src="croppr.min.js"></script>
+  <link rel="stylesheet" href="croppr.min.css"/>
 
   <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
@@ -306,6 +302,7 @@
   let L;
   let input_texture;
   let album_art_img;
+  let cropper;
 
   function keyPressToClick(e, cb, args) {
     // 13 is enter, 32 is space (commonly used by assisted reader devices)
@@ -341,6 +338,7 @@
   }
 
   function createLegoificator(img) {
+    console.log(img)
     input_texture = fxcanvas.texture(img)
 
     // either this, or EXT_color_buffer_float
@@ -353,6 +351,7 @@
   }
 
   function handleFile(file) {
+    console.log(file)
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
 
@@ -362,7 +361,8 @@
         const cropImg = document.getElementById("cropperImg")
         cropImg.src = album_art_url
 
-        const cropper = new Cropper(cropImg, {
+        if (cropper) cropper.destroy()
+        cropper = new Cropper(cropImg, {
           viewMode: 1,
           aspectRatio: 1,
           dragMode: 'none',
@@ -390,9 +390,6 @@
         modalCloseBtn.addEventListener("click", () => {
           cropperModal.style.display = "none"
           album_art_img.src = cropper.getCroppedCanvas().toDataURL("image/png")
-          cropper.destroy()
-
-          createLegoificator(album_art_img)
         })
         // hideContents()
         // return
@@ -400,8 +397,7 @@
         hideError()
         showContents()
       }
-
-      createLegoificator(album_art_img)
+        createLegoificator(album_art_img)
     }
 
     album_art_img.src = album_art_url
