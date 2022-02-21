@@ -389,18 +389,25 @@ hr {
 /* Modal Content/Box */
 .modal-content {
   border-radius: 0 0 18px 18px;
-  background-color: #ffe330;
-  margin: 10% auto;
+  background-color: white;
+  margin: 5% auto;
   /* 15% from the top and centered */
   border: 1px solid #888;
-  width: 80%;
+  width: 40%;
   /* Could be more or less, depending on screen size */
   max-width: 808.9968943827px;
+}
+@media only screen and (max-width: 808.9968943827px) {
+  .modal-content {
+    width: 80%;
+    /* Could be more or less, depending on screen size */
+  }
 }
 
 /* The Close Button */
 .modal-cancel, .modal-close {
   font-size: 28px;
+  background-color: #ffe330;
 }
 .modal-cancel:hover, .modal-close:hover, .modal-cancel:focus, .modal-close:focus {
   color: black;
