@@ -353,6 +353,7 @@
   }
 
   function handleFile(file) {
+    // https://github.com/fengyuanchen/cropperjs#known-issues
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
 
@@ -374,6 +375,7 @@
           guides: false,
           center: false,
           background: true,
+          checkOrientation: false, // divined to use big memory if checkOrientation is true
           autoCropArea: 1,
           crop: e => { // we dont extrapolate around these parts
             if (e.detail.width < 64 || e.detail.height < 64) {
