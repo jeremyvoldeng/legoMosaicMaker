@@ -461,26 +461,35 @@ hr {
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  border-radius: 0 0 $smallSpacing $smallSpacing;
+  background-color: $yellow;
+  margin: 10% auto; /* 15% from the top and centered */
+  
   // padding: 20px;
   border: 1px solid #888;
-  width: 40%; /* Could be more or less, depending on screen size */
+  width: 80%; /* Could be more or less, depending on screen size */
+  max-width: 2 * ($displayCanvasDim + $displayCanvasMargin);
   // max-width: 600px;
   // max-height: auto;
 }
 
 /* The Close Button */
-.modal-close {
-  color: #aaa;
-  float: right;
+%modal-button {
+  @extend %bigButton;
+
   font-size: 28px;
-  font-weight: bold;
+
+  &:hover,&:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
 }
 
-.modal-close:hover,
-.modal-close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+.modal-close {
+  @extend %modal-button
+}
+
+.modal-cancel {
+  @extend %modal-button
 }
