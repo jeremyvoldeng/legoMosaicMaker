@@ -23,8 +23,7 @@ $black: rgba(10, 10, 10, 0.5);
 @font-face {
   // Oh god this font stuff is messsyyyyyy
   font-family: "Legothick";
-  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"),
-    url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
+  src: url("Legothick.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }

@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
 @font-face {
   font-family: "Legothick";
-  src: url("Legothick.eot?") format("eot"), url("Legothick.woff") format("woff"), url("Legothick.ttf") format("truetype"), url("Legothick.svg#Legothick") format("svg");
+  src: url("Legothick.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
