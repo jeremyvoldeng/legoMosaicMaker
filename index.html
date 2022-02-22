@@ -429,13 +429,7 @@
 
   function genInstructions() {
     if (L) {
-      const mosaic = output_canvas.toDataURL('image/png')
-      L.makeMosaicInstructions(
-        albumName.value,
-        mosaic,
-        output_canvas.width,
-        output_canvas.height
-      )
+      L.makeMosaicInstructions(albumName.value)
     }
   }
 

@@ -273,10 +273,9 @@ class Legoificator {
     this.commenceLegoification(output_ctx)
   }
 
-  makeMosaicInstructions = (name, mosaicImg) => {
+  makeMosaicInstructions = (name) => {
     Instructionificator.Instructionificate(
       name,
-      mosaicImg,
       this.pieceList,
       this.idxToColour,
       this.size,
