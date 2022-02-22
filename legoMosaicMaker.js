@@ -122,6 +122,30 @@ class Legoificator {
     return LABColours
   }
 
+  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => 
+  {
+    let R = 0, G = 0, B = 0, n = 0
+    const period = 4
+    const chunkSegmentWidth = chunkWidth * period
+    const chunkSegmentHeight = chunkHeight * period
+
+    const imin = Math.floor(I0 * chunkSegmentWidth)
+    const jmin = Math.floor(J0 * canvasWidth * chunkSegmentHeight)
+    const imax = Math.ceil((I0 + 1) * chunkSegmentWidth)
+    const jmax = Math.ceil((J0 + 1) * canvasWidth * chunkSegmentHeight)
+
+    console.log(I0, J0, jmin, jmax, imin, imax)
+    for (let j = jmin; j < jmax; j += canvasWidth * period) {
+      for (let i = imin; i < imax; i += period) {
+        R += imgData[j + i + 0]
+        G += imgData[j + i + 1]
+        B += imgData[j + i + 2]
+        n += 1
+      }
+    }
+    return [R / n, G / n, B / n]
+  }
+
   resizeImage = () => {
     /* notes:
      *  This is almost certainly an absurdly stupid way to do this in webgl, but I
@@ -150,18 +174,17 @@ class Legoificator {
     const width_chunk_size = canvas.width / this.size[0]
     const height_chunk_size = canvas.height / this.size[1]
 
-    for (let i = 0; i < this.size[0]; i++) {
-      for (let j = 0; j < this.size[1]; j++) {
-        const vals = ctx.getImageData(
-          i * width_chunk_size,
-          j * width_chunk_size,
-          width_chunk_size,
-          height_chunk_size
-        ).data
-        const R = periodicAvgOverArr(vals, 4, 0)
-        const G = periodicAvgOverArr(vals, 4, 1)
-        const B = periodicAvgOverArr(vals, 4, 2)
-        small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+
+    for (let j = 0; j < this.size[1]; j++) {
+      for (let i = 0; i < this.size[0]; i++) {
+        const RGBavg = this.periodicAvgOnChunk(
+            imgData,
+            i, j,
+            width_chunk_size, height_chunk_size,
+            canvas.width, canvas.height
+        )
+        small_ctx.fillStyle = `rgba(${RGBavg[0]}, ${RGBavg[1]}, ${RGBavg[2]}, 1)`
         // can we somehow write to matrix, then once all colours are
         // in place, write the matrix simultaneously? fewer calls
         // to fillRect.
