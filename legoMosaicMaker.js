@@ -67,6 +67,15 @@ const nthOfArray = (array, period, start) => {
   return vs
 }
 
+const periodicAvgOverArr = (array, period, start) => {
+  let s = 0, n = 0
+  for (let i = start; i < array.length; i += period) {
+    s += array[i]
+    n += 1
+  }
+  return s / n
+}
+
 
 class Legoificator {
 
@@ -149,12 +158,9 @@ class Legoificator {
           width_chunk_size,
           height_chunk_size
         ).data
-        const rs = nthOfArray(vals, 4, 0)
-        const gs = nthOfArray(vals, 4, 1)
-        const bs = nthOfArray(vals, 4, 2)
-        const R = rs.reduce(add) / rs.length
-        const G = gs.reduce(add) / gs.length
-        const B = bs.reduce(add) / bs.length
+        const R = periodicAvgOverArr(vals, 4, 0)
+        const G = periodicAvgOverArr(vals, 4, 1)
+        const B = periodicAvgOverArr(vals, 4, 2)
         small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
         // can we somehow write to matrix, then once all colours are
         // in place, write the matrix simultaneously? fewer calls
