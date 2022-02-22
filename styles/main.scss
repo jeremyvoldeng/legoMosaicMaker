@@ -82,6 +82,9 @@ label {
   background-color: $yellow;
   border: 1px solid $black;
   border-radius: $smallSpacing;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: ew-resize;
 }
 
 input[type="button"],
@@ -123,6 +126,7 @@ input[type="range"] {
   // job of a web dev.
   // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
   background: transparent;
+  cursor: pointer;
 
   &:focus {
     outline: none;

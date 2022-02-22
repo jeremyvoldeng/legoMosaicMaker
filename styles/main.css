@@ -54,6 +54,7 @@ input[type=url]:focus > :invalid {
 
 input[type=range] {
   background: transparent;
+  cursor: pointer;
 }
 input[type=range]:focus {
   outline: none;
@@ -84,6 +85,9 @@ input[type=range]::-webkit-slider-thumb {
   background-color: #ffe330;
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 18px;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: ew-resize;
   -webkit-appearance: none;
 }
 input[type=range]::-moz-range-thumb {
@@ -93,6 +97,9 @@ input[type=range]::-moz-range-thumb {
   background-color: #ffe330;
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 18px;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: ew-resize;
 }
 input[type=range]::-ms-thumb {
   height: 18px;
@@ -101,6 +108,9 @@ input[type=range]::-ms-thumb {
   background-color: #ffe330;
   border: 1px solid rgba(10, 10, 10, 0.5);
   border-radius: 18px;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: ew-resize;
 }
 input[type=range]:disabled::-webkit-slider-thumb, input[type=range]:disabled::-moz-range-thumb, input[type=range]:disabled::-ms-thumb {
   background-color: rgba(206, 193, 111, 0.5);
