@@ -76,6 +76,55 @@ const periodicAvgOverArr = (array, period, start) => {
   return s / n
 }
 
+const resizeImage = (inputImg, outputWidth, outputHeight) => {
+  /* notes:
+   *  This is almost certainly an absurdly stupid way to do this in webgl, but I
+   *  am stupid and just trying to move quickly so c'est la vie
+   *
+   *  Should make this a webGL thing too w/ glfx, and when a texture is applied to
+   *  the input image, also apply it to this small image. This is probably the
+   *  method with the greatest performance returns.
+   *
+   *  The question is: does the resizing commute with any affects that are applied?
+   *  e.g. does local averaging commute with saturation, brightness, contrast?
+   */
+  const canvas = document.createElement('canvas')
+  canvas.width = inputImg.width
+  canvas.height = inputImg.height
+
+  const small_canvas = document.createElement('canvas')
+  small_canvas.width = outputWidth
+  small_canvas.height = outputHeight
+
+  const ctx = canvas.getContext('2d');
+  const small_ctx = small_canvas.getContext('2d');
+
+  ctx.drawImage(inputImg, 0, 0);
+
+  const width_chunk_size = canvas.width / outputWidth
+  const height_chunk_size = canvas.height / outputHeight
+
+  for (let i = 0; i < outputWidth; i++) {
+    for (let j = 0; j < outputHeight; j++) {
+      const vals = ctx.getImageData(
+        i * width_chunk_size,
+        j * width_chunk_size,
+        width_chunk_size,
+        height_chunk_size
+      ).data
+      const R = periodicAvgOverArr(vals, 4, 0)
+      const G = periodicAvgOverArr(vals, 4, 1)
+      const B = periodicAvgOverArr(vals, 4, 2)
+      small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
+      // can we somehow write to matrix, then once all colours are
+      // in place, write the matrix simultaneously? fewer calls
+      // to fillRect.
+      small_ctx.fillRect(i, j, 1, 1)
+    }
+  }
+  return small_ctx
+}
+
 
 class Legoificator {
 
@@ -99,7 +148,7 @@ class Legoificator {
     this.size = undefined
 
     this.updateSize(size)
-    this.resizeImage()
+    this.updateMiniCtx()
 
   }
 
@@ -122,53 +171,10 @@ class Legoificator {
     return LABColours
   }
 
-  resizeImage = () => {
-    /* notes:
-     *  This is almost certainly an absurdly stupid way to do this in webgl, but I
-     *  am stupid and just trying to move quickly so c'est la vie
-     *
-     *  Should make this a webGL thing too w/ glfx, and when a texture is applied to
-     *  the input image, also apply it to this small image. This is probably the
-     *  method with the greatest performance returns.
-     *
-     *  The question is: does the resizing commute with any affects that are applied?
-     *  e.g. does local averaging commute with saturation, brightness, contrast?
-     */
-    const canvas = document.createElement('canvas')
-    canvas.width = this.input_image_gl.width
-    canvas.height = this.input_image_gl.height
-
-    const small_canvas = document.createElement('canvas')
-    small_canvas.width = this.size[0]
-    small_canvas.height = this.size[1]
-
-    const ctx = canvas.getContext('2d');
-    const small_ctx = small_canvas.getContext('2d');
-
-    ctx.drawImage(this.input_image_gl.gl.canvas, 0, 0);
-
-    const width_chunk_size = canvas.width / this.size[0]
-    const height_chunk_size = canvas.height / this.size[1]
-
-    for (let i = 0; i < this.size[0]; i++) {
-      for (let j = 0; j < this.size[1]; j++) {
-        const vals = ctx.getImageData(
-          i * width_chunk_size,
-          j * width_chunk_size,
-          width_chunk_size,
-          height_chunk_size
-        ).data
-        const R = periodicAvgOverArr(vals, 4, 0)
-        const G = periodicAvgOverArr(vals, 4, 1)
-        const B = periodicAvgOverArr(vals, 4, 2)
-        small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
-        // can we somehow write to matrix, then once all colours are
-        // in place, write the matrix simultaneously? fewer calls
-        // to fillRect.
-        small_ctx.fillRect(i, j, 1, 1)
-      }
-    }
-    this.mini_input_ctx = small_ctx
+  updateMiniCtx = () => {
+    this.mini_input_ctx = resizeImage(
+      this.input_image_gl.gl.canvas, this.size[0], this.size[1]
+    )
   }
 
   SquaredEuclideanDist = (v0, v1) => {
@@ -269,7 +275,7 @@ class Legoificator {
   }
 
   updateLegoificatedEntity = (output_ctx) => {
-    this.resizeImage()
+    this.updateMiniCtx()
     this.commenceLegoification(output_ctx)
   }
 
