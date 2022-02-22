@@ -171,12 +171,6 @@ hr {
   border: 0;
 }
 
-#errText {
-  max-width: 50%;
-  margin-bottom: 36px;
-  color: #af9907;
-}
-
 #initialMessage {
   max-width: 50%;
 }
@@ -302,6 +296,12 @@ hr {
 
 .content {
   text-align: center;
+}
+
+.errText {
+  max-width: 50%;
+  margin-bottom: 36px;
+  color: #af9907;
 }
 
 .row, .rowToCol, #linksDiv {

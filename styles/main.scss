@@ -185,7 +185,7 @@ hr {
 
   @include mobileDesign {
     & h1 {
-      font-size: $phi * $baseFontSize
+      font-size: $phi * $baseFontSize;
     }
   }
 }
@@ -220,7 +220,7 @@ hr {
   @extend %footerSpacing;
   margin: $smallSpacing;
   & > * {
-    margin: math.div($smallSpacing, 2)
+    margin: math.div($smallSpacing, 2);
   }
 }
 
@@ -237,12 +237,6 @@ hr {
   white-space: nowrap; /* 1 */
   clip-path: inset(50%);
   border: 0;
-}
-
-#errText {
-  max-width: 50%;
-  margin-bottom: 2 * $smallSpacing;
-  color: $yellowDark;
 }
 
 #initialMessage {
@@ -385,6 +379,12 @@ hr {
 
 .content {
   text-align: center;
+}
+
+.errText {
+  max-width: 50%;
+  margin-bottom: 2 * $smallSpacing;
+  color: $yellowDark;
 }
 
 .row {

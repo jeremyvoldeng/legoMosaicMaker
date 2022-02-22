@@ -22,7 +22,7 @@
   <!-- jsPDF lets us make PDF -->
   <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
 
-  <!-- cropper lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
+  <!-- croppr lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
   <script src="croppr.min.js"></script>
   <link rel="stylesheet" href="croppr.min.css" />
 
@@ -49,7 +49,28 @@
   </div>
 
   <div class="content col">
-    <b id="errText" hidden> </b>
+    <noscript>
+      <style type="text/css">
+        .pagecontainer {
+          display: none;
+        }
+      </style>
+      <b class="errText">
+        You don't have Javascript enabled. Unfortunately, this website requires Javascript to run!
+        <br>
+        <br>
+        We don't collect data, run a crypto miner, or do anything else of the sort - we don't even run the hosting
+        server (thanks Github!).
+        <br>
+        You can feel safe turning it on for this site. If you don't trust me, <a
+          href="https://github.com/jeremyvoldeng/legoMosaicMaker">check out the code on Github!</a>
+        <br>
+        <br>
+        Otherwise, thank you for checking us out! We appreciate it - Axel & Jeremy
+      </b>
+    </noscript>
+
+    <b class="errText" hidden> </b>
 
     <!-- Satan's Modal of Satanity -->
     <div id="cropperModal" class="modal">
@@ -91,11 +112,9 @@
       <option value="https://upload.wikimedia.org/wikipedia/en/5/5e/Madvillainy_cover.png" label="Madvillany">
     </datalist>
 
-    <!-- <div class="secondaryContent" role="button" tabIndex="0" aria-label="Just try an example"> -->
     <p class="secondaryContent" role="button" tabIndex="0" aria-label="Just try an example" id="example">
       Just want to try an example? Click Me!
     </p>
-    <!-- </div> -->
 
     <div id="informationText" class="secondaryContent">
       <h4> What is this? </h4>
