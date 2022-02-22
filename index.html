@@ -186,16 +186,7 @@
               <input type="text" id="albumName" placeholder="Title">
             </div>
             <div class="centre">
-              <!-- <div class="row pointer"> -->
-              <!--   <label for="useLAB"> -->
-              <!--     <!-1- Open in new tab -1-> -->
-              <!--     <a href="https://en.wikipedia.org/wiki/CIELAB_color_space" target="_blank" rel="noopener"> -->
-              <!--       use L*a*b* colours -->
-              <!--     </a> -->
-              <!--   </label> -->
-
-              <!--   <input type="checkbox" id="useLAB"> -->
-              <!-- </div> -->
+              <input type="submit" id="resetBtn" value="Reset">
             </div>
           </div>
 
@@ -203,11 +194,14 @@
             <div class="centre">
               <div id="generatePDFBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
                 <span id="downloadTheWord">Download</span>
-                <span id="instructionsTheWord">Instructions</span>
+                <span id="anotherWord">Instructions</span>
               </div>
             </div>
             <div class="centre">
-              <input type="submit" id="resetBtn" value="Reset">
+              <div id="downloadMosaicBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
+                <span id="downloadTheWord">Download</span>
+                <span id="anotherWord">Mosaic</span>
+              </div>
             </div>
           </div>
 
@@ -257,6 +251,7 @@
   const contrastSlider = document.getElementById("contrast")
   const sizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
+  const downloadMosaicBtn = document.getElementById("downloadMosaicBtn")
   const errTextBox = document.getElementById("errText")
   const modalCloseBtn = document.getElementById("modal-close")
   const modalCancelBtn = document.getElementById("modal-cancel")
@@ -280,6 +275,7 @@
   contrastSlider.oninput = legoify
   generatePDFBtn.onclick = genInstructions
   generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
+  downloadMosaicBtn.onclick = downloadMosaic
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
@@ -396,7 +392,6 @@
   }
 
   function reset() {
-    // useLABCheck.checked = true
     sizeSlider.value = 3
     contrastSlider.value = 0
     brightSlider.value = 0
@@ -425,6 +420,15 @@
       L.updateSize(parseInt(sizeSlider.value))
       L.updateLegoificatedEntity(out_ctx)
     }
+  }
+
+  function downloadMosaic() {
+    const mosaicURL = output_canvas.toDataURL('image/png')
+    const alink = document.createElement('a')
+    const fileName = (albumName.value || 'mosaic') + '.png'
+    alink.href = mosaicURL
+    alink.download = fileName
+    alink.click()
   }
 
   function genInstructions() {

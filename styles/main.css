@@ -206,14 +206,14 @@ hr {
 }
 
 #downloadTheWord {
+  font-size: 18px;
+}
+
+#anotherWord {
   font-size: 29.1246117966px;
 }
 
-#instructionsTheWord {
-  font-size: 38.1246117966px;
-}
-
-.modal-cancel, .modal-close, #example, #albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
+.modal-cancel, .modal-close, #example, #downloadMosaicBtn, #albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
   cursor: pointer;
   padding: 18px;
   background-clip: padding-box;
@@ -222,7 +222,7 @@ hr {
   border-radius: 18px;
   font-size: 18px;
 }
-.modal-cancel:focus, .modal-close:focus, #example:focus, #albumArtURLBtn:focus, #uploadImgBtn:focus, #generatePDFBtn:focus, #resetBtn:focus {
+.modal-cancel:focus, .modal-close:focus, #example:focus, #downloadMosaicBtn:focus, #albumArtURLBtn:focus, #uploadImgBtn:focus, #generatePDFBtn:focus, #resetBtn:focus {
   outline: 1px solid;
 }
 
@@ -232,7 +232,7 @@ hr {
 }
 
 #generatePDFBtn {
-  border: 18px solid rgba(255, 227, 48, 0.5);
+  border: 9px solid rgba(255, 227, 48, 0.5);
   background-color: #ffe330;
 }
 
@@ -250,6 +250,11 @@ hr {
   border-radius: 0 9px 9px 0;
   padding: 7.25px;
   margin: 0;
+}
+
+#downloadMosaicBtn {
+  border: 9px solid rgba(255, 227, 48, 0.5);
+  background-color: #ffe330;
 }
 
 #albumArtURL {
@@ -329,12 +334,16 @@ hr {
   font-family: "Legothick";
 }
 
+.nonSliderInputs {
+  margin: 0;
+}
 .nonSliderInputs > * {
   height: 180px;
 }
 @media only screen and (max-width: 808.9968943827px) {
   .nonSliderInputs > * {
-    height: 120px;
+    margin: 18px;
+    height: initial;
   }
 }
 
@@ -377,41 +386,28 @@ hr {
 
 .modal {
   display: none;
-  /* Hidden by default */
   position: fixed;
-  /* Stay in place */
   z-index: 1;
-  /* Sit on top */
   left: 0;
   top: 0;
   width: 100%;
-  /* Full width */
   height: 100%;
-  /* Full height */
   overflow: auto;
-  /* Enable scroll if needed */
   background-color: black;
-  /* Fallback color */
   background-color: rgba(0, 0, 0, 0.9);
-  /* Black w/ opacity */
 }
 
-/* Modal Content/Box */
 .modal-content {
   margin: 5% auto;
-  /* 15% from the top and centered */
   width: 40%;
-  /* Could be more or less, depending on screen size */
   max-width: 808.9968943827px;
 }
 @media only screen and (max-width: 808.9968943827px) {
   .modal-content {
     width: 80%;
-    /* Could be more or less, depending on screen size */
   }
 }
 
-/* The Close Button */
 .modal-cancel, .modal-close {
   font-size: 28px;
   background-color: #ffe330;
