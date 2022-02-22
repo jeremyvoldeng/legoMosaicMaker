@@ -87,7 +87,11 @@ const resizeImage = (inputImg, outputWidth, outputHeight) => {
    *
    *  The question is: does the resizing commute with any affects that are applied?
    *  e.g. does local averaging commute with saturation, brightness, contrast?
+   *
+   *  inputImg has one of the types defined under `image`: 
+   *    https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage#parameters
    */
+  console.log(inputImg, outputWidth, outputHeight)
   const canvas = document.createElement('canvas')
   canvas.width = inputImg.width
   canvas.height = inputImg.height

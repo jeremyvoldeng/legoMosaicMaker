@@ -359,9 +359,26 @@
     // Therefore I would love some help here!
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
+    console.log(file)
 
     album_art_img.onload = () => {
-      if (imgRequiresResize(album_art_img)) {
+      if (imgTooSmall(album_art_img)) {
+        hideContents()
+        showError(
+          "Your image is too small! It needs to have a width " +
+          "and height greater than 64px. Yours is " + album_art_img.width +
+          " by " + album_art_img.height
+        )
+        return
+      } else if (imgTooBig(img)) {
+        console.log('toobig')
+        hideError()
+        let v = resizeImage(album_art_img, album_art_img.width/2, album_art_img.height/2)
+        console.log(v)
+        album_art_img.src = v.canvas.toDataURL('image/png')
+      } else if (imgRequiresCrop(album_art_img)) {
+        console.log('rectangular')
+        hideError()
         cropperModal.style.display = "block"
         const cropImg = document.getElementById("cropperImg")
 
@@ -383,11 +400,13 @@
             cropperModal.style.display = "none"
             cropper.destroy()
             cropImg.removeAttribute('src')
+            console.log(cropImage(album_art_img, cropBoxData))
             album_art_img.src = cropImage(album_art_img, cropBoxData)
           }
         }
         cropImg.src = album_art_url
       } else {
+        console.log('gucci')
         hideError()
         showContents()
         createLegoificator(album_art_img)
@@ -461,11 +480,17 @@
     legoify()
   }
 
-  function imgRequiresResize(img) {
+  function imgRequiresCrop(img) {
+    return img.width != img.height
+  }
+
+  function imgTooSmall(img) {
     const minDim = 64
-    const unevenAspectRatio = img.width != img.height
-    const tooSmall = img.width < minDim || img.height < minDim
-    return tooSmall || unevenAspectRatio
+    return img.width < minDim || img.height < minDim
+  }
+
+  function fileTooBig(file) {
+    return file.size > 64000
   }
 
   function showContents() {
