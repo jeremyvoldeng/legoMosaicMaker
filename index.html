@@ -186,17 +186,7 @@
               <input type="text" id="albumName" placeholder="Title">
             </div>
             <div class="centre">
-              <div class="row pointer">
-
-                <label for="useLAB">
-                  <!-- Open in new tab -->
-                  <a href="https://en.wikipedia.org/wiki/CIELAB_color_space" target="_blank" rel="noopener">
-                    use L*a*b* colours
-                  </a>
-                </label>
-
-                <input type="checkbox" id="useLAB">
-              </div>
+              <input type="submit" id="resetBtn" value="Reset">
             </div>
           </div>
 
@@ -204,11 +194,14 @@
             <div class="centre">
               <div id="generatePDFBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
                 <span id="downloadTheWord">Download</span>
-                <span id="instructionsTheWord">Instructions</span>
+                <span id="anotherWord">Instructions</span>
               </div>
             </div>
             <div class="centre">
-              <input type="submit" id="resetBtn" value="Reset">
+              <div id="downloadMosaicBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
+                <span id="downloadTheWord">Download</span>
+                <span id="anotherWord">Mosaic</span>
+              </div>
             </div>
           </div>
 
@@ -251,13 +244,14 @@
   const imgdiv = document.getElementById("imgdiv")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
-  const useLABCheck = document.getElementById("useLAB")
+  // const useLABCheck = document.getElementById("useLAB")
   const sizeSlider = document.getElementById("size")
   const satSlider = document.getElementById("saturation")
   const brightSlider = document.getElementById("brightness")
   const contrastSlider = document.getElementById("contrast")
   const sizeLabel = document.getElementById("sizeLabel")
   const generatePDFBtn = document.getElementById("generatePDFBtn")
+  const downloadMosaicBtn = document.getElementById("downloadMosaicBtn")
   const errTextBox = document.getElementById("errText")
   const modalCloseBtn = document.getElementById("modal-close")
   const modalCancelBtn = document.getElementById("modal-cancel")
@@ -274,13 +268,14 @@
   }
   resetButton.onclick = reset
   resetButton.onkeydown = e => keyPressToClick(e, reset)
-  useLABCheck.onchange = legoify
+  // useLABCheck.onchange = legoify
   sizeSlider.oninput = updateSize
   satSlider.oninput = legoify
   brightSlider.oninput = legoify
   contrastSlider.oninput = legoify
   generatePDFBtn.onclick = genInstructions
   generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
+  downloadMosaicBtn.onclick = downloadMosaic
 
   let fxcanvas
   try { fxcanvas = fx.canvas() } catch (e) {
@@ -397,7 +392,6 @@
   }
 
   function reset() {
-    useLABCheck.checked = true
     sizeSlider.value = 3
     contrastSlider.value = 0
     brightSlider.value = 0
@@ -411,7 +405,7 @@
       input_texture.loadContentsOf(album_art_img)
       fxcanvas.draw(input_texture).update()
       L.updateSize(parseInt(sizeSlider.value))
-      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+      L.updateLegoificatedEntity(out_ctx)
     }
   }
 
@@ -424,19 +418,22 @@
         .update()
 
       L.updateSize(parseInt(sizeSlider.value))
-      L.updateLegoificatedEntity(out_ctx, useLABCheck.checked)
+      L.updateLegoificatedEntity(out_ctx)
     }
+  }
+
+  function downloadMosaic() {
+    const mosaicURL = output_canvas.toDataURL('image/png')
+    const alink = document.createElement('a')
+    const fileName = (albumName.value || 'mosaic') + '.png'
+    alink.href = mosaicURL
+    alink.download = fileName
+    alink.click()
   }
 
   function genInstructions() {
     if (L) {
-      const mosaic = output_canvas.toDataURL('image/png')
-      L.makeMosaicInstructions(
-        albumName.value,
-        mosaic,
-        output_canvas.width,
-        output_canvas.height
-      )
+      L.makeMosaicInstructions(albumName.value)
     }
   }
 

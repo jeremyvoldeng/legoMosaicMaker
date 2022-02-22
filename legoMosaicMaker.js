@@ -181,7 +181,7 @@ class Legoificator {
     return d1 * d1 + d2 * d2 + d3 * d3
   }
 
-  getClosestLegoColour = (rgb, colours = legoColours) => {
+  getClosestLegoColour = (rgb) => {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -197,8 +197,8 @@ class Legoificator {
      */
     let minimumColourDist = Number.MAX_SAFE_INTEGER
     let closestColour = ""
-    for (let colour in colours) {
-      const legoRGB = colours[colour]
+    for (let colour in this.LABColours) {
+      const legoRGB = this.LABColours[colour]
       const colourDist = this.SquaredEuclideanDist(rgb, legoRGB)
       if (colourDist < minimumColourDist) {
         minimumColourDist = colourDist
@@ -208,7 +208,7 @@ class Legoificator {
     return closestColour
   }
 
-  commenceLegoification = (output_ctx, useLAB = false) => {
+  commenceLegoification = (output_ctx) => {
     if (this.mini_input_ctx === undefined) {
       throw `Legoificator has not been initialized; mini_input_ctx is undefined`
     }
@@ -225,10 +225,9 @@ class Legoificator {
     let current_colour_id = 1  // this is used in the PDF
     const coloursUsed = this.initColoursUsed()  // this holds information for PDF generation
 
-    if (useLAB && this.LABColours == undefined) {
+    if (this.LABColours == undefined) {
       this.LABColours = this.initLABColours()
     }
-    const colourPalette = useLAB ? this.LABColours : legoColours
 
     const RGBAs = this.mini_input_ctx.getImageData(
       0, 0,
@@ -247,8 +246,8 @@ class Legoificator {
         const b = Bs[idx]
 
         // find the closest colour
-        const targetColour = useLAB ? RGBtoLAB([r, g, b]) : [r, g, b]
-        const closest_lego_colour = this.getClosestLegoColour(targetColour, colourPalette)
+        const targetColour = RGBtoLAB([r, g, b])
+        const closest_lego_colour = this.getClosestLegoColour(targetColour)
 
         // update the colours that were used
         coloursUsed[closest_lego_colour]['pieceCount']++
@@ -269,15 +268,14 @@ class Legoificator {
     this.pieceList = coloursUsed
   }
 
-  updateLegoificatedEntity = (output_ctx, useLAB = false) => {
+  updateLegoificatedEntity = (output_ctx) => {
     this.resizeImage()
-    this.commenceLegoification(output_ctx, useLAB)
+    this.commenceLegoification(output_ctx)
   }
 
-  makeMosaicInstructions = (name, mosaicImg) => {
+  makeMosaicInstructions = (name) => {
     Instructionificator.Instructionificate(
       name,
-      mosaicImg,
       this.pieceList,
       this.idxToColour,
       this.size,
