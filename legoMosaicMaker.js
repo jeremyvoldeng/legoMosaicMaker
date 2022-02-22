@@ -78,8 +78,6 @@ class Legoificator {
      *
      * size gives the number of lego pieces along width and height by this formula
      *    [width, height] = [size * 16, size * 16]
-     *
-     * scale is used to incrase the scale of the image
      */
     this.input_image_gl = input_image._  // plz dont delete that underscore
     this.factor = factor
@@ -97,7 +95,7 @@ class Legoificator {
   }
 
   updateSize(s) {
-    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof (size)} (must be int)`
+    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof(size)} (must be int)`
     this.size = [16 * s, 16 * s]
   }
 
