@@ -104,7 +104,7 @@ class Legoificator {
   }
 
   updateSize(s) {
-    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof(size)} (must be int)`
+    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof (size)} (must be int)`
     this.size = [16 * s, 16 * s]
   }
 
@@ -120,6 +120,25 @@ class Legoificator {
     for (let [key, rgb] of Object.entries(legoColours))
       LABColours[key] = RGBtoLAB(rgb)
     return LABColours
+  }
+
+  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => {
+    let R = 0, G = 0, B = 0, n = 0
+    const period = 4
+    const imin = Math.floor(chunkWidth * I0) * period
+    const jmin = Math.floor(chunkHeight * J0) * canvasWidth * period
+    const imax = Math.ceil(chunkWidth * (I0 + 1)) * period
+    const jmax = Math.ceil(chunkHeight * (J0 + 1)) * canvasWidth * period
+
+    for (let j = jmin; j < jmax; j += canvasWidth * period) {
+      for (let i = imin; i < imax; i += period) {
+        R += imgData[j + i]
+        G += imgData[j + i + 1]
+        B += imgData[j + i + 2]
+        n += 1
+      }
+    }
+    return [R / n, G / n, B / n]
   }
 
   resizeImage = () => {
@@ -150,18 +169,17 @@ class Legoificator {
     const width_chunk_size = canvas.width / this.size[0]
     const height_chunk_size = canvas.height / this.size[1]
 
-    for (let i = 0; i < this.size[0]; i++) {
-      for (let j = 0; j < this.size[1]; j++) {
-        const vals = ctx.getImageData(
-          i * width_chunk_size,
-          j * width_chunk_size,
-          width_chunk_size,
-          height_chunk_size
-        ).data
-        const R = periodicAvgOverArr(vals, 4, 0)
-        const G = periodicAvgOverArr(vals, 4, 1)
-        const B = periodicAvgOverArr(vals, 4, 2)
-        small_ctx.fillStyle = `rgba(${R}, ${G}, ${B}, 1)`
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
+
+    for (let j = 0; j < this.size[1]; j++) {
+      for (let i = 0; i < this.size[0]; i++) {
+        const RGBavg = this.periodicAvgOnChunk(
+          imgData,
+          i, j,
+          width_chunk_size, height_chunk_size,
+          canvas.width, canvas.height
+        )
+        small_ctx.fillStyle = `rgba(${RGBavg[0]}, ${RGBavg[1]}, ${RGBavg[2]}, 1)`
         // can we somehow write to matrix, then once all colours are
         // in place, write the matrix simultaneously? fewer calls
         // to fillRect.
