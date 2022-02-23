@@ -104,7 +104,7 @@ class Legoificator {
   }
 
   updateSize(s) {
-    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof(size)} (must be int)`
+    if (![1, 2, 3, 4].includes(s)) throw `size must be one of 1,2,3,4 - got ${s}, typeof(size) == ${typeof (size)} (must be int)`
     this.size = [16 * s, 16 * s]
   }
 
@@ -122,22 +122,17 @@ class Legoificator {
     return LABColours
   }
 
-  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => 
-  {
+  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => {
     let R = 0, G = 0, B = 0, n = 0
     const period = 4
-    const chunkSegmentWidth = chunkWidth * period
-    const chunkSegmentHeight = chunkHeight * period
+    const imin = Math.floor(chunkWidth * I0) * period
+    const jmin = Math.floor(chunkHeight * J0) * canvasWidth * period
+    const imax = Math.ceil(chunkWidth * (I0 + 1)) * period
+    const jmax = Math.ceil(chunkHeight * (J0 + 1)) * canvasWidth * period
 
-    const imin = Math.floor(I0 * chunkSegmentWidth)
-    const jmin = Math.floor(J0 * canvasWidth * chunkSegmentHeight)
-    const imax = Math.ceil((I0 + 1) * chunkSegmentWidth)
-    const jmax = Math.ceil((J0 + 1) * canvasWidth * chunkSegmentHeight)
-
-    console.log(I0, J0, jmin, jmax, imin, imax)
     for (let j = jmin; j < jmax; j += canvasWidth * period) {
       for (let i = imin; i < imax; i += period) {
-        R += imgData[j + i + 0]
+        R += imgData[j + i]
         G += imgData[j + i + 1]
         B += imgData[j + i + 2]
         n += 1
@@ -179,10 +174,10 @@ class Legoificator {
     for (let j = 0; j < this.size[1]; j++) {
       for (let i = 0; i < this.size[0]; i++) {
         const RGBavg = this.periodicAvgOnChunk(
-            imgData,
-            i, j,
-            width_chunk_size, height_chunk_size,
-            canvas.width, canvas.height
+          imgData,
+          i, j,
+          width_chunk_size, height_chunk_size,
+          canvas.width, canvas.height
         )
         small_ctx.fillStyle = `rgba(${RGBavg[0]}, ${RGBavg[1]}, ${RGBavg[2]}, 1)`
         // can we somehow write to matrix, then once all colours are
