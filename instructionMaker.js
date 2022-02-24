@@ -5,6 +5,27 @@ const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) 
 const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
 
 
+class wantedListGenerator {
+  // https://www.bricklink.com/help.asp?helpID=207
+  static createWantedList = pieceList => {
+    /*
+     * pieceList is {
+     *    color1: {count: n1, colourId: m1},
+     *    color2: {count: n2, colourId: m2},
+     *    ...
+     *  }
+     */
+    const wantedList = document.implementation.createDocument(null, "wantedlist")
+    wantedList.appendChild(wantedList.create
+  }
+
+  static addPiece = (doc, colour, count) => {
+    const item = doc.createElement("ITEM")
+    item.
+  }
+}
+
+
 class Instructionificator {
   /* There are a lot of magic numbers in this class.
    * We all need more ~~~magic~~~ in our lives!!!
