@@ -425,7 +425,7 @@
       input_texture.loadContentsOf(album_art_img)
       fxcanvas.draw(input_texture).update()
       L.updateSize(parseInt(sizeSlider.value))
-      L.updateLegoificatedEntity(out_ctx)
+      L.commenceLegoification(out_ctx)
     }
   }
 
@@ -438,7 +438,7 @@
         .update()
 
       L.updateSize(parseInt(sizeSlider.value))
-      L.updateLegoificatedEntity(out_ctx)
+      L.commenceLegoification(out_ctx)
     }
   }
 
@@ -516,7 +516,7 @@
                 .update()
 
               L.updateSize(size)
-              L.updateLegoificatedEntity(out_ctx, LAB)
+              L.commenceLegoification(out_ctx, LAB)
             }
           }
         }

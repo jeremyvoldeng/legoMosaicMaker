@@ -222,10 +222,6 @@ class Legoificator {
     this.pieceList = coloursUsed
   }
 
-  updateLegoificatedEntity = (output_ctx) => {
-    this.commenceLegoification(output_ctx)
-  }
-
   makeMosaicInstructions = (name) => {
     Instructionificator.Instructionificate(
       name,
