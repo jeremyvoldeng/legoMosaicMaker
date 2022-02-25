@@ -264,7 +264,6 @@
   const imgdiv = document.getElementById("imgdiv")
   const albumName = document.getElementById("albumName")
   const resetButton = document.getElementById("resetBtn")
-  // const useLABCheck = document.getElementById("useLAB")
   const sizeSlider = document.getElementById("size")
   const satSlider = document.getElementById("saturation")
   const brightSlider = document.getElementById("brightness")
@@ -288,7 +287,6 @@
   }
   resetButton.onclick = reset
   resetButton.onkeydown = e => keyPressToClick(e, reset)
-  // useLABCheck.onchange = legoify
   sizeSlider.oninput = updateSize
   satSlider.oninput = legoify
   brightSlider.oninput = legoify
@@ -504,20 +502,18 @@
 
   function testMe() {
     console.log("starting test")
-    for (let LAB of [false, true]) {
-      for (let size of [1, 2, 3, 4]) {
-        for (let saturation of linspace(-0.2, 0.2, 3)) {
-          for (let bright of linspace(-0.2, 0.2, 3)) {
-            for (let contrast of linspace(-0.2, 0.2, 3)) {
-              input_texture.loadContentsOf(album_art_img)
-              fxcanvas.draw(input_texture)
-                .hueSaturation(0, saturation)
-                .brightnessContrast(bright, contrast)
-                .update()
+    for (let size of [1, 2, 3, 4]) {
+      for (let saturation of linspace(-0.2, 0.2, 3)) {
+        for (let bright of linspace(-0.2, 0.2, 3)) {
+          for (let contrast of linspace(-0.2, 0.2, 3)) {
+            input_texture.loadContentsOf(album_art_img)
+            fxcanvas.draw(input_texture)
+              .hueSaturation(0, saturation)
+              .brightnessContrast(bright, contrast)
+              .update()
 
-              L.updateSize(size)
-              L.commenceLegoification(out_ctx, LAB)
-            }
+            L.updateSize(size)
+            L.commenceLegoification(out_ctx, LAB)
           }
         }
       }
