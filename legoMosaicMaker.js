@@ -59,23 +59,6 @@ const drawCircle = (x, y, r, colour, canvas_ctx) => {
   canvas_ctx.fill(circle)
 }
 
-const nthOfArray = (array, period, start) => {
-  const vs = []
-  for (let i = start; i < array.length; i += period) {
-    vs.push(array[i])
-  }
-  return vs
-}
-
-const periodicAvgOverArr = (array, period, start) => {
-  let s = 0, n = 0
-  for (let i = start; i < array.length; i += period) {
-    s += array[i]
-    n += 1
-  }
-  return s / n
-}
-
 
 class Legoificator {
 
@@ -95,12 +78,9 @@ class Legoificator {
     this.pieceList = {}
 
     this.LABColours = undefined
-    this.mini_input_ctx = undefined
     this.size = undefined
 
     this.updateSize(size)
-    this.resizeImage()
-
   }
 
   updateSize(s) {
@@ -120,73 +100,6 @@ class Legoificator {
     for (let [key, rgb] of Object.entries(legoColours))
       LABColours[key] = RGBtoLAB(rgb)
     return LABColours
-  }
-
-  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => {
-    let R = 0, G = 0, B = 0, n = 0
-    const period = 4
-    const imin = Math.floor(chunkWidth * I0) * period
-    const jmin = Math.floor(chunkHeight * J0) * canvasWidth * period
-    const imax = Math.ceil(chunkWidth * (I0 + 1)) * period
-    const jmax = Math.ceil(chunkHeight * (J0 + 1)) * canvasWidth * period
-
-    for (let j = jmin; j < jmax; j += canvasWidth * period) {
-      for (let i = imin; i < imax; i += period) {
-        R += imgData[j + i]
-        G += imgData[j + i + 1]
-        B += imgData[j + i + 2]
-        n += 1
-      }
-    }
-    return [R / n, G / n, B / n]
-  }
-
-  resizeImage = () => {
-    /* notes:
-     *  This is almost certainly an absurdly stupid way to do this in webgl, but I
-     *  am stupid and just trying to move quickly so c'est la vie
-     *
-     *  Should make this a webGL thing too w/ glfx, and when a texture is applied to
-     *  the input image, also apply it to this small image. This is probably the
-     *  method with the greatest performance returns.
-     *
-     *  The question is: does the resizing commute with any affects that are applied?
-     *  e.g. does local averaging commute with saturation, brightness, contrast?
-     */
-    const canvas = document.createElement('canvas')
-    canvas.width = this.input_image_gl.width
-    canvas.height = this.input_image_gl.height
-
-    const small_canvas = document.createElement('canvas')
-    small_canvas.width = this.size[0]
-    small_canvas.height = this.size[1]
-
-    const ctx = canvas.getContext('2d');
-    const small_ctx = small_canvas.getContext('2d');
-
-    ctx.drawImage(this.input_image_gl.gl.canvas, 0, 0);
-
-    const width_chunk_size = canvas.width / this.size[0]
-    const height_chunk_size = canvas.height / this.size[1]
-
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
-
-    for (let j = 0; j < this.size[1]; j++) {
-      for (let i = 0; i < this.size[0]; i++) {
-        const RGBavg = this.periodicAvgOnChunk(
-          imgData,
-          i, j,
-          width_chunk_size, height_chunk_size,
-          canvas.width, canvas.height
-        )
-        small_ctx.fillStyle = `rgba(${RGBavg[0]}, ${RGBavg[1]}, ${RGBavg[2]}, 1)`
-        // can we somehow write to matrix, then once all colours are
-        // in place, write the matrix simultaneously? fewer calls
-        // to fillRect.
-        small_ctx.fillRect(i, j, 1, 1)
-      }
-    }
-    this.mini_input_ctx = small_ctx
   }
 
   SquaredEuclideanDist = (v0, v1) => {
@@ -226,11 +139,26 @@ class Legoificator {
     return closestColour
   }
 
-  commenceLegoification = (output_ctx) => {
-    if (this.mini_input_ctx === undefined) {
-      throw `Legoificator has not been initialized; mini_input_ctx is undefined`
-    }
+  periodicAvgOnChunk = (imgData, I0, J0, chunkWidth, chunkHeight, canvasWidth, canvasHeight) => {
+    let R = 0, G = 0, B = 0, n = 0
+    const period = 4
+    const imin = Math.floor(chunkWidth * I0) * period
+    const jmin = Math.floor(chunkHeight * J0) * canvasWidth * period
+    const imax = Math.ceil(chunkWidth * (I0 + 1)) * period
+    const jmax = Math.ceil(chunkHeight * (J0 + 1)) * canvasWidth * period
 
+    for (let j = jmin; j < jmax; j += canvasWidth * period) {
+      for (let i = imin; i < imax; i += period) {
+        R += imgData[j + i]
+        G += imgData[j + i + 1]
+        B += imgData[j + i + 2]
+        n += 1
+      }
+    }
+    return [R / n, G / n, B / n]
+  }
+
+  commenceLegoification = (output_ctx) => {
     // Set canvas size, with appropriate css scaling to make it look good
     output_ctx.canvas.width = this.factor * this.size[0] * window.devicePixelRatio
     output_ctx.canvas.height = this.factor * this.size[1] * window.devicePixelRatio
@@ -247,24 +175,32 @@ class Legoificator {
       this.LABColours = this.initLABColours()
     }
 
-    const RGBAs = this.mini_input_ctx.getImageData(
-      0, 0,
-      this.mini_input_ctx.canvas.width, this.mini_input_ctx.canvas.height
-    ).data
-    const Rs = nthOfArray(RGBAs, 4, 0)
-    const Gs = nthOfArray(RGBAs, 4, 1)
-    const Bs = nthOfArray(RGBAs, 4, 2)
+    // Create canvas that we can use to look at input_image_gl's canvas
+    // Since input_image_gl is a webgl canvas, we need to create a seperate
+    // 2d canvas to query pixel data
+    const canvas = document.createElement('canvas')
+    canvas.width = this.input_image_gl.width
+    canvas.height = this.input_image_gl.height
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(this.input_image_gl.gl.canvas, 0, 0);
+
+    const width_chunk_size = canvas.width / this.size[0]
+    const height_chunk_size = canvas.height / this.size[1]
+
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data
 
     for (let j = 0; j < this.size[1]; j++) {
       for (let i = 0; i < this.size[0]; i++) {
-        // gimme a pixel!
-        const idx = j * this.size[1] + i
-        const r = Rs[idx]
-        const g = Gs[idx]
-        const b = Bs[idx]
+        const RGBavg = this.periodicAvgOnChunk(
+          imgData,
+          i, j,
+          width_chunk_size, height_chunk_size,
+          canvas.width, canvas.height
+        )
 
         // find the closest colour
-        const targetColour = RGBtoLAB([r, g, b])
+        const targetColour = RGBtoLAB(RGBavg)
         const closest_lego_colour = this.getClosestLegoColour(targetColour)
 
         // update the colours that were used
@@ -287,7 +223,6 @@ class Legoificator {
   }
 
   updateLegoificatedEntity = (output_ctx) => {
-    this.resizeImage()
     this.commenceLegoification(output_ctx)
   }
 
