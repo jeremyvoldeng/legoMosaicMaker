@@ -51,11 +51,6 @@
 
   <div class="content col">
     <noscript>
-      <style type="text/css">
-        .pagecontainer {
-          display: none;
-        }
-      </style>
       <b class="errText">
         You don't have Javascript enabled. Unfortunately, this website requires Javascript to run!
         <br>
@@ -285,17 +280,7 @@
     e.preventDefault()
     handleURL(urlSelection.value)
   }
-  albumName.oninput = e => {
-    if (e.target.value == "makeitdark") {
-      albumName.value = ""
-      albumName.classList.add("dark-mode")
-      document.body.classList.add("dark-mode")      
-    } else if (e.target.value == "makeitlight") {
-      albumName.value = ""
-      albumName.classList.remove("dark-mode")
-      document.body.classList.remove("dark-mode")      
-    }
-  }
+  albumName.oninput = e => handleTextBox(e)
   resetButton.onclick = reset
   resetButton.onkeydown = e => keyPressToClick(e, reset)
   sizeSlider.oninput = updateSize
@@ -365,8 +350,6 @@
   }
 
   function handleFile(file) {
-    // I have a feeling that this could be done better.
-    // Therefore I would love some help here!
     album_art_img = new Image
     const album_art_url = URL.createObjectURL(file)
 
@@ -389,6 +372,7 @@
 
           modalCloseBtn.onclick = () => {
             // let onload loop back around - album_art_img.src should be correctly cropped now
+            // wouldn't be cool if there wasn't recursion ;)
             const cropBoxData = cropper.getValue()
             cropperModal.style.display = "none"
             cropper.destroy()
@@ -505,31 +489,16 @@
     errTextBox.style.display = "none"
   }
 
-  function linspace(start, stop, num) {
-    const div = num
-    const step = (stop - start) / div
-    return Array.from({ length: num }, (_, i) => start + step * i)
-  }
-
-  function testMe() {
-    console.log("starting test")
-    for (let size of [1, 2, 3, 4]) {
-      for (let saturation of linspace(-0.2, 0.2, 3)) {
-        for (let bright of linspace(-0.2, 0.2, 3)) {
-          for (let contrast of linspace(-0.2, 0.2, 3)) {
-            input_texture.loadContentsOf(album_art_img)
-            fxcanvas.draw(input_texture)
-              .hueSaturation(0, saturation)
-              .brightnessContrast(bright, contrast)
-              .update()
-
-            L.updateSize(size)
-            L.commenceLegoification(out_ctx, LAB)
-          }
-        }
-      }
+  function handleTextBox(e) {
+    if (e.target.value == "makeitdark") {
+      albumName.value = ""
+      albumName.classList.add("dark-mode")
+      document.body.classList.add("dark-mode")
+    } else if (e.target.value == "makeitlight") {
+      albumName.value = ""
+      albumName.classList.remove("dark-mode")
+      document.body.classList.remove("dark-mode")
     }
-    console.log("test done")
   }
 </script>
 
