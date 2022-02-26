@@ -1,6 +1,3 @@
-// Notes
-//   media query + sass stuff
-//   https://dev.to/paul_duvall/sass-and-media-queries-hb2
 @use "sass:math";
 
 $phi: 1.6180339887;
@@ -21,7 +18,6 @@ $yellowDarkTransluscent: rgba(206, 193, 111, 0.5);
 $black: rgba(10, 10, 10, 0.5);
 
 @font-face {
-  // Oh god this font stuff is messsyyyyyy
   font-family: "Legothick";
   src: url("Legothick.woff") format("woff");
   font-weight: normal;
@@ -176,6 +172,7 @@ hr {
   @extend .centre;
 
   cursor: pointer;
+  color: $baseFontColor;
 
   width: 100%;
   background-color: $yellow;
@@ -192,6 +189,7 @@ hr {
 #footer {
   @extend .col;
 
+  color: $baseFontColor;
   font-size: $baseFontSize;
 
   width: 100%;
@@ -278,6 +276,7 @@ hr {
 
 %bigButton {
   cursor: pointer;
+  color: $baseFontColor;
   padding: $smallSpacing;
 
   background-clip: padding-box;
@@ -511,4 +510,9 @@ hr {
 
 .modal-cancel {
   @extend %modal-button;
+}
+
+.dark-mode {
+  color: rgb(220, 220, 220);
+  background-color: rgb(48, 48, 48)
 }

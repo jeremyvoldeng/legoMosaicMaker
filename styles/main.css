@@ -123,6 +123,7 @@ hr {
 
 #header {
   cursor: pointer;
+  color: #0a0a0a;
   width: 100%;
   background-color: #ffe330;
   box-shadow: 0 20px 5px 0 rgba(255, 227, 48, 0.5);
@@ -135,6 +136,7 @@ hr {
 }
 
 #footer {
+  color: #0a0a0a;
   font-size: 18px;
   width: 100%;
   justify-content: space-around;
@@ -209,6 +211,7 @@ hr {
 
 .modal-cancel, .modal-close, #example, #downloadMosaicBtn, #albumArtURLBtn, #uploadImgBtn, #generatePDFBtn, #resetBtn {
   cursor: pointer;
+  color: #0a0a0a;
   padding: 18px;
   background-clip: padding-box;
   -webkit-background-clip: padding-box;
@@ -416,6 +419,11 @@ hr {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.dark-mode {
+  color: gainsboro;
+  background-color: #303030;
 }
 
 /*# sourceMappingURL=main.css.map */

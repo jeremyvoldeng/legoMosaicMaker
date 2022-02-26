@@ -285,6 +285,17 @@
     e.preventDefault()
     handleURL(urlSelection.value)
   }
+  albumName.oninput = e => {
+    if (e.target.value == "makeitdark") {
+      albumName.value = ""
+      albumName.classList.add("dark-mode")
+      document.body.classList.add("dark-mode")      
+    } else if (e.target.value == "makeitlight") {
+      albumName.value = ""
+      albumName.classList.remove("dark-mode")
+      document.body.classList.remove("dark-mode")      
+    }
+  }
   resetButton.onclick = reset
   resetButton.onkeydown = e => keyPressToClick(e, reset)
   sizeSlider.oninput = updateSize
