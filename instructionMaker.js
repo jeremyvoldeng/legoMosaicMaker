@@ -1,5 +1,14 @@
 'use strict';
 
+
+const beautifyLegoColourName = name => name
+  .split("_")
+  .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+  .join(" ")
+
+const IDENTITY = x => x
+const add = (a, b) => a + b
+
 const clockmod = (i, m) => i % m ? i % m : m
 const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
 const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16

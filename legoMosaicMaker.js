@@ -39,16 +39,6 @@ const legoColours = {
   "yellowish_green": [226, 249, 154]
 }
 
-const beautifyLegoColourName = name => name
-  .split("_")
-  .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-  .join(" ")
-
-
-// functions for kwargs, reduce, e.t.c.
-const IDENTITY = x => x
-const add = (a, b) => a + b
-
 const drawCircle = (x, y, r, colour, canvas_ctx) => {
   // rgba is more performant
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices
