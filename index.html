@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title> LEGO MOSAIC DESIGNER </Title>
+
+  <!-- people say i need this line -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description"
+    content="Create a Lego Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it and make something entirely different!">
+
+  <!-- Add a goatcounter -->
+  <!-- To those who are interested, this just lets us see how much attention this
+  site is getting. It doesn't track you, and is open source!
+  -->
+  <script data-goatcounter="https://legomosaicdesigner.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <link rel="stylesheet" href="styles/main.css">
+
+  <!-- glfx gives quick textures -->
+  <!-- forked to make even speedier -->
+  <script type='text/javascript' src='resources/glfx.min.js'></script>
+  <!-- jsPDF lets us make PDF -->
+  <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js'></script>
+
+  <!-- croppr lets us crop those DISGUSTING images that have NON-SQUARE aspect ratios -->
+  <script src="resources/croppr.min.js"></script>
+  <link rel="stylesheet" href="resources/croppr.min.css" />
+
+  <!-- this is where the fun stuff lives -->
+  <script type='text/javascript' src='instructionMaker.js'></script>
+  <script type='text/javascript' src='RGBtoLAB.js'></script>
+  <script type='text/javascript' src='legoMosaicMaker.js'></script>
+</head>
+
+<body>
+  <!--
+    I am very clearly a novice web developer. I have been sticking to the pure
+    web APIs as much as I can, in order to learn the absolute basics. I am SURE that
+    there are better ways to do things here. If you have the motivation to help me
+    out, create an issue here https://github.com/jeremyvoldeng/legoMosaicMaker/issues
+
+    Jeremy Voldeng had this great idea and created the first implementation, written
+    in Python. I am here to just get it out onto the web.
+
+    Axel!
+    -->
+  <div id="header" class="legoFont" onclick="window.location.reload()">
+    <h1> LEGO MOSAIC DESIGNER </h1>
+  </div>
+
+  <div class="content col">
+    <noscript>
+      <b class="errText">
+        You don't have Javascript enabled. Unfortunately, this website requires Javascript to run!
+        <br>
+        <br>
+        We don't collect data, run a crypto miner, or do anything else of the sort - we don't even run the hosting
+        server (thanks Github!).
+        <br>
+        You can feel safe turning it on for this site. If you don't trust me, <a
+          href="https://github.com/jeremyvoldeng/legoMosaicMaker">check out the code on Github!</a>
+        <br>
+        <br>
+        Otherwise, thank you for checking us out! We appreciate it - Axel & Jeremy
+      </b>
+    </noscript>
+
+    <b class="errText" id="errTextBox" hidden> </b>
+
+    <!-- Satan's Modal of Satanity -->
+    <div id="cropperModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <img id="cropperImg"></img>
+        <div class="row withspace">
+          <span class="modal-cancel" id=modal-cancel>Cancel</span>
+          <span class="modal-close" id=modal-close>Done</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="secondaryContent" id="initialMessage">
+      Hello, World!
+      <br>
+      Try uploading an image of an album cover you like.
+    </h3>
+
+    <label for="albumArtIn" id="uploadImgBtn">
+      <input type="file" id="albumArtIn" accept="image/*">
+      Upload Image
+    </label>
+
+    <p>
+      or, submit a URL to an image
+    </p>
+
+    <form id="urlSubmission" class="row">
+      <input type="url" id="albumArtURL" list="defaultURLs" pattern="https://.*" required>
+      <input type="submit" id="albumArtURLBtn" value="Submit URL">
+    </form>
+
+    <datalist id="defaultURLs">
+      <option value="https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png">Lenna</option>
+      <option value="https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png"
+        label="Dark Side of the Moon">
+      <option value="https://upload.wikimedia.org/wikipedia/en/1/14/Inrainbowscover.png" label="In Rainbows">
+      <option value="https://upload.wikimedia.org/wikipedia/en/5/5e/Madvillainy_cover.png" label="Madvillany">
+    </datalist>
+
+    <p class="secondaryContent" role="button" tabIndex="0" aria-label="Just try an example" id="example">
+      Just want to try an example? Click Me!
+    </p>
+
+    <div id="informationText" class="secondaryContent">
+      <h4> What is this? </h4>
+      <p>
+        This is a website to help you make a <a href="https://www.lego.com/en-us/product/disney-s-mickey-mouse-31202"
+          target="_blank" rel="noopener">Lego mosaic</a> from an image, such as album covers.
+      </p>
+
+      <h4> How do I use it? </h4>
+      <p>
+        Upload a square image (same width and height), play with the settings until it looks good to you, and then
+        download instructions
+      </p>
+
+      <h4> Ordering Pieces </h4>
+      <p> There is no right way to get the pieces that you need for your mosaic, but I thought I would throw together
+        some helpful tips to get you started:</p>
+      <ul>
+        <li> If you don’t have one of Lego’s mosaics already, I recommend buying one. They come with 9 16x16 plates, a
+          frame and a ton of 1x1 tile pieces already. I would take a look at Lego’s options and pick the one that has
+          the most pieces you need. Personally, I purchased The World Map as that gave me enough plates to build four
+          3x3 and one 2x2 mosaics, along with a large portion of colours to get me started.
+        </li>
+        <li> Lego has a pick a brick option online, but currently they only have 10 of the ~35 solid coloured 1x1 tiles.
+          Your best bet for sourcing pieces is Bricklink.com. You can create a “Wanted List” of all the pieces you need,
+          and Bricklink will find the cheapest group of stores that have all the pieces you need.
+        </li>
+      </ul>
+
+      <h3> More FAQs, and some Advice</h3>
+      <h4> The "Submit URL" button is giving you trouble? </h4>
+      <p>
+        You need to give it a URL to an image <i> only </i>. A good way to get this is to <b>right click on the
+          image</b> and
+        then <b>click "copy image address" or "copy image link"</b>. You can also just upload an image from your
+        computer, if
+        you like!
+      </p>
+      <h4> Which photos work best? </h4>
+      <p>
+        Photos with big, blocky colours. Fine details, such as text, often gets washed out.
+      </p>
+    </div>
+
+    <!-- hidden before an image is chosen -->
+    <div id="hideableContent" style="display: none">
+
+      <!-- Some nice looking images -->
+      <div id="imgdiv">
+        <canvas id="outcvs" class="displayCanvas">
+          Sorry, your browser does not support "canvas" elements - this is typically because
+          the browser is relatively old, or any one of another million esoteric issues that
+          I am not smart enough to predict. You can try updating your browser, or view the project
+          <a href="https://github.com/jeremyvoldeng/legoMosaicMaker">here!</a> Sorry about that.
+        </canvas>
+      </div>
+
+      <div id="inputBox" class="col">
+
+        <div class="rowToCol">
+          <div class="colToRow">
+            <b class="sliderLabel">Saturation</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="saturation">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Brightness</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="brightness">
+          </div>
+
+          <div class="colToRow">
+            <b class="sliderLabel">Contrast</b>
+            <input class="slider" type="range" min=-0.5 max=0.5 value=0 step=0.01 id="contrast">
+          </div>
+
+          <div class="colToRow">
+            <b id="sizeLabel" class="sliderLabel">Size: 48 by 48</b>
+            <input class="slider" type="range" min=1 max=4 value=3 step=1 id="size">
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="rowToCol">
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <input type="text" id="albumName" placeholder="Title">
+            </div>
+            <div class="centre">
+              <input type="submit" id="resetBtn" value="Reset">
+            </div>
+          </div>
+
+          <div class="nonSliderInputs col withspace">
+            <div class="centre">
+              <div id="generatePDFBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
+                <span id="downloadTheWord">Download</span>
+                <span id="anotherWord">Instructions</span>
+              </div>
+            </div>
+            <div class="centre">
+              <div id="downloadMosaicBtn" class="col" role="button" tabIndex="0" aria-label="Generate Instructions">
+                <span id="downloadTheWord">Download</span>
+                <span id="anotherWord">Mosaic</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <footer id="footer">
+      <div id="footerText">
+        Thanks for using Lego Mosaic Designer! If you enjoyed using the website and want to support us, you can buy us a
+        coffee below.
+        <br><br>Happy building! <a href="https://jeremyvoldeng.github.io/" target="_blank" rel="noopener">Jeremy</a>
+        &amp; <a href="https://axel-jacobsen.github.io" target="_blank" rel="noopener">Axel</a>
+      </div>
+
+      <div id="linksDiv">
+        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+          data-name="bmc-button" data-slug="AxelJ" data-color="#FF5F5F" data-emoji="" data-font="Inter"
+          data-text="Donate?" data-outline-color="#000000" data-font-color="#ffffff"
+          data-coffee-color="#FFDD00"></script>
+
+        <a href="https://github.com/jeremyvoldeng/legoMosaicMaker" target="_blank" rel="noopener">
+          <img src="resources/GitHub-Mark-32px.png" alt="GitHub logo" id="githubLogo">
+        </a>
+      </div>
+    </footer>
+  </div>
+
+</body>
+
+<script type="text/javascript">
+  'use strict'
+
+  const fileSelection = document.getElementById("albumArtIn")
+  const urlSelection = document.getElementById("albumArtURL")
+  const urlSelectionBtn = document.getElementById("albumArtURLBtn")
+  const urlSubmission = document.getElementById("urlSubmission")
+  const example = document.getElementById("example")
+  const imgdiv = document.getElementById("imgdiv")
+  const albumName = document.getElementById("albumName")
+  const resetButton = document.getElementById("resetBtn")
+  const sizeSlider = document.getElementById("size")
+  const satSlider = document.getElementById("saturation")
+  const brightSlider = document.getElementById("brightness")
+  const contrastSlider = document.getElementById("contrast")
+  const sizeLabel = document.getElementById("sizeLabel")
+  const generatePDFBtn = document.getElementById("generatePDFBtn")
+  const downloadMosaicBtn = document.getElementById("downloadMosaicBtn")
+  const errTextBox = document.getElementById("errTextBox")
+  const modalCloseBtn = document.getElementById("modal-close")
+  const modalCancelBtn = document.getElementById("modal-cancel")
+
+  const runExample = () => handleURL(
+    "https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png"
+  )
+  example.onclick = runExample
+  example.onkeydown = e => keyPressToClick(e, runExample)
+  fileSelection.onchange = e => handleFile(e.target.files[0])
+  urlSubmission.onsubmit = e => {
+    e.preventDefault()
+    handleURL(urlSelection.value)
+  }
+  albumName.oninput = e => handleTextBox(e)
+  resetButton.onclick = reset
+  resetButton.onkeydown = e => keyPressToClick(e, reset)
+  sizeSlider.oninput = updateSize
+  satSlider.oninput = legoify
+  brightSlider.oninput = legoify
+  contrastSlider.oninput = legoify
+  generatePDFBtn.onclick = genInstructions
+  generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
+  downloadMosaicBtn.onclick = downloadMosaic
+
+  let fxcanvas
+  try { fxcanvas = fx.canvas() } catch (e) {
+    alert("Sorry, your browser does not support WebGL. Unfortunately, this website requires it to run.")
+  }
+  fxcanvas.id = "incvs"
+  fxcanvas.className = "displayCanvas"
+
+  const output_canvas = document.getElementById("outcvs")
+  const out_ctx = output_canvas.getContext('2d')
+
+  let L;
+  let input_texture;
+  let album_art_img;
+
+  function keyPressToClick(e, cb, args) {
+    // 13 is enter, 32 is space (commonly used by assisted reader devices)
+    if (e.keyCode === 13 || e.keyCode === 32) {
+      cb(args)
+    }
+  }
+
+  function handleURL(url) {
+    hideError()
+    const errMsg = "Could not load image from your URL - make sure that the link is to JUST an image, and nothing else. This can be finicky!\n\nIf it is still not working, I suggest downloading the image, and then using the 'Upload Image' button below."
+
+    fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'default',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      referrer: 'no-referrer',
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.blob()
+        } else {
+          showError(errMsg)
+        }
+      })
+      .then(blob => handleFile(blob))
+      .catch(error => {
+        showError(errMsg)
+      })
+  }
+
+  function createLegoificator(img) {
+    input_texture = fxcanvas.texture(img)
+
+    // either this, or EXT_color_buffer_float
+    input_texture._.gl.getExtension('WEBGL_color_buffer_float')
+
+    L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+    reset()
+
+    imgdiv.prepend(fxcanvas)
+  }
+
+  function handleFile(file) {
+    album_art_img = new Image
+    const album_art_url = URL.createObjectURL(file)
+
+    album_art_img.onload = () => {
+      if (imgRequiresResize(album_art_img)) {
+        cropperModal.style.display = "block"
+        const cropImg = document.getElementById("cropperImg")
+
+        cropImg.onload = () => {
+          const cropper = new Croppr(cropImg, {
+            aspectRatio: 1,
+            minSize: [64, 64, 'px'],
+          })
+
+          modalCancelBtn.onclick = () => {
+            cropperModal.style.display = "none"
+            cropper.destroy()
+            cropImg.removeAttribute('src')
+          }
+
+          modalCloseBtn.onclick = () => {
+            // let onload loop back around - album_art_img.src should be correctly cropped now
+            // wouldn't be cool if there wasn't recursion ;)
+            const cropBoxData = cropper.getValue()
+            cropperModal.style.display = "none"
+            cropper.destroy()
+            cropImg.removeAttribute('src')
+            album_art_img.src = cropImage(album_art_img, cropBoxData)
+          }
+        }
+        cropImg.src = album_art_url
+      } else {
+        hideError()
+        showContents()
+        createLegoificator(album_art_img)
+      }
+    }
+
+    album_art_img.src = album_art_url
+  }
+
+  function cropImage(img, data) {
+    const cv = document.createElement('canvas')
+    const ctx = cv.getContext('2d')
+    // our cropping library rounds floats for width and height which leads
+    // to cases where data['width'] = data['height'] +/- 1. Just choose the
+    // minimum dimension for this case. 1px diff shouldn't matter.
+    const cropDim = Math.min(data['width'], data['height'])
+    cv.width = cropDim
+    cv.height = cropDim
+    ctx.drawImage(img, data['x'], data['y'], cropDim, cropDim, 0, 0, cropDim, cropDim)
+    return cv.toDataURL("image/png")
+  }
+
+  function reset() {
+    sizeSlider.value = 3
+    contrastSlider.value = 0
+    brightSlider.value = 0
+    satSlider.value = 0
+    albumName.value = ""
+    albumArtURL.value = ""
+
+    updateSize()
+
+    if (L) {
+      input_texture.loadContentsOf(album_art_img)
+      fxcanvas.draw(input_texture).update()
+      L.updateSize(parseInt(sizeSlider.value))
+      L.commenceLegoification(out_ctx)
+    }
+  }
+
+  function legoify() {
+    if (L) {
+      input_texture.loadContentsOf(album_art_img)
+      fxcanvas.draw(input_texture)
+        .hueSaturation(0, satSlider.value)
+        .brightnessContrast(brightSlider.value, contrastSlider.value)
+        .update()
+
+      L.updateSize(parseInt(sizeSlider.value))
+      L.commenceLegoification(out_ctx)
+    }
+  }
+
+  function downloadMosaic() {
+    const mosaicURL = output_canvas.toDataURL('image/png')
+    const alink = document.createElement('a')
+    const fileName = (albumName.value || 'mosaic') + '.png'
+    alink.href = mosaicURL
+    alink.download = fileName
+    alink.click()
+  }
+
+  function genInstructions() {
+    if (L) {
+      L.makeMosaicInstructions(albumName.value)
+    }
+  }
+
+  function updateSize() {
+    sizeLabel.innerHTML = `Size: ${16 * sizeSlider.value} by ${16 * sizeSlider.value}`
+    legoify()
+  }
+
+  function imgRequiresResize(img) {
+    const minDim = 64
+    const unevenAspectRatio = img.width != img.height
+    const tooSmall = img.width < minDim || img.height < minDim
+    return tooSmall || unevenAspectRatio
+  }
+
+  function showContents() {
+    // gotta be flex, or else the styling just falls apart
+    document.getElementById("hideableContent").style.display = "block"
+    const secondaryElements = document.getElementsByClassName("secondaryContent")
+    Array.from(secondaryElements).forEach(el => {
+      el.style.display = "none"
+    })
+  }
+
+  function hideContents() {
+    document.getElementById("hideableContent").style.display = "none"
+    const secondaryElements = document.getElementsByClassName("secondaryContent")
+    Array.from(secondaryElements).forEach(el => {
+      el.style.display = "block"
+    })
+  }
+
+  function showError(msg) {
+    errTextBox.innerText = msg
+    errTextBox.style.display = "block"
+  }
+
+  function hideError() {
+    errTextBox.innerText = ""
+    errTextBox.style.display = "none"
+  }
+
+  function handleTextBox(e) {
+    if (e.target.value == "makeitdark") {
+      albumName.value = ""
+      albumName.classList.add("dark-mode")
+      document.body.classList.add("dark-mode")
+    } else if (e.target.value == "makeitlight") {
+      albumName.value = ""
+      albumName.classList.remove("dark-mode")
+      document.body.classList.remove("dark-mode")
+    }
+  }
+</script>
+
+</html>

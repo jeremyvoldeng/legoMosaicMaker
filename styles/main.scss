@@ -1,0 +1,518 @@
+@use "sass:math";
+
+$phi: 1.6180339887;
+$smallMult: math.div(1.6180339887 - 1, 2) + 1;
+$smallSpacing: 18px;
+$displayCanvasDimSmall: 320px;
+$displayCanvasDim: 360px;
+$paddingByCanvas: math.div($displayCanvasDim, ($phi * 10));
+$displayCanvasMargin: $paddingByCanvas * 2;
+
+$baseFontSize: 18px;
+$baseFontColor: rgba(10, 10, 10);
+
+$yellow: rgba(255, 227, 48);
+$yellowLight: rgba(255, 227, 48, 0.5);
+$yellowDark: rgba(175, 153, 7);
+$yellowDarkTransluscent: rgba(206, 193, 111, 0.5);
+$black: rgba(10, 10, 10, 0.5);
+
+@font-face {
+  font-family: "Legothick";
+  src: url("Legothick.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&display=swap");
+
+@mixin mobileDesign {
+  @media only screen and (max-width: (2 * ($displayCanvasDim + $displayCanvasMargin))) {
+    @content;
+  }
+}
+
+// generic content
+
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  color: $baseFontColor;
+  font-size: $baseFontSize;
+  font-family: "Roboto Condensed", sans-serif;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+label {
+  font-size: $baseFontSize;
+
+  &:focus-within {
+    outline: 1px solid;
+  }
+}
+
+// see my fury below
+@mixin trackConsts {
+  border: 1px solid $black;
+  border-radius: 4px;
+  height: 5px;
+}
+@mixin thumbConsts {
+  height: $smallSpacing;
+  width: $smallSpacing;
+  margin-top: -1 * math.div($smallSpacing, 2);
+  background-color: $yellow;
+  border: 1px solid $black;
+  border-radius: $smallSpacing;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: ew-resize;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="range"],
+input[type="text"] {
+  font-family: "Roboto Condensed", sans-serif;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="url"]:focus {
+  outline: none;
+
+  & > :invalid {
+    border: 2px solid red;
+    border-radius: 2px;
+  }
+}
+
+input[type="range"] {
+  // This is the thing that reminded me of the horrors of web
+  // development. You can't include all of the pseudo-elements
+  // in one comma-seperated list, because webkit browsers will
+  // toss out the entire style if it doesn't recognize just one element
+  // in the list. Therefore I have to use mixins instead of just extending
+  // because SASS will automatically consolidate all similar
+  // extended styles into one. This is all before acknowledging that
+  // we have to pay attention to all these arbitrary rules for each
+  // individual browser, simply to style a gosh darn slider. I would
+  // guess that a modern web dev would tell me to use an autoprefixer
+  // for this, but like jeez man I don't want to have to deal with
+  // npm, babel, transpilers, postpilers, postmoderntranspilers, and
+  // all of their dependencies, just to style a GOSH DARN INPUT SLIDER.
+  // Web developers deserve every penny they get. I would not be willing
+  // to put up with this nonsense professionally. Good god! I am nauseous.
+  // I love that you need a website called "css-tricks" to do the basic
+  // job of a web dev.
+  // https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/
+  background: transparent;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    @include trackConsts();
+  }
+  &::-moz-range-track {
+    @include trackConsts();
+  }
+  &::-ms-track {
+    @include trackConsts();
+    width: 100%;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+
+  &::-webkit-slider-thumb {
+    @include thumbConsts();
+    -webkit-appearance: none;
+  }
+  &::-moz-range-thumb {
+    @include thumbConsts();
+  }
+  &::-ms-thumb {
+    @include thumbConsts();
+  }
+
+  &:disabled {
+    &::-webkit-slider-thumb,
+    &::-moz-range-thumb,
+    &::-ms-thumb {
+      background-color: $yellowDarkTransluscent;
+    }
+  }
+}
+
+hr {
+  color: $black;
+  width: 100%;
+}
+
+// specific stuff
+
+#header {
+  @extend .centre;
+
+  cursor: pointer;
+  color: $baseFontColor;
+
+  width: 100%;
+  background-color: $yellow;
+  box-shadow: 0 20px 5px 0 $yellowLight;
+  margin-bottom: 3 * $smallSpacing;
+
+  @include mobileDesign {
+    & h1 {
+      font-size: $phi * $baseFontSize;
+    }
+  }
+}
+
+#footer {
+  @extend .col;
+
+  color: $baseFontColor;
+  font-size: $baseFontSize;
+
+  width: 100%;
+
+  justify-content: space-around;
+
+  padding: $smallSpacing;
+  background-color: $yellow;
+  box-shadow: 0 -20px 5px 0 $yellowLight;
+  margin-top: 3 * $smallSpacing;
+}
+
+%footerSpacing {
+  max-width: 3 * $displayCanvasDim;
+  width: 60%;
+}
+
+#footerText {
+  @extend %footerSpacing;
+}
+
+#linksDiv {
+  @extend .rowToCol;
+  @extend .withspace;
+  @extend %footerSpacing;
+  margin: $smallSpacing;
+  & > * {
+    margin: math.div($smallSpacing, 2);
+  }
+}
+
+#albumArtIn {
+  cursor: pointer;
+  justify-content: flex-end;
+
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap; /* 1 */
+  clip-path: inset(50%);
+  border: 0;
+}
+
+#initialMessage {
+  max-width: 50%;
+}
+
+#imgdiv {
+  @extend .centre;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+}
+
+#inputdiv > * {
+  margin: $paddingByCanvas;
+}
+
+#albumName {
+  text-align: center;
+  font-size: $phi * $baseFontSize;
+  border: 0px;
+}
+
+#generatePDFBtn {
+  font-size: $phi * $baseFontSize;
+}
+
+#albumArtIn {
+  align-self: center;
+}
+
+#downloadTheWord {
+  font-size: $baseFontSize;
+}
+
+#anotherWord {
+  font-size: $phi * $baseFontSize;
+}
+
+%bigButton {
+  cursor: pointer;
+  color: $baseFontColor;
+  padding: $smallSpacing;
+
+  background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+
+  border: none;
+  border-radius: $smallSpacing;
+
+  font-size: $baseFontSize;
+
+  &:focus {
+    outline: 1px solid;
+  }
+}
+
+#resetBtn {
+  @extend %bigButton;
+  background-color: $yellowDarkTransluscent;
+  font-size: $baseFontSize;
+}
+
+#generatePDFBtn {
+  @extend %bigButton;
+  border: math.div($smallSpacing, 2) solid $yellowLight;
+  background-color: $yellow;
+}
+
+#uploadImgBtn {
+  @extend %bigButton;
+  background-color: $yellow;
+  margin: $smallSpacing;
+}
+
+#albumArtURLBtn {
+  @extend %bigButton;
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+
+  background-color: $yellow;
+
+  border: 1px solid $black;
+  border-radius: 0 math.div($baseFontSize, 2) math.div($baseFontSize, 2) 0;
+  padding: math.div($baseFontSize, 2) - 1.75px;
+  margin: 0;
+}
+
+#downloadMosaicBtn {
+  @extend %bigButton;
+  border: math.div($smallSpacing, 2) solid $yellowLight;
+  background-color: $yellow;
+}
+
+#albumArtURL {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+
+  width: $displayCanvasDimSmall;
+  font-size: $baseFontSize;
+  font-family: "Roboto Condensed", sans-serif;
+  text-indent: 0.5em;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid $black;
+  border-right-width: 0;
+  border-radius: 2px 0 0 2px;
+}
+
+#urlSubmission {
+  height: 2 * $baseFontSize;
+  @include mobileDesign {
+    max-width: 90%;
+  }
+}
+
+#useLAB {
+  font-size: $phi * $baseFontSize;
+  width: $smallSpacing;
+  height: $smallSpacing;
+}
+
+#example {
+  @extend %bigButton;
+  background-color: $yellow;
+  margin-top: 2 * $smallSpacing;
+}
+
+#informationText {
+  width: 80%;
+  margin-top: 4 * $smallSpacing;
+  max-width: 2 * $displayCanvasDim;
+  text-align: left;
+  font-size: $smallMult * $baseFontSize;
+}
+
+.content {
+  text-align: center;
+}
+
+.errText {
+  max-width: 50%;
+  margin-bottom: 2 * $smallSpacing;
+  color: $yellowDark;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.centre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.withspace {
+  height: 100%;
+  justify-content: space-around;
+  margin: $smallSpacing;
+  margin-left: $smallSpacing;
+  margin-right: $smallSpacing;
+}
+
+.legoFont {
+  font-family: "Legothick";
+}
+
+.nonSliderInputs {
+  margin: 0;
+
+  & > * {
+    height: math.div($displayCanvasDim, 2);
+
+    @include mobileDesign {
+      margin: $smallSpacing;
+      height: initial;
+    }
+  }
+}
+
+.rowToCol {
+  @extend .row;
+
+  @include mobileDesign {
+    flex-direction: column;
+  }
+}
+
+.colToRow {
+  @extend .col;
+
+  @include mobileDesign {
+    flex-direction: row;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.slider {
+  margin: $smallSpacing;
+  margin-top: math.div($smallSpacing, 2);
+}
+
+.slider,
+.sliderLabel {
+  text-align: center;
+  width: 130px;
+}
+
+.displayCanvas {
+  width: $displayCanvasDim;
+  margin: math.div($displayCanvasMargin, 2) $displayCanvasMargin;
+
+  @include mobileDesign {
+    width: $displayCanvasDim;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+.modal-content {
+  margin: 5% auto;
+  width: 40%;
+  max-width: 2 * ($displayCanvasDim + $displayCanvasMargin);
+  @include mobileDesign {
+    width: 80%;
+  }
+}
+
+%modal-button {
+  @extend %bigButton;
+
+  font-size: 28px;
+  background-color: $yellow;
+
+  &:hover,
+  &:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
+
+.modal-close {
+  @extend %modal-button;
+}
+
+.modal-cancel {
+  @extend %modal-button;
+}
+
+.dark-mode {
+  color: rgb(220, 220, 220);
+  background-color: rgb(48, 48, 48)
+}
