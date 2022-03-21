@@ -7,6 +7,7 @@ const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1]
 
 class wantedListGenerator {
   // https://www.bricklink.com/help.asp?helpID=207
+  // https://stackoverflow.com/questions/14340894/create-xml-in-javascript
   static createWantedList = pieceList => {
     /*
      * pieceList is {
@@ -247,7 +248,7 @@ class Instructionificator {
      *                     gridIdx Numbering
      *                     -----------------
      *  Size 1:  #         1
-     *          
+     *
      *  Size 2:  ##        1 2
      *           ##        3 4
      *
