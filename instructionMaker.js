@@ -4,11 +4,48 @@ const clockmod = (i, m) => i % m ? i % m : m
 const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
 const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
 
+const legoColoursToID = {
+  "black": 11,
+  "blue": 7,
+  "bright_green": 36,
+  "bright_light_blue": 105,
+  "bright_light_orange": 110,
+  "bright_light_yellow": 103,
+  "bright_pink": 104,
+  "coral": 220,
+  "dark_azure": 153,
+  "dark_blue": 63,
+  "dark_bluish_gray": 85,
+  "dark_brown": 120,
+  "dark_orange": 68,
+  "dark_pink": 47,
+  "dark_red": 59,
+  "dark_tan": 69,
+  "dark_turquoise": 39,
+  "lavender": 154,
+  "light_aqua": 152,
+  "light_bluish_gray": 86,
+  "light_nougat": 90,
+  "lime": 34,
+  "magenta": 71,
+  "medium_azure": 156,
+  "medium_blue": 42,
+  "medium_nougat": 150,
+  "olive_green": 155,
+  "orange": 4,
+  "red": 5,
+  "reddish_brown": 88,
+  "sand_blue": 55,
+  "tan": 2,
+  "white": 1,
+  "yellow": 3,
+  "yellowish_green": 158
+}
 
 class wantedListGenerator {
   // https://www.bricklink.com/help.asp?helpID=207
   // https://stackoverflow.com/questions/14340894/create-xml-in-javascript
-  static createWantedList = pieceList => {
+  static createWantedList = (pieceList, name) => {
     /*
      * pieceList is {
      *    color1: {count: n1, colourId: m1},
@@ -16,13 +53,37 @@ class wantedListGenerator {
      *    ...
      *  }
      */
-    const wantedList = document.implementation.createDocument(null, "wantedlist")
-    wantedList.appendChild(wantedList.create
+    const wantedListDoc = document.implementation.createDocument(null, "wantedlist")
+    const inventory = wantedListDoc.createElement("INVENTORY")
+    for (let [colour, countAndDifferentIdObj] of Object.entries(pieceList)) {
+      wantedListGenerator.addPiece(
+        wantedListDoc,
+        inventory,
+        colour,
+        countAndDifferentIdObj["pieceCount"]
+      )
+    }
   }
 
-  static addPiece = (doc, colour, count) => {
+  static addPiece = (doc, element, colour, count) => {
     const item = doc.createElement("ITEM")
-    item.
+
+    const itemType = doc.createElement("ITEMTYPE")
+    itemType.innerHTML = "P"
+
+    const itemId = doc.createElement("ITEMID")
+    itemId.innerHTML = "98138"  // 1x1 round on bricklink
+
+    const colorEl = doc.createElement("COLOR")
+    colorEl.innerHTML = legoColoursToID[colour].toString()
+
+    const minQty = doc.createElement("MINQTY")
+    minQty.innerHTML = count.toString()
+
+    item.appendChild(itemType)
+    item.appendChild(itemId)
+    item.appendChild(minQty)
+    return item
   }
 }
 
