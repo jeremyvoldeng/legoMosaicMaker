@@ -293,8 +293,8 @@
   satSlider.oninput = legoify
   brightSlider.oninput = legoify
   contrastSlider.oninput = legoify
-  generatePDFBtn.onclick = genInstructions
-  generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
+  generatePDFBtn.onclick = downloadInstructions
+  generatePDFBtn.onkeydown = e => keyPressToClick(e, downloadInstructions)
   downloadMosaicBtn.onclick = downloadMosaic
 
   let fxcanvas
@@ -451,10 +451,26 @@
     alink.click()
   }
 
-  function genInstructions() {
+  function downloadWantedList() {
+    if (L) {
+      const wantedList = wantedListGenerator.createWantedList(L.pieceList)
+      const XMLString = (new XMLSerializer()).serializeToString(wantedList)
+      console.log(XMLString)
+      const alink = document.createElement('a')
+      const blob = new Blob([XMLString], { type: "text/plain" })
+      const fileName = (albumName.value || 'mosaic') + '_wanted_list.xml'
+      alink.href = window.URL.createObjectURL(blob)
+      alink.download = fileName
+      alink.dataset.downloadurl = ["text/plain", alink.download, alink.href].join(":")
+      alink.click()
+    }
+  }
+
+  function downloadInstructions() {
     if (L) {
       L.makeMosaicInstructions(albumName.value)
     }
+    downloadWantedList()
   }
 
   function updateSize() {

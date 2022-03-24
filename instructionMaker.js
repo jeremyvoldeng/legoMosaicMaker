@@ -42,10 +42,11 @@ const legoColoursToID = {
   "yellowish_green": 158
 }
 
+
 class wantedListGenerator {
   // https://www.bricklink.com/help.asp?helpID=207
   // https://stackoverflow.com/questions/14340894/create-xml-in-javascript
-  static createWantedList = (pieceList, name) => {
+  static createWantedList = pieceList => {
     /*
      * pieceList is {
      *    color1: {count: n1, colourId: m1},
@@ -53,16 +54,19 @@ class wantedListGenerator {
      *    ...
      *  }
      */
-    const wantedListDoc = document.implementation.createDocument(null, "wantedlist")
+    const wantedListDoc = document.implementation.createDocument(null, null)
     const inventory = wantedListDoc.createElement("INVENTORY")
+    wantedListDoc.appendChild(inventory)
     for (let [colour, countAndDifferentIdObj] of Object.entries(pieceList)) {
-      wantedListGenerator.addPiece(
+      const item = wantedListGenerator.addPiece(
         wantedListDoc,
         inventory,
         colour,
         countAndDifferentIdObj["pieceCount"]
       )
+      inventory.appendChild(item)
     }
+    return wantedListDoc
   }
 
   static addPiece = (doc, element, colour, count) => {
@@ -82,6 +86,7 @@ class wantedListGenerator {
 
     item.appendChild(itemType)
     item.appendChild(itemId)
+    item.appendChild(colorEl)
     item.appendChild(minQty)
     return item
   }
