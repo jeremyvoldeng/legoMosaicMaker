@@ -454,7 +454,6 @@
   function downloadWantedList() {
     const wantedList = wantedListGenerator.createWantedList(L.pieceList)
     const XMLString = (new XMLSerializer()).serializeToString(wantedList)
-    console.log(XMLString)
     const alink = document.createElement('a')
     const blob = new Blob([XMLString], { type: "text/plain" })
     const fileName = (albumName.value || 'mosaic') + '_wanted_list.xml'
