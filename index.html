@@ -451,12 +451,12 @@
     alink.click()
   }
 
-  function downloadWantedList() {
-    const wantedList = wantedListGenerator.createWantedList(L.pieceList)
+  function _downloadWantedList() {
+    const wantedList = wantedListGenerator.createWantedList(L.pieceList, L.size[0])
     const XMLString = (new XMLSerializer()).serializeToString(wantedList)
     const alink = document.createElement('a')
     const blob = new Blob([XMLString], { type: "text/plain" })
-    const fileName = (albumName.value || 'mosaic') + '_wanted_list.xml'
+    const fileName = (albumName.value || 'mosaic') + '_wanted_list.txt'
     alink.href = window.URL.createObjectURL(blob)
     alink.download = fileName
     alink.dataset.downloadurl = ["text/plain", alink.download, alink.href].join(":")
@@ -466,7 +466,7 @@
   function downloadInstructions() {
     if (L) {
       L.makeMosaicInstructions(albumName.value)
-      downloadWantedList()
+      _downloadWantedList()
     }
   }
 

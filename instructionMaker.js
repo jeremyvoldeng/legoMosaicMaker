@@ -46,7 +46,7 @@ const legoColoursToID = {
 class wantedListGenerator {
   // https://www.bricklink.com/help.asp?helpID=207
   // https://stackoverflow.com/questions/14340894/create-xml-in-javascript
-  static createWantedList = pieceList => {
+  static createWantedList = (pieceList, size) => {
     /*
      * pieceList is {
      *    color1: {count: n1, colourId: m1},
@@ -56,40 +56,62 @@ class wantedListGenerator {
      */
     const wantedListDoc = document.implementation.createDocument(null, null)
     const inventory = wantedListDoc.createElement("INVENTORY")
+
     wantedListDoc.appendChild(inventory)
+
+    wantedListGenerator.setBase(wantedListDoc, inventory, size)
+
     for (let [colour, countAndDifferentIdObj] of Object.entries(pieceList)) {
-      const item = wantedListGenerator.addPiece(
+      const item = wantedListGenerator.setRound(
         wantedListDoc,
         inventory,
-        colour,
-        countAndDifferentIdObj["pieceCount"]
+        countAndDifferentIdObj["pieceCount"],
+        colour
       )
-      inventory.appendChild(item)
     }
     return wantedListDoc
   }
 
-  static addPiece = (doc, element, colour, count) => {
+  static setBase = (doc, element, size) => {
+    const basePlateId = "65803"  // 1x1, 2x2, 3x3, 4x4
+    const connectorId = "2780"  // 3 per interior edge
+    const basePlateCount = (size / 16) * (size / 16)
+    const connectorCount = (size / 16 - 1) * (size / 16 - 1)
+    wantedListGenerator.setPiece(doc, element, basePlateId, basePlateCount)
+    wantedListGenerator.setPiece(doc, element, connectorId, connectorCount)
+  }
+
+  static setRound = (doc, element, count, colour) => {
+    // 1x1 round on bricklink
+    return wantedListGenerator.setPiece(doc, element, "98138", count, colour)
+  }
+
+  static setPiece = (doc, element, itemIdNum, count, colour) => {
+    if (count <= 0) return
+
     const item = doc.createElement("ITEM")
 
     const itemType = doc.createElement("ITEMTYPE")
     itemType.innerHTML = "P"
+    item.appendChild(itemType)
 
     const itemId = doc.createElement("ITEMID")
-    itemId.innerHTML = "98138"  // 1x1 round on bricklink
-
-    const colorEl = doc.createElement("COLOR")
-    colorEl.innerHTML = legoColoursToID[colour].toString()
+    itemId.innerHTML = itemIdNum
+    item.appendChild(itemId)
 
     const minQty = doc.createElement("MINQTY")
     minQty.innerHTML = count.toString()
-
-    item.appendChild(itemType)
-    item.appendChild(itemId)
-    item.appendChild(colorEl)
     item.appendChild(minQty)
-    return item
+
+    if (colour !== undefined) {
+      const colorEl = doc.createElement("COLOR")
+      colorEl.innerHTML = legoColoursToID[colour].toString()
+      item.appendChild(colorEl)
+    }
+
+    element.appendChild(item)
   }
+
 }
 
 
