@@ -163,7 +163,9 @@ class Instructionificator {
     doc.addPage('a4', 'landscape')
     doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
     doc.text(
-      `Here is a bunch of text. A tonne of text. Entirely too much text to explain what this is. Fill in each tile, according to the numbers. Do it.`,
+        "Fill in each tile 16x16 tile, piece by piece. Connect each edge of each tile " \
+      + "with three connector pieces. There is also a '.txt' file that was also downloaded " \
+      + "that lets you ",
       this.pdfWidth / 2,
       this.pdfHeight / 2,
       { align: "center", baseline: "middle", maxWidth: '' + 0.8 * this.pdfWidth }
