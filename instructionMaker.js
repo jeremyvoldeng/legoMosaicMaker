@@ -13,6 +13,116 @@ const clockmod = (i, m) => i % m ? i % m : m
 const getColFromGridIdx = (gridIdx, size) => (clockmod(gridIdx, (size[0] / 16)) - 1) * 16
 const getRowFromGridIdx = (gridIdx, size) => Math.floor((gridIdx - 1) / (size[1] / 16)) * 16
 
+const legoColoursToID = {
+  "black": 11,
+  "blue": 7,
+  "bright_green": 36,
+  "bright_light_blue": 105,
+  "bright_light_orange": 110,
+  "bright_light_yellow": 103,
+  "bright_pink": 104,
+  "coral": 220,
+  "dark_azure": 153,
+  "dark_blue": 63,
+  "dark_bluish_gray": 85,
+  "dark_brown": 120,
+  "dark_orange": 68,
+  "dark_pink": 47,
+  "dark_red": 59,
+  "dark_tan": 69,
+  "dark_turquoise": 39,
+  "lavender": 154,
+  "light_aqua": 152,
+  "light_bluish_gray": 86,
+  "light_nougat": 90,
+  "lime": 34,
+  "magenta": 71,
+  "medium_azure": 156,
+  "medium_blue": 42,
+  "medium_nougat": 150,
+  "olive_green": 155,
+  "orange": 4,
+  "red": 5,
+  "reddish_brown": 88,
+  "sand_blue": 55,
+  "tan": 2,
+  "white": 1,
+  "yellow": 3,
+  "yellowish_green": 158
+}
+
+
+class wantedListGenerator {
+  // https://www.bricklink.com/help.asp?helpID=207
+  // https://stackoverflow.com/questions/14340894/create-xml-in-javascript
+  static createWantedList = (pieceList, size) => {
+    /*
+     * pieceList is {
+     *    color1: {count: n1, colourId: m1},
+     *    color2: {count: n2, colourId: m2},
+     *    ...
+     *  }
+     */
+    const wantedListDoc = document.implementation.createDocument(null, null)
+    const inventory = wantedListDoc.createElement("INVENTORY")
+
+    wantedListDoc.appendChild(inventory)
+
+    wantedListGenerator.setBase(wantedListDoc, inventory, size)
+
+    for (let [colour, countAndDifferentIdObj] of Object.entries(pieceList)) {
+      const item = wantedListGenerator.setRound(
+        wantedListDoc,
+        inventory,
+        countAndDifferentIdObj["pieceCount"],
+        colour
+      )
+    }
+    return wantedListDoc
+  }
+
+  static setBase = (doc, element, size) => {
+    const basePlateId = "65803"  // 1x1, 2x2, 3x3, 4x4
+    const connectorId = "2780"  // 3 per interior edge
+    const basePlateCount = (size / 16) * (size / 16)
+    const connectorCount = (size / 16 - 1) * (size / 16 - 1)
+    wantedListGenerator.setPiece(doc, element, basePlateId, basePlateCount)
+    wantedListGenerator.setPiece(doc, element, connectorId, connectorCount)
+  }
+
+  static setRound = (doc, element, count, colour) => {
+    // 1x1 round on bricklink
+    return wantedListGenerator.setPiece(doc, element, "98138", count, colour)
+  }
+
+  static setPiece = (doc, element, itemIdNum, count, colour) => {
+    if (count <= 0) return
+
+    const item = doc.createElement("ITEM")
+
+    const itemType = doc.createElement("ITEMTYPE")
+    itemType.innerHTML = "P"
+    item.appendChild(itemType)
+
+    const itemId = doc.createElement("ITEMID")
+    itemId.innerHTML = itemIdNum
+    item.appendChild(itemId)
+
+    const minQty = doc.createElement("MINQTY")
+    minQty.innerHTML = count.toString()
+    item.appendChild(minQty)
+
+    if (colour !== undefined) {
+      const colorEl = doc.createElement("COLOR")
+      colorEl.innerHTML = legoColoursToID[colour].toString()
+      item.appendChild(colorEl)
+    }
+
+    element.appendChild(item)
+  }
+
+}
+
 
 class Instructionificator {
   /* There are a lot of magic numbers in this class.
@@ -62,7 +172,9 @@ class Instructionificator {
     doc.addPage('a4', 'landscape')
     doc.rect(0, 0, this.pdfWidth, this.pdfHeight, 'F')
     doc.text(
-      `Here is a bunch of text. A tonne of text. Entirely too much text to explain what this is. Fill in each tile, according to the numbers. Do it.`,
+        "Fill in each tile 16x16 tile, piece by piece. Connect each edge of each tile " \
+      + "with three connector pieces. There is also a '.txt' file that was also downloaded " \
+      + "that lets you ",
       this.pdfWidth / 2,
       this.pdfHeight / 2,
       { align: "center", baseline: "middle", maxWidth: '' + 0.8 * this.pdfWidth }
@@ -235,7 +347,7 @@ class Instructionificator {
      *                     gridIdx Numbering
      *                     -----------------
      *  Size 1:  #         1
-     *          
+     *
      *  Size 2:  ##        1 2
      *           ##        3 4
      *
