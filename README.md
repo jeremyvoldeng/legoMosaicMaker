@@ -1,7 +1,7 @@
-# Lego Mosaic Maker
+# Pictures With Bricks
 
 This is a program designed to create Mosaics of your own photos. The program takes an image and gives you instructions similar to the official lego mosiacs as well as a parts list.
-This was original designed for personal use, as I wanted to make mosaics of my favourite album covers. Once I realized that there was nothing I could find online that did what I 
+This was original designed for personal use, as I wanted to make mosaics of my favourite album covers. Once I realized that there was nothing I could find online that did what I
 was looking for, I decided to design something that anyone could easily use to do the same.
 
 ## Important Info
@@ -10,9 +10,9 @@ The program uses the template used for the current official lego Mosaics, such a
 only on a 16x16 scale since that is the size of the large plates that are used. I recommend cropping your image to fit on a 16x16 grid, or else your image will be transformed
 to fit (ex. 600x600px (1:1) or 1000x750 (4:3)).
 
-Pieces will have to be sourced yourself. Lego's official pick a brick is useful but only has a handful of colours, so Bricklink is probably the best alternative. I recommend 
+Pieces will have to be sourced yourself. Lego's official pick a brick is useful but only has a handful of colours, so Bricklink is probably the best alternative. I recommend
 comparing your parts list to that of Lego's offical mosaic parts list and purchasing one since that could potentially be cheaper than purchasing the bricks, plus it will already
-include the 16x16 plates as well as the pieces for the frame. I purchased the World Map 31203 so I had enough plates to make 4 3x3 covers as well as a large number of 1x1 tiles to 
+include the 16x16 plates as well as the pieces for the frame. I purchased the World Map 31203 so I had enough plates to make 4 3x3 covers as well as a large number of 1x1 tiles to
 start with.
 
 ## Installation (WIP)

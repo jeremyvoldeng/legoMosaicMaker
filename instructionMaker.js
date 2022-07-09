@@ -159,10 +159,10 @@ class Instructionificator {
       const x = x0 + 2 * r
       const y = this.pdfHeight / 2 - pieceListHeight / 2 + 2.5 * r * ypos++
 
-      doc.setFillColor(...legoColours[colourName])
+      doc.setFillColor(...brickColours[colourName])
       doc.circle(x, y, r, 'F')
 
-      if (legoColours[colourName].reduce(add) > 127 * 3)
+      if (brickColours[colourName].reduce(add) > 127 * 3)
         doc.setTextColor(0, 0, 0)
       else
         doc.setTextColor(255, 255, 255)
@@ -223,7 +223,7 @@ class Instructionificator {
       const [i, j] = idx.split(",").map(Number)
       const x = i * 2 * r + x0
       const y = j * 2 * r + y0
-      doc.setFillColor(...legoColours[colour])
+      doc.setFillColor(...brickColours[colour])
       doc.circle(x, y, r, 'F')
     }
   }
@@ -235,7 +235,7 @@ class Instructionificator {
      *                     gridIdx Numbering
      *                     -----------------
      *  Size 1:  #         1
-     *          
+     *
      *  Size 2:  ##        1 2
      *           ##        3 4
      *
@@ -261,10 +261,10 @@ class Instructionificator {
         const x = i * factor + factor / 2 + x0
         const y = j * factor + factor / 2 + y0
 
-        doc.setFillColor(...legoColours[mosaicColourAtij])
+        doc.setFillColor(...brickColours[mosaicColourAtij])
         doc.circle(x, y, factor / 2, 'F')
 
-        if (legoColours[mosaicColourAtij].reduce(add) > 127 * 3)
+        if (brickColours[mosaicColourAtij].reduce(add) > 127 * 3)
           doc.setTextColor(0, 0, 0)
         else
           doc.setTextColor(255, 255, 255)

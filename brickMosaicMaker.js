@@ -1,7 +1,7 @@
 'use strict';
 
 
-const legoColours = {
+const brickColours = {
   "black": [33, 33, 33],
   "blue": [0, 85, 191],
   "bright_green": [16, 203, 49],
@@ -54,11 +54,11 @@ class Legoificator {
 
   constructor(input_image, size = 3, factor = 9) {
     /*
-     * factor is roughly the diameter of the lego pieces (in px) (though it can be
+     * factor is roughly the diameter of the brick pieces (in px) (though it can be
      * different depending on the context e.g. while generating different parts of
      * the instructions)
      *
-     * size gives the number of lego pieces along width and height by this formula
+     * size gives the number of brick pieces along width and height by this formula
      *    [width, height] = [size * 16, size * 16]
      */
     this.input_image_gl = input_image._  // plz dont delete that underscore
@@ -80,14 +80,14 @@ class Legoificator {
 
   initColoursUsed = () => {
     const coloursUsed = {}
-    for (const colour in legoColours)
+    for (const colour in brickColours)
       coloursUsed[colour] = { 'pieceCount': 0, 'colourID': undefined }
     return coloursUsed
   }
 
   initLABColours = () => {
     const LABColours = {}
-    for (let [key, rgb] of Object.entries(legoColours))
+    for (let [key, rgb] of Object.entries(brickColours))
       LABColours[key] = RGBtoLAB(rgb)
     return LABColours
   }
@@ -119,8 +119,8 @@ class Legoificator {
     let minimumColourDist = Number.MAX_SAFE_INTEGER
     let closestColour = ""
     for (let colour in this.LABColours) {
-      const legoRGB = this.LABColours[colour]
-      const colourDist = this.SquaredEuclideanDist(rgb, legoRGB)
+      const brickRGB = this.LABColours[colour]
+      const colourDist = this.SquaredEuclideanDist(rgb, brickRGB)
       if (colourDist < minimumColourDist) {
         minimumColourDist = colourDist
         closestColour = colour
@@ -191,20 +191,20 @@ class Legoificator {
 
         // find the closest colour
         const targetColour = RGBtoLAB(RGBavg)
-        const closest_lego_colour = this.getClosestLegoColour(targetColour)
+        const closest_brick_colour = this.getClosestLegoColour(targetColour)
 
         // update the colours that were used
-        coloursUsed[closest_lego_colour]['pieceCount']++
-        if (coloursUsed[closest_lego_colour]['colourID'] == undefined) {
-          coloursUsed[closest_lego_colour]['colourID'] = current_colour_id++
+        coloursUsed[closest_brick_colour]['pieceCount']++
+        if (coloursUsed[closest_brick_colour]['colourID'] == undefined) {
+          coloursUsed[closest_brick_colour]['colourID'] = current_colour_id++
         }
 
-        this.idxToColour[[i, j]] = closest_lego_colour
+        this.idxToColour[[i, j]] = closest_brick_colour
         drawCircle(
           (i * this.factor + this.factor / 2) * window.devicePixelRatio,
           (j * this.factor + this.factor / 2) * window.devicePixelRatio,
           this.factor / 2 * window.devicePixelRatio,
-          legoColours[closest_lego_colour],
+          brickColours[closest_brick_colour],
           output_ctx
         )
       }

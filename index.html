@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-  <title> LEGO MOSAIC DESIGNER </Title>
+  <title> PICTURES WITH BRICKS </Title>
 
   <!-- people say i need this line -->
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description"
-    content="Create a Lego Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it and make something entirely different!">
+    content="Create a Brick Mosaic! Download Instructions! Make the Mosaic! Treasure the Mosaic! Disassemble it, and make something entirely different!">
 
   <!-- Add a goatcounter -->
   <!-- To those who are interested, this just lets us see how much attention this
@@ -30,7 +30,7 @@
   <!-- this is where the fun stuff lives -->
   <script type='text/javascript' src='instructionMaker.js'></script>
   <script type='text/javascript' src='RGBtoLAB.js'></script>
-  <script type='text/javascript' src='legoMosaicMaker.js'></script>
+  <script type='text/javascript' src='brickMosaicMaker.js'></script>
 </head>
 
 <body>
@@ -227,7 +227,7 @@
 
     <footer id="footer">
       <div id="footerText">
-        Thanks for using Lego Mosaic Designer! If you enjoyed using the website and want to support us, you can buy us a
+        Thanks for using our brick mosaic designer! If you enjoyed using the website and want to support us, you can buy us a
         coffee below.
         <br><br>Happy building! <a href="https://jeremyvoldeng.github.io/" target="_blank" rel="noopener">Jeremy</a>
         &amp; <a href="https://axel-jacobsen.github.io" target="_blank" rel="noopener">Axel</a>
@@ -284,9 +284,9 @@
   resetButton.onclick = reset
   resetButton.onkeydown = e => keyPressToClick(e, reset)
   sizeSlider.oninput = updateSize
-  satSlider.oninput = legoify
-  brightSlider.oninput = legoify
-  contrastSlider.oninput = legoify
+  satSlider.oninput = brickify
+  brightSlider.oninput = brickify
+  contrastSlider.oninput = brickify
   generatePDFBtn.onclick = genInstructions
   generatePDFBtn.onkeydown = e => keyPressToClick(e, genInstructions)
   downloadMosaicBtn.onclick = downloadMosaic
@@ -422,7 +422,7 @@
     }
   }
 
-  function legoify() {
+  function brickify() {
     if (L) {
       input_texture.loadContentsOf(album_art_img)
       fxcanvas.draw(input_texture)
@@ -452,7 +452,7 @@
 
   function updateSize() {
     sizeLabel.innerHTML = `Size: ${16 * sizeSlider.value} by ${16 * sizeSlider.value}`
-    legoify()
+    brickify()
   }
 
   function imgRequiresResize(img) {
