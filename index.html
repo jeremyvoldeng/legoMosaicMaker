@@ -337,13 +337,13 @@
       })
   }
 
-  function createLegoificator(img) {
+  function createBrickificator(img) {
     input_texture = fxcanvas.texture(img)
 
     // either this, or EXT_color_buffer_float
     input_texture._.gl.getExtension('WEBGL_color_buffer_float')
 
-    L = new Legoificator(input_texture, parseInt(sizeSlider.value))
+    L = new Brickificator(input_texture, parseInt(sizeSlider.value))
     reset()
 
     imgdiv.prepend(fxcanvas)
@@ -384,7 +384,7 @@
       } else {
         hideError()
         showContents()
-        createLegoificator(album_art_img)
+        createBrickificator(album_art_img)
       }
     }
 
@@ -418,7 +418,7 @@
       input_texture.loadContentsOf(album_art_img)
       fxcanvas.draw(input_texture).update()
       L.updateSize(parseInt(sizeSlider.value))
-      L.commenceLegoification(out_ctx)
+      L.commenceBrickification(out_ctx)
     }
   }
 
@@ -431,7 +431,7 @@
         .update()
 
       L.updateSize(parseInt(sizeSlider.value))
-      L.commenceLegoification(out_ctx)
+      L.commenceBrickification(out_ctx)
     }
   }
 

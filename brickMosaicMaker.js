@@ -50,7 +50,7 @@ const drawCircle = (x, y, r, colour, canvas_ctx) => {
 }
 
 
-class Legoificator {
+class Brickificator {
 
   constructor(input_image, size = 3, factor = 9) {
     /*
@@ -102,7 +102,7 @@ class Legoificator {
     return d1 * d1 + d2 * d2 + d3 * d3
   }
 
-  getClosestLegoColour = (rgb) => {
+  getClosestBrickColour = (rgb) => {
     /* From the Colour Difference Wikipedia page[0], it turns
      * out that distances in RGB colour space are not perceptibly
      * uniform - that is, a colour distance of "5" will look different
@@ -148,7 +148,7 @@ class Legoificator {
     return [R / n, G / n, B / n]
   }
 
-  commenceLegoification = (output_ctx) => {
+  commenceBrickification = (output_ctx) => {
     // Set canvas size, with appropriate css scaling to make it look good
     output_ctx.canvas.width = this.factor * this.size[0] * window.devicePixelRatio
     output_ctx.canvas.height = this.factor * this.size[1] * window.devicePixelRatio
@@ -191,7 +191,7 @@ class Legoificator {
 
         // find the closest colour
         const targetColour = RGBtoLAB(RGBavg)
-        const closest_brick_colour = this.getClosestLegoColour(targetColour)
+        const closest_brick_colour = this.getClosestBrickColour(targetColour)
 
         // update the colours that were used
         coloursUsed[closest_brick_colour]['pieceCount']++
