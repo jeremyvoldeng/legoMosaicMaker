@@ -1,6 +1,6 @@
 # Lego Mosaic Maker
 
-pictureswithbricks.com
+[Website is live! pictureswithbricks.com](https://pictureswithbricks.com)
 
 This is a program designed to create Mosaics of your own photos. The program takes an image and gives you instructions similar to the official lego mosiacs as well as a parts list.
 This was original designed for personal use, as I wanted to make mosaics of my favourite album covers. Once I realized that there was nothing I could find online that did what I 
